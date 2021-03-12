@@ -21,7 +21,6 @@ There are 2 ways of deploying plugins in the spinnaker.
    - [x] Configure the Spinnaker service. Put the following in the service.yml to enable the plugin and configure the extension.
    
           1.   Orca configuration
-
 Adding the following to your orca.yml or ~/.hal/default/profiles/orca-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
 spinnaker:
@@ -48,7 +47,6 @@ spinnaker:
         url: https://raw.githubusercontent.com/opsmx/spinnakerPluginRepository/master/repositories.json
 ```
           2.   Deck configuration
-
 Adding the following to your gate.yml or ~/.hal/default/profiles/gate-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
 spinnaker:
@@ -66,7 +64,6 @@ spinnaker:
 ```
 
           3.   Echo configuration
-
 Adding the following to your echo.yml or ~/.hal/default/profiles/echo-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
 spinnaker:
@@ -92,7 +89,6 @@ spinnaker:
    - [x] Configure the Spinnaker service. Put the following in the service.yml to enable the plugin and configure the extension.
    
           1.   Orca configuration
-
 Adding the following to your orca.yml or ~/.hal/default/profiles/orca-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
 spinnaker:
@@ -116,7 +112,6 @@ spinnaker:
                               }'
 ```
           2.   Echo configuration
-
 Adding the following to your echo.yml or ~/.hal/default/profiles/echo-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
 spinnaker:
@@ -127,5 +122,7 @@ spinnaker:
         version: 1.0.1
 ```   
    - [x] Restart the microservices.
- 
-   **NOTE: ** `Method 2 cannot be used for deploying ` **DECK** `plugin.`
+
+**NOTE: ** `Method 2 cannot be used for deploying ` **DECK** `plugin.`
+
+## ** Check the logs to confirm the plugins started successfully **
