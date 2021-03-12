@@ -17,7 +17,7 @@ There are 2 ways of deploying plugins in the spinnaker.
 
    - [x] Run `./gradlew clean releaseBundle`.
    - [x] Put the `build/distributions/pf4jCustomStagePlugin-v1.0.1.zip` into your github repo.
-          See  [Opsmx Spinnaker Plugin Repository] (https://github.com/OpsMx/spinnakerPluginRepository).
+          See  [Opsmx Custom Stage Plugin Repository] (https://github.com/OpsMx/Pf4jCustomStagePlugin/releases/tag/v1.0.1).
    - [x] Configure the Spinnaker service. Put the following in the service.yml to enable the plugin and configure the extension.
    
           1.   Orca configuration
