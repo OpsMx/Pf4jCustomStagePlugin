@@ -6,12 +6,14 @@ This custom stage plugin involves 2 microservices.
      1. Orca
     
      2. Deck
+     
+     3. Echo
 
 1) Run `./gradlew releaseBundle`
 2) Put the `/build/distributions/pf4jCustomStagePlugin-v1.0.1.zip` in the [configured plugins location for your service](https://pf4j.org/doc/packaging.html).
 3) Configure the Spinnaker service. Put the following in the service yml to enable the plugin and configure the extension.
 
-1.  Orca configuration
+     3.1)  Orca configuration
 
 Adding the following to your orca.yml or ~/.hal/default/profiles/orca-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
@@ -39,7 +41,7 @@ spinnaker:
         url: https://raw.githubusercontent.com/opsmx/spinnakerPluginRepository/master/repositories.json
 ```
 
-2.  Deck configuration
+     3.2)  Deck configuration
 
 Adding the following to your gate.yml or ~/.hal/default/profiles/gate-local.yml config will load and start the latest CustomStage plugin during app startup.
 ```
@@ -55,4 +57,19 @@ spinnaker:
     repositories:
       opsmx-repo:
         url: https://raw.githubusercontent.com/opsmx/spinnakerPluginRepository/master/plugins.json
+```
+
+     3.3)  Echo configuration
+
+Adding the following to your echo.yml or ~/.hal/default/profiles/echo-local.yml config will load and start the latest CustomStage plugin during app startup.
+```
+spinnaker:
+  extensibility:
+    plugins:
+      Opsmx.CustomStagePlugin:
+        enabled: true
+        version: 1.0.1
+    repositories:
+      opsmx-repo:
+        url: https://raw.githubusercontent.com/opsmx/spinnakerPluginRepository/master/repositories.json
 ```
