@@ -11,7 +11,7 @@ This custom stage plugin involves 3 microservices.
 
 There are 2 ways of deploying plugins in the spinnaker.
 
-## ** Method 1 **
+## Method 1
 
    #### Tasks list
 
@@ -78,7 +78,7 @@ spinnaker:
 ```   
    - [x] Restart the microservices.
 
-## ** Method 2 **
+## Method 2
 
    #### Tasks list
 
@@ -123,6 +123,37 @@ spinnaker:
 ```   
    - [x] Restart the microservices.
 
-**NOTE: ** `Method 2 cannot be used for deploying ` **DECK** `plugin.`
+###### **NOTE: ** `Method 2 cannot be used for deploying ` **DECK** `plugin.`
 
-## ** Check the logs to confirm the plugins started successfully **
+## Check the logs to confirm the plugins started successfully:
+
+   #### Echo logs
+```
+2021-03-12 07:41:03.578  INFO 15021 --- [           main] c.n.s.config.PluginsAutoConfiguration    : Enabling spinnaker-official and spinnaker-community plugin repositories
+2021-03-12 07:41:03.725  INFO 15021 --- [           main] org.pf4j.AbstractPluginManager           : Plugin 'Opsmx.CustomStagePlugin@1.0.2' resolved
+2021-03-12 07:41:05.148  INFO 15021 --- [           main] org.pf4j.AbstractPluginManager           : Start plugin 'Opsmx.CustomStagePlugin@1.0.2'
+2021-03-12 07:41:05.157  INFO 15021 --- [           main] c.o.s.echo.plugins.CustomEchoPlugin      : CustomEchoPlugin.start()
+```
+   #### Orca logs
+```
+2021-03-12 07:43:02.827  INFO 15527 --- [           main] org.pf4j.AbstractPluginManager           : [] No plugins
+2021-03-12 07:43:04.472  INFO 15527 --- [           main] org.pf4j.util.FileUtils                  : [] Expanded plugin zip 'Opsmx.CustomStagePlugin-pf4jCustomStagePlugin-v1.0.1.zip' in 'Opsmx.CustomStagePlugin-pf4jCustomStagePlugin-v1.0.1'
+2021-03-12 07:43:04.490  INFO 15527 --- [           main] org.pf4j.util.FileUtils                  : [] Expanded plugin zip 'orca.zip' in 'orca'
+2021-03-12 07:43:04.508  INFO 15527 --- [           main] org.pf4j.AbstractPluginManager           : [] Plugin 'Opsmx.CustomStagePlugin@1.0.2' resolved
+2021-03-12 07:43:04.509  INFO 15527 --- [           main] org.pf4j.AbstractPluginManager           : [] Start plugin 'Opsmx.CustomStagePlugin@1.0.2'
+2021-03-12 07:43:04.517  INFO 15527 --- [           main] c.o.p.stage.custom.CustomStagePlugin     : [] CustomStagePlugin.start()
+```
+#### Deck logs
+```
+2021-03-12 07:51:24.117  INFO 16634 --- [TaskScheduler-3] c.n.s.gate.plugins.deck.DeckPluginCache  : Downloading plugin 'Opsmx.CustomStagePlugin@1.0.1'
+2021-03-12 07:51:24.481  INFO 16634 --- [TaskScheduler-3] org.pf4j.util.FileUtils                  : Expanded plugin zip 'pf4jCustomStagePlugin-v1.0.1.zip' in 'pf4jCustomStagePlugin-v1.0.1'
+2021-03-12 07:51:24.482  INFO 16634 --- [TaskScheduler-3] org.pf4j.util.FileUtils                  : Expanded plugin zip 'deck.zip' in 'deck'
+2021-03-12 07:51:24.482  INFO 16634 --- [TaskScheduler-3] c.n.s.gate.plugins.deck.DeckPluginCache  : Adding plugin 'Opsmx.CustomStagePlugin@1.0.1' to local cache: /tmp/downloaded-plugin-cache12282751100144509192/Opsmx.CustomStagePlugin/1.0.1
+2021-03-12 07:51:24.490  INFO 16634 --- [TaskScheduler-3] c.n.s.gate.plugins.deck.DeckPluginCache  : Cached 1 deck plugins
+```
+
+## Common pitfalls:
+
+     1. Check the plugin id in the code with service.yml configuration. Ensure that both the plugin id's are the same.
+    
+     2. Check the plugin version in the code with service.yml configuration. Ensure that both the versions are the same.
