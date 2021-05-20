@@ -1,8 +1,8 @@
 import { IDeckPlugin } from '@spinnaker/core';
-import { customStage } from './CustomStage';
+import { verificationGate } from './VerificationGate';
 import { initialize } from './initialize';
 
 export const plugin: IDeckPlugin = {
   initialize,
-  stages: [customStage],
+  stages: [verificationGate],
 };
