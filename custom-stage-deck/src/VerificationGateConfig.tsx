@@ -17,8 +17,8 @@ import {
   NumberInput,
   Validators,
 } from '@spinnaker/core';
-
 import './VerificationGate.less';
+import DateTimePicker from './input/DateTimePickerInput';
 
 /*
   IStageConfigProps defines properties passed to all Spinnaker Stages.
@@ -79,13 +79,13 @@ export function VerificationGateConfig(props: IStageConfigProps) {
               name="baselineStartTime"
               label="Baseline StartTime"
               help={<HelpField id="opsmx.verificationGate.baselineStartTime" />}
-              input={(props) => <DayPickerInput {...props} />}
+              input={(props) => <DateTimePicker {...props} />}
             />
             <FormikFormField
               name="canaryStartTime"
               label="Canary StartTime"
               help={<HelpField id="opsmx.verificationGate.canaryStartTime" />}
-              input={(props) => <DayPickerInput {...props} />}
+              input={(props) => <DateTimePicker {...props} />}
             />
             <FormikFormField
               name="gateName"
