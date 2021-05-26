@@ -12,14 +12,9 @@ import { HelpContentsRegistry } from '@spinnaker/core';
   These registries and their methods may change without warning.
 */
 export const initialize = () => {
-  HelpContentsRegistry.register('opsmx.verificationGate.gateUrl', 'Gate Url.');
-  HelpContentsRegistry.register('opsmx.verificationGate.lifeTimeHours', 'Life Time Hours.');
-  HelpContentsRegistry.register('opsmx.verificationGate.minimumCanaryResult', 'Minimum Canary Result.');
-  HelpContentsRegistry.register('opsmx.verificationGate.canaryResultScore', 'Canary Result Score.');
-  HelpContentsRegistry.register('opsmx.verificationGate.logAnalysis', 'Log Analysis.');
-  HelpContentsRegistry.register('opsmx.verificationGate.metricAnalysis', 'Metric Analysis.');
-  HelpContentsRegistry.register('opsmx.verificationGate.baselineStartTime', 'Baseline StartTime.');
-  HelpContentsRegistry.register('opsmx.verificationGate.canaryStartTime', 'Canary StartTime.');
-  HelpContentsRegistry.register('opsmx.verificationGate.gateName', 'Gate Name.');
-  HelpContentsRegistry.register('opsmx.verificationGate.imageIds', 'Image Ids.');
+  HelpContentsRegistry.register('opsmx.policyStage.policyProxy', 'Please enter the POLICY Proxy Hostname and Port.');
+  HelpContentsRegistry.register('opsmx.policyStage.policyPath', 'Please enter Policy path that applies to this stage.');
+  HelpContentsRegistry.register('opsmx.policyStage.payload', 'Please enter the Payload in single line.');
+  HelpContentsRegistry.register('opsmx.policyStage.gateName', 'Gate Name.');
+  HelpContentsRegistry.register('opsmx.policyStage.imageIds', 'Image IDs.');
 };

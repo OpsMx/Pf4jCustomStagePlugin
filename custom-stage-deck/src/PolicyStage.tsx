@@ -1,8 +1,8 @@
 import React from 'react';
 import { ExecutionDetailsTasks, IStageTypeConfig } from '@spinnaker/core';
 
-import { VerificationGateExecutionDetails } from './VerificationGateExecutionDetails';
-import { VerificationGateConfig, validate } from './VerificationGateConfig';
+import { PolicyStageExecutionDetails } from './PolicyStageExecutionDetails';
+import { PolicyStageConfig, validate } from './PolicyStageConfig';
 
 /*
   Define Spinnaker Stages with IStageTypeConfig.
@@ -13,11 +13,11 @@ import { VerificationGateConfig, validate } from './VerificationGateConfig';
   - component -> The rendered React component
   - validateFn -> A validation function for the stage config form.
  */
-export const verificationGate: IStageTypeConfig = {
-  key: 'verificationGate',
-  label: `Verification Gate`,
-  description: 'Stage for Verification Gate',
-  component: VerificationGateConfig, // stage config
-  executionDetailsSections: [VerificationGateExecutionDetails, ExecutionDetailsTasks],
+export const policyStage: IStageTypeConfig = {
+  key: 'policyStage',
+  label: `Policy Stage`,
+  description: 'Spinnaker Policy Evaluation and Decision Stage',
+  component: PolicyStageConfig, // stage config
+  executionDetailsSections: [PolicyStageExecutionDetails, ExecutionDetailsTasks],
   //validateFn: validate,
 };
