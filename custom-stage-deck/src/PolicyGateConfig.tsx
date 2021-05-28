@@ -25,7 +25,7 @@ import './PolicyStage.less';
 
   This method returns JSX (https://reactjs.org/docs/introducing-jsx.html) that gets displayed in the Spinnaker UI.
  */
-export function PolicyStageConfig(props: IStageConfigProps) {
+export function PolicyGateConfig(props: IStageConfigProps) {
   return (
     <div className="PolicyStageConfig">
       <FormikStageConfig

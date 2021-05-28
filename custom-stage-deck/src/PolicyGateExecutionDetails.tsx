@@ -10,7 +10,7 @@ import { ExecutionDetailsSection, IExecutionDetailsSectionProps } from '@spinnak
  * - `props.stage.outputs` maps to your SimpleStage's `Output` class.
  * - `props.stage.context` maps to your SimpleStage's `Context` class.
  */
-export function PolicyStageExecutionDetails(props: IExecutionDetailsSectionProps) {
+export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps) {
   return (
     <ExecutionDetailsSection name={props.name} current={props.current}>
       <div>
@@ -23,6 +23,6 @@ export function PolicyStageExecutionDetails(props: IExecutionDetailsSectionProps
 // The title here will be used as the tab name inside the
 // pipeline stage execution view. Camel case will be mapped
 // to space-delimited text: randomWait -> Random Wait.
-export namespace PolicyStageExecutionDetails {
+export namespace PolicyGateExecutionDetails {
   export const title = 'policyStage';
 }

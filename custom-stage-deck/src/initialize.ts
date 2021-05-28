@@ -12,9 +12,9 @@ import { HelpContentsRegistry } from '@spinnaker/core';
   These registries and their methods may change without warning.
 */
 export const initialize = () => {
-  HelpContentsRegistry.register('opsmx.policyStage.policyProxy', 'Please enter the POLICY Proxy Hostname and Port.');
-  HelpContentsRegistry.register('opsmx.policyStage.policyPath', 'Please enter Policy path that applies to this stage.');
-  HelpContentsRegistry.register('opsmx.policyStage.payload', 'Please enter the Payload in single line.');
-  HelpContentsRegistry.register('opsmx.policyStage.gateName', 'Gate Name.');
-  HelpContentsRegistry.register('opsmx.policyStage.imageIds', 'Image IDs.');
+  HelpContentsRegistry.register('opsmx.policyGate.policyProxy', 'Please enter the POLICY Proxy Hostname and Port.');
+  HelpContentsRegistry.register('opsmx.policyGate.policyPath', 'Please enter Policy path that applies to this stage.');
+  HelpContentsRegistry.register('opsmx.policyGate.payload', 'Please enter the Payload in single line.');
+  HelpContentsRegistry.register('opsmx.policyGate.gateName', 'Gate Name.');
+  HelpContentsRegistry.register('opsmx.policyGate.imageIds', 'Image IDs.');
 };
