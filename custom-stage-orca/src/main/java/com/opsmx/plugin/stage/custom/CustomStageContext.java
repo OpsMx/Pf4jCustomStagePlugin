@@ -1,5 +1,6 @@
 package com.opsmx.plugin.stage.custom;
 
+
 public class CustomStageContext {
 
     public String getVmDetails() {

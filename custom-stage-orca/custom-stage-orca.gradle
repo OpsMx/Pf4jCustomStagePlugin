@@ -63,6 +63,8 @@ dependencies {
   testRuntime "org.junit.jupiter:junit-jupiter-engine:5.4.0"
   testRuntime "org.junit.platform:junit-platform-launcher:1.4.0"
   testRuntime "org.junit.platform:junit-platform-commons:1.5.2"
+
+  compile "org.apache.httpcomponents:httpclient:4.5.13"
 }
 
 tasks.withType(Test) {
