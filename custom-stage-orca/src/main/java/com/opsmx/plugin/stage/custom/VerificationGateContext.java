@@ -10,10 +10,10 @@ public class VerificationGateContext {
     private String imageIds;
     private Boolean logAnalysis;
     private Boolean metricAnalysis;
-    private String baselineStartTime;
-    private String canaryStartTime;
+    private Long baselineStartTime;
+    private Long canaryStartTime;
 
-    public VerificationGateContext(String gateUrl, String lifeTimeHours, Integer minimumCanaryResult, Integer canaryResultScore, String gateName, String imageIds, Boolean logAnalysis, Boolean metricAnalysis, String baselineStartTime, String canaryStartTime) {
+    public VerificationGateContext(String gateUrl, String lifeTimeHours, Integer minimumCanaryResult, Integer canaryResultScore, String gateName, String imageIds, Boolean logAnalysis, Boolean metricAnalysis, Long baselineStartTime, Long canaryStartTime) {
         this.gateUrl = gateUrl;
         this.lifeTimeHours = lifeTimeHours;
         this.minimumCanaryResult = minimumCanaryResult;
@@ -90,19 +90,19 @@ public class VerificationGateContext {
         this.metricAnalysis = metricAnalysis;
     }
 
-    public String getBaselineStartTime() {
+    public Long getBaselineStartTime() {
         return baselineStartTime;
     }
 
-    public void setBaselineStartTime(String baselineStartTime) {
+    public void setBaselineStartTime(Long baselineStartTime) {
         this.baselineStartTime = baselineStartTime;
     }
 
-    public String getCanaryStartTime() {
+    public Long getCanaryStartTime() {
         return canaryStartTime;
     }
 
-    public void setCanaryStartTime(String canaryStartTime) {
+    public void setCanaryStartTime(Long canaryStartTime) {
         this.canaryStartTime = canaryStartTime;
     }
 }
