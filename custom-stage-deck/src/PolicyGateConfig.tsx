@@ -16,7 +16,7 @@ import {
   NumberInput,
   Validators,
 } from '@spinnaker/core';
-import './PolicyStage.less';
+import './PolicyGate.less';
 
 /*
   IStageConfigProps defines properties passed to all Spinnaker Stages.
@@ -27,7 +27,7 @@ import './PolicyStage.less';
  */
 export function PolicyGateConfig(props: IStageConfigProps) {
   return (
-    <div className="PolicyStageConfig">
+    <div className="PolicyGateConfig">
       <FormikStageConfig
         {...props}
         onChange={props.updateStage}
@@ -38,31 +38,31 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="policyProxy"
                   label="Policy Proxy"
-                  help={<HelpField id="opsmx.policyStage.policyProxy" />}
+                  help={<HelpField id="opsmx.policyGate.policyProxy" />}
                   input={(props) => <TextInput {...props} />}
                 />
                 <FormikFormField
                   name="policyPath"
                   label="Policy Path"
-                  help={<HelpField id="opsmx.policyStage.policyPath" />}
+                  help={<HelpField id="opsmx.policyGate.policyPath" />}
                   input={(props) => <TextInput {...props} />}
                 />
                 <FormikFormField
                   name="payload"
                   label="Payload"
-                  help={<HelpField id="opsmx.policyStage.payload" />}
+                  help={<HelpField id="opsmx.policyGate.payload" />}
                   input={(props) => <TextAreaInput {...props} />}
                 />
                 <FormikFormField
                   name="gateName"
                   label="Gate Name"
-                  help={<HelpField id="opsmx.policyStage.gateName" />}
+                  help={<HelpField id="opsmx.policyGate.gateName" />}
                   input={(props) => <TextInput {...props} />}
                 />
                 <FormikFormField
                   name="imageIds"
                   label="Image Ids"
-                  help={<HelpField id="opsmx.policyStage.imageIds" />}
+                  help={<HelpField id="opsmx.policyGate.imageIds" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>

@@ -24,5 +24,5 @@ export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps)
 // pipeline stage execution view. Camel case will be mapped
 // to space-delimited text: randomWait -> Random Wait.
 export namespace PolicyGateExecutionDetails {
-  export const title = 'policyStage';
+  export const title = 'policyGate';
 }
