@@ -109,7 +109,7 @@ export function VerificationGateConfig(props: IStageConfigProps) {
                   name="baselineStartTime"
                   label="Baseline StartTime"
                   help={<HelpField id="opsmx.verificationGate.baselineStartTime" />}
-                  input={(props) => <DateTimePicker date={props.value} {...props} />}
+                  input={(props) => <DateTimePicker {...props} />}
                 />
               </div>
               <div className="flex-item-right">
@@ -117,7 +117,7 @@ export function VerificationGateConfig(props: IStageConfigProps) {
                   name="canaryStartTime"
                   label="Canary StartTime"
                   help={<HelpField id="opsmx.verificationGate.canaryStartTime" />}
-                  input={(props) => <DateTimePicker date={props.value} {...props} />}
+                  input={(props) => <DateTimePicker {...props} />}
                 />
               </div>
             </div>
