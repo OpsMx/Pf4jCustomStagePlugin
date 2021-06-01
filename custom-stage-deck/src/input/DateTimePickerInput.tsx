@@ -5,20 +5,18 @@ export interface IDateInputProps extends IFormInputProps, OmitControlledInputPro
   date: number;
 }
 
-const epochToLocalTime = (epochString: number) => {
+var epochToLocalTime = (epochString: any) => {
   const inputDate = epochString ? new Date(epochString) : new Date();
   let hours = inputDate.getHours();
-  let minutes = inputDate.getMinutes();
+  let minutes: number | string = inputDate.getMinutes();
   hours = hours % 24;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
   hours = hours ? hours : 24;
-  minutes = minutes < 10 ? +('0' + minutes) : minutes;
   const year = inputDate.getFullYear();
-  let month = inputDate.getMonth();
-  month = month < 10 ? +('0' + month) : month;
-  let date = inputDate.getDate();
-  date = date < 10 ? +('0' + date) : date;
-  hours = hours < 10 ? +('0' + hours) : hours;
-  minutes = minutes < 10 ? +('0' + minutes) : minutes;
+  let month: number | string = inputDate.getMonth();
+  month = month < 10 ? '0' + month : month;
+  let date: number | string = inputDate.getDate();
+  date = date < 10 ? '0' + date : date;
   const strTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes;
   return strTime;
 };
@@ -36,7 +34,7 @@ export class DateTimePicker extends React.Component<IDateInputProps> {
         value={formattedDate}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           const date = e.target.value;
-          const newValue = date && localTimeToEpoch(date);
+          const newValue = localTimeToEpoch(date);
           this.props.onChange(createFakeReactSyntheticEvent({ name, value: newValue }));
         }}
         {...rest}
