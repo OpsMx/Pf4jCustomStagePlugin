@@ -73,21 +73,30 @@ public class CustomStageTask implements Task {
 		String stageType = stage.getType();
 		if (stageType.equalsIgnoreCase(StageType.VERIFICATION_GATE.getType())) {
 			Map<String, Object> contextMap = new HashMap<>();
+			Map<String, Object> outputs = new HashMap<>();
 			log.info(" CustomStageTask execute start ");
 			VerificationGateContext context = stage.mapTo(VerificationGateContext.class);
+			
+			if (context.getGateUrl().isEmpty()) {
+				log.info("Gate Url should not be empty");
+				outputs.put("result", "Gate Url should not be empty");
+				return TaskResult.builder(ExecutionStatus.TERMINAL)
+						.context(contextMap)
+						.outputs(outputs)
+						.build();
+			}
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			HttpPost post = new HttpPost(context.getGateUrl());
-			Map<String, Object> outputs = new HashMap<>();
-
 
 			try {
 				post.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context)));
+				post.setHeader("Content-type", "application/json");
 				CloseableHttpResponse response = httpClient.execute(post);
 				if (response.getStatusLine().getStatusCode() != 202) {
 					outputs.put("result", response.getStatusLine());
 					return TaskResult.builder(ExecutionStatus.TERMINAL)
-							//                   .context(contextMap)
+							.context(contextMap)
 							.outputs(outputs)
 							.build();
 				}
@@ -99,12 +108,12 @@ public class CustomStageTask implements Task {
 					ObjectNode readValue = objectMapper.readValue(CharStreams.toString(rd), ObjectNode.class);
 					canaryId = readValue.get("canaryId").asText();
 				} catch (IOException e) {
-					outputs.put("result", "Error while getting canary id");
+					outputs.put("result", e.getMessage());
 				}
 
 				if (canaryId == null || canaryId.isEmpty()) {
 					return TaskResult.builder(ExecutionStatus.TERMINAL)
-							//.context(contextMap)
+							.context(contextMap)
 							.outputs(outputs)
 							.build();
 				}
@@ -115,6 +124,7 @@ public class CustomStageTask implements Task {
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				outputs.put("result", e.getMessage());
 			}
 
 			outputs.put("result", "Error while getting canary id");
@@ -181,6 +191,7 @@ public class CustomStageTask implements Task {
 		String analysisStatus = "RUNNING";
 		while (analysisStatus.equalsIgnoreCase("RUNNING")) {
 			try {
+				request.setHeader("Content-type", "application/json");
 				CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(request);
 
@@ -257,7 +268,10 @@ public class CustomStageTask implements Task {
 
 		finalJson.set("canaryConfig", canaryConfig);
 		finalJson.set("canaryDeployments", payloadTriggerNode);
-		return finalJson.toString();
+		String finalPayloadString = finalJson.toString();
+		log.info("Payload string to trigger analysis : {}", finalPayloadString);
+		
+		return finalPayloadString;
 	}
 
 	private String parseArtifactForCommand(String response) {
