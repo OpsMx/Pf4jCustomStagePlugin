@@ -18,7 +18,7 @@ import {
   Validators,
 } from '@spinnaker/core';
 import './VerificationGate.less';
-import DateTimePicker from './input/DateTimePickerInput';
+import { DateTimePicker } from './input/DateTimePickerInput';
 
 /*
   IStageConfigProps defines properties passed to all Spinnaker Stages.
@@ -109,7 +109,7 @@ export function VerificationGateConfig(props: IStageConfigProps) {
                   name="baselineStartTime"
                   label="Baseline StartTime"
                   help={<HelpField id="opsmx.verificationGate.baselineStartTime" />}
-                  input={(props) => <DateTimePicker {...props} />}
+                  input={(props) => <DateTimePicker date={props.value} {...props} />}
                 />
               </div>
               <div className="flex-item-right">
@@ -117,7 +117,7 @@ export function VerificationGateConfig(props: IStageConfigProps) {
                   name="canaryStartTime"
                   label="Canary StartTime"
                   help={<HelpField id="opsmx.verificationGate.canaryStartTime" />}
-                  input={(props) => <DateTimePicker {...props} />}
+                  input={(props) => <DateTimePicker date={props.value} {...props} />}
                 />
               </div>
             </div>
