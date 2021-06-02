@@ -63,6 +63,7 @@ public class VerificationGateTask implements Task {
 			HttpPost post = new HttpPost(context.getGateUrl());
 
 			try {
+				log.info("Spinnaker application : {}, pipeline name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 				post.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context)));
 				post.setHeader("Content-type", "application/json");
 				CloseableHttpResponse response = httpClient.execute(post);
@@ -197,17 +198,5 @@ public class VerificationGateTask implements Task {
 		log.info("Payload string to trigger analysis : {}", finalPayloadString);
 		
 		return finalPayloadString;
-	}
-
-	private Long getEpoch(String timestamp) {
-
-		if(timestamp == null) return null;
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-			Date dt = sdf.parse(timestamp);
-			return dt.getTime();
-		} catch(Exception e) {
-			return null;
-		}
 	}
 }
