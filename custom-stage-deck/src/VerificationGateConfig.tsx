@@ -132,9 +132,48 @@ export function validate(stageConfig: IStage) {
   const validator = new FormValidator(stageConfig);
 
   validator
-    .field('maxWaitTime')
+    .field('gateUrl')
     .required()
-    .withValidators((value, label) => (value < 0 ? `${label} must be non-negative` : undefined));
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('lifeTimeHours')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('minimumCanaryResult')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('canaryResultScore')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('logAnalysis')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('metricAnalysis')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('gateName')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator
+    .field('imageIds')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+
+  validator.field('baselineStartTime').required();
+
+  validator.field('canaryStartTime').required();
 
   return validator.validateForm();
 }

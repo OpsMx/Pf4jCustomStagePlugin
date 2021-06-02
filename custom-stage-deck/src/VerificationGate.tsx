@@ -19,5 +19,5 @@ export const verificationGate: IStageTypeConfig = {
   description: 'Stage for Verification Gate',
   component: VerificationGateConfig, // stage config
   executionDetailsSections: [VerificationGateExecutionDetails, ExecutionDetailsTasks],
-  //validateFn: validate,
+  validateFn: validate,
 };

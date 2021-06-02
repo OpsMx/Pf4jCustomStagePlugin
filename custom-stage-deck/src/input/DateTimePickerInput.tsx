@@ -3,12 +3,11 @@ import { createFakeReactSyntheticEvent, IFormInputProps } from '@spinnaker/core'
 
 const epochToDate = (epoch: number) => {
   const d = new Date(0); // The 0 there is the key, which sets the date to the epoch
-  d.setUTCSeconds(epoch);
+  d.setUTCMilliseconds(epoch);
   return d;
 };
 
 const epochToLocalTime = (epochString: any) => {
-  debugger;
   const inputDate = epochString ? epochToDate(epochString) : new Date();
   let hours = inputDate.getHours();
   let minutes: number | string = inputDate.getMinutes();
@@ -24,7 +23,7 @@ const epochToLocalTime = (epochString: any) => {
   return strTime;
 };
 
-const localTimeToEpoch = (selectedDate: string) => new Date(selectedDate).getTime() / 1000;
+const localTimeToEpoch = (selectedDate: string) => new Date(selectedDate).getTime();
 export class DateTimePicker extends React.Component<IFormInputProps> {
   public render() {
     const { onChange, name, value } = this.props;
