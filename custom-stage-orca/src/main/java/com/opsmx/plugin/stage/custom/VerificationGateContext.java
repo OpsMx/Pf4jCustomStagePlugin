@@ -1,5 +1,8 @@
 package com.opsmx.plugin.stage.custom;
 
+import com.netflix.spinnaker.kork.plugins.api.PluginComponent;
+
+@PluginComponent
 public class VerificationGateContext {
 
     private String gateUrl;
@@ -12,6 +15,8 @@ public class VerificationGateContext {
     private Boolean metricAnalysis;
     private Long baselineStartTime;
     private Long canaryStartTime;
+    
+    public VerificationGateContext(){}
 
     public VerificationGateContext(String gateUrl, String lifeTimeHours, Integer minimumCanaryResult, Integer canaryResultScore, String gateName, String imageIds, Boolean logAnalysis, Boolean metricAnalysis, Long baselineStartTime, Long canaryStartTime) {
         this.gateUrl = gateUrl;
