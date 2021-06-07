@@ -8,19 +8,23 @@ const epochToDate = (epoch: number) => {
 };
 
 const epochToLocalTime = (epochString: any) => {
-  const inputDate = epochString ? epochToDate(epochString) : new Date();
-  let hours = inputDate.getHours();
-  let minutes: number | string = inputDate.getMinutes();
-  hours = hours % 24;
-  minutes = minutes < 10 ? '0' + minutes : minutes;
-  hours = hours ? hours : 24;
-  const year = inputDate.getFullYear();
-  let month: number | string = inputDate.getMonth() + 1;
-  month = month < 10 ? '0' + month : month;
-  let date: number | string = inputDate.getDate();
-  date = date < 10 ? '0' + date : date;
-  const strTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes;
-  return strTime;
+  if (epochString) {
+    const inputDate = epochToDate(epochString);
+    let hours = inputDate.getHours();
+    let minutes: number | string = inputDate.getMinutes();
+    hours = hours % 24;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    hours = hours ? hours : 24;
+    const year = inputDate.getFullYear();
+    let month: number | string = inputDate.getMonth() + 1;
+    month = month < 10 ? '0' + month : month;
+    let date: number | string = inputDate.getDate();
+    date = date < 10 ? '0' + date : date;
+    const strTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes;
+    return strTime;
+  } else {
+    return null;
+  }
 };
 
 const localTimeToEpoch = (selectedDate: string) => new Date(selectedDate).getTime();
