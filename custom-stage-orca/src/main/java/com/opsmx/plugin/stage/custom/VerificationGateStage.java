@@ -9,7 +9,6 @@ import com.netflix.spinnaker.orca.api.pipeline.graph.TaskNode;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
-@StageDefinitionBuilder.Aliases("verificationGate")
 @Component
 public class VerificationGateStage implements StageDefinitionBuilder {
 

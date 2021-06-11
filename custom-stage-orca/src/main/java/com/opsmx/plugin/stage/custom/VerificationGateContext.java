@@ -2,7 +2,6 @@ package com.opsmx.plugin.stage.custom;
 
 import com.netflix.spinnaker.kork.plugins.api.PluginComponent;
 
-@PluginComponent
 public class VerificationGateContext {
 
     private String gateUrl;

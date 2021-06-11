@@ -36,6 +36,7 @@ export class DateTimePicker extends React.Component<IFormInputProps> {
 
     return (
       <input
+        style={{ width: '100%' }}
         type="datetime-local"
         {...this.props}
         value={formattedDate}
