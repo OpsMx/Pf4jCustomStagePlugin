@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
-import { ExecutionDetailsSection, IExecutionDetailsSectionProps } from '@spinnaker/core';
+import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMessage } from '@spinnaker/core';
+import './VerificationGate.less';
 
 /*
  * You can use this component to provide information to users about
@@ -10,12 +11,55 @@ import { ExecutionDetailsSection, IExecutionDetailsSectionProps } from '@spinnak
  * - `props.stage.outputs` maps to your SimpleStage's `Output` class.
  * - `props.stage.context` maps to your SimpleStage's `Context` class.
  */
+
 export function VerificationGateExecutionDetails(props: IExecutionDetailsSectionProps) {
   return (
     <ExecutionDetailsSection name={props.name} current={props.current}>
-      <div>
-        <p>Verification gate Text</p>
-      </div>
+      {props.stage.outputs.overallScore >= 0 ? (
+        <div>
+          <div className="detailpagelogo">
+            <span className="score">{props.stage.outputs.overallScore}</span>
+            <img
+              src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
+              alt="logo"
+              width="70px"
+            ></img>
+          </div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Result</th>
+                <th>Report</th>
+                <th>Last Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span className="scoreSmall">{props.stage.outputs.overallScore}</span>
+                </td>
+                <td>
+                  <a href={props.stage.outputs.canaryReportURL} target="_blank">
+                    Report
+                  </a>
+                </td>
+                <td>{new Date(props.stage.endTime).toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          {' '}
+          <img
+            src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
+            alt="logo"
+            width="80px"
+            style={{ float: 'right', marginBottom: '10px' }}
+          ></img>
+          <StageFailureMessage stage={props.stage} message={props.stage.failureMessage} />)
+        </>
+      )}
     </ExecutionDetailsSection>
   );
 }
