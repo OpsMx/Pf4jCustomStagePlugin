@@ -48,7 +48,7 @@ public class VerificationGateTask implements Task {
 
 	private static final String CANARY_ID = "canaryId";
 
-	private static final String RESULT = "result";
+	private static final String RESULT = "exception";
 
 	private static final String COMPLETED = "COMPLETED";
 
