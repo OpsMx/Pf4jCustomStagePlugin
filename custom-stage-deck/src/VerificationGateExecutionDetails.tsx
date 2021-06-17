@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 
 import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMessage } from '@spinnaker/core';
 import './VerificationGate.less';
@@ -13,12 +13,39 @@ import './VerificationGate.less';
  */
 
 export function VerificationGateExecutionDetails(props: IExecutionDetailsSectionProps) {
+  const getClasses = () => {
+    let classes = '';
+    if (props.stage.outputs.overallScore < props.stage.context.minimumCanaryResult) {
+      classes = 'verificationScoreDanger';
+    } else if (props.stage.outputs.overallScore > props.stage.context.canaryResultScore - 1) {
+      classes = 'verificationScoreSuccess';
+    } else if (
+      props.stage.outputs.overallScore < props.stage.context.canaryResultScore + 1 &&
+      props.stage.outputs.overallScore > props.stage.context.minimumCanaryResult - 1
+    ) {
+      classes = 'verificationScoreAlert';
+    } else {
+      classes = '';
+    }
+    return classes;
+  };
+  const exceptionDiv = props.stage.outputs.exception ? (
+    <div className="alert alert-danger">
+      <div>
+        <h5>Exception </h5>
+        <div className="Markdown break-word">
+          <p>{props.stage.outputs.exception}</p>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   return (
     <ExecutionDetailsSection name={props.name} current={props.current}>
       {props.stage.outputs.overallScore >= 0 ? (
         <div>
           <div className="detailpagelogo">
-            <span className="score">{props.stage.outputs.overallScore}</span>
+            <span className={'score ' + getClasses()}>{props.stage.outputs.overallScore}</span>
             <img
               src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
               alt="logo"
@@ -36,7 +63,7 @@ export function VerificationGateExecutionDetails(props: IExecutionDetailsSection
             <tbody>
               <tr>
                 <td>
-                  <span className="scoreSmall">{props.stage.outputs.overallScore}</span>
+                  <span className={'scoreSmall ' + getClasses()}>{props.stage.outputs.overallScore}</span>
                 </td>
                 <td>
                   <a href={props.stage.outputs.canaryReportURL} target="_blank">
@@ -47,6 +74,7 @@ export function VerificationGateExecutionDetails(props: IExecutionDetailsSection
               </tr>
             </tbody>
           </table>
+          {exceptionDiv}
         </div>
       ) : (
         <>
