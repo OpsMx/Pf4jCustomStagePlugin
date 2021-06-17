@@ -40,6 +40,8 @@ public class VerificationGateTask implements Task {
 
 	private static final String MINIMUM_CANARY_RESULT_SCORE = "minimumCanaryResultScore";
 
+	private static final String MAXIMUM_CANARY_RESULT_SCORE = "maximumCanaryResultScore";
+
 	private static final String CANARY_CONFIG = "canaryConfig";
 
 	private static final String CANARY_RESULT = "canaryResult";
@@ -118,7 +120,7 @@ public class VerificationGateTask implements Task {
 
 			String canaryUrl = response.getLastHeader(LOCATION).getValue();
 			logger.info("Analysis autopilot link : {}", canaryUrl);
-			
+
 			return getVerificationStatus(canaryUrl);
 
 		} catch (Exception e) {
@@ -147,34 +149,43 @@ public class VerificationGateTask implements Task {
 				if (entity != null) {
 					ObjectNode readValue = objectMapper.readValue(EntityUtils.toString(entity), ObjectNode.class);
 					analysisStatus = readValue.get(OesConstants.STATUS).get(OesConstants.STATUS).asText();
-					if (analysisStatus.equalsIgnoreCase(COMPLETED)) {
+					if (!analysisStatus.equalsIgnoreCase(COMPLETED)) {
+						continue;
+					}
 
-						Float overAllScore = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_SCORE).floatValue();
-						Float successScore = readValue.get(CANARY_CONFIG).get(MINIMUM_CANARY_RESULT_SCORE).floatValue(); 
+					Float overAllScore = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_SCORE).floatValue();
+					Float minimumScore = readValue.get(CANARY_CONFIG).get(MINIMUM_CANARY_RESULT_SCORE).floatValue();
+					Float maximumScore = readValue.get(CANARY_CONFIG).get(MAXIMUM_CANARY_RESULT_SCORE).floatValue(); 
 
-						outputs.put(OesConstants.OVERALL_RESULT, readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_RESULT).asText());
-						outputs.put(OesConstants.CANARY_REPORTURL, readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText());
-						outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
+					outputs.put(OesConstants.OVERALL_RESULT, readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_RESULT).asText());
+					outputs.put(OesConstants.CANARY_REPORTURL, readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText());
+					outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
 
-						if (Float.compare(successScore, overAllScore) == 0 || Float.compare(successScore, overAllScore) < 0) {
-							return TaskResult.builder(ExecutionStatus.SUCCEEDED)
-									.outputs(outputs)
-									.build();
-						} else {
-							return TaskResult.builder(ExecutionStatus.TERMINAL)
-									.outputs(outputs)
-									.build();
-						}
+					if (Float.compare(overAllScore, minimumScore) < 0 ) {
+						outputs.put(RESULT, "Analysis score is below the minimum canary score");
+						return TaskResult.builder(ExecutionStatus.TERMINAL)
+								.outputs(outputs)
+								.build();
+					} else if (Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
+						outputs.put(RESULT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
+						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
+								.outputs(outputs)
+								.build();
+					} else {
+						outputs.put(RESULT, "Analysis result is meeting the success score criteria");
+						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
+								.outputs(outputs)
+								.build();
 					}
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error occured while getting anaysis result ", e);
 				outputs.put(RESULT, e.getMessage());
 			}
 
 		}
-		
+
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
 				.outputs(outputs)
 				.build();
