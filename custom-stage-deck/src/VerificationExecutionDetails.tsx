@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 
 import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMessage } from '@spinnaker/core';
-import './VerificationGate.less';
+import './Verification.less';
 
 /*
  * You can use this component to provide information to users about
@@ -12,7 +12,7 @@ import './VerificationGate.less';
  * - `props.stage.context` maps to your SimpleStage's `Context` class.
  */
 
-export function VerificationGateExecutionDetails(props: IExecutionDetailsSectionProps) {
+export function VerificationExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
     if (props.stage.outputs.overallScore < props.stage.context.minimumCanaryResult) {
@@ -85,7 +85,7 @@ export function VerificationGateExecutionDetails(props: IExecutionDetailsSection
             width="80px"
             style={{ float: 'right', marginBottom: '10px' }}
           ></img>
-          <StageFailureMessage stage={props.stage} message={props.stage.failureMessage} />)
+          <StageFailureMessage stage={props.stage} message={props.stage.failureMessage} />
         </>
       )}
     </ExecutionDetailsSection>
@@ -95,6 +95,6 @@ export function VerificationGateExecutionDetails(props: IExecutionDetailsSection
 // The title here will be used as the tab name inside the
 // pipeline stage execution view. Camel case will be mapped
 // to space-delimited text: randomWait -> Random Wait.
-export namespace VerificationGateExecutionDetails {
-  export const title = 'verificationGate';
+export namespace VerificationExecutionDetails {
+  export const title = 'verification';
 }
