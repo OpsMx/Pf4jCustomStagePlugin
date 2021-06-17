@@ -172,7 +172,6 @@ public class VerificationGateTask implements Task {
 								.outputs(outputs)
 								.build();
 					} else {
-						outputs.put(RESULT, "Analysis result is meeting the success score criteria");
 						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 								.outputs(outputs)
 								.build();
