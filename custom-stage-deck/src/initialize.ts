@@ -13,22 +13,16 @@ import { HelpContentsRegistry } from '@spinnaker/core';
 */
 export const initialize = () => {
   HelpContentsRegistry.register('opsmx.visibilityApproval.gateUrl', 'Please enter the Gate URL');
-  HelpContentsRegistry.register(
-    'opsmx.visibilityApproval.lifeTimeHours',
-    'Please enter the Life Time in Hours like 0.5',
-  );
-  HelpContentsRegistry.register(
-    'opsmx.visibilityApproval.minimumCanaryResult',
-    'Please enter the Minimum Canary Result',
-  );
+  HelpContentsRegistry.register('opsmx.visibilityApproval.jiraId', 'Please enter the JIRA ID');
+  HelpContentsRegistry.register('opsmx.visibilityApproval.autopilotCanaryId', 'Please enter the Autopilot Canary');
   HelpContentsRegistry.register('opsmx.visibilityApproval.canaryResultScore', 'Please enter the Canry Result Score');
   HelpContentsRegistry.register('opsmx.visibilityApproval.logAnalysis', 'Please Enable Log Analysis with true / false');
   HelpContentsRegistry.register(
-    'opsmx.visibilityApproval.metricAnalysis',
-    'Please Enable Metric Analysis with true / false',
+    'opsmx.visibilityApproval.sonarqubeProjectKey',
+    'Please enter the Sonarqube Prject Key',
   );
-  HelpContentsRegistry.register('opsmx.visibilityApproval.baselineStartTime', 'Please select Baseline Start Time');
-  HelpContentsRegistry.register('opsmx.visibilityApproval.canaryStartTime', 'Please select Canry Start Time');
+  HelpContentsRegistry.register('opsmx.visibilityApproval.appScanProjectId', 'Please enter the App Scan ID');
+  HelpContentsRegistry.register('opsmx.visibilityApproval.canaryStartTime', 'Please enter the Aqua Wave Image IDs');
   HelpContentsRegistry.register('opsmx.visibilityApproval.gateName', 'Please enter Gate Name that is created in OES');
   HelpContentsRegistry.register('opsmx.visibilityApproval.imageIds', 'Please enter the Image IDs');
 };

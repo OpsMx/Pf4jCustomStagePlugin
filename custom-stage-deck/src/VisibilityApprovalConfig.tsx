@@ -17,7 +17,7 @@ import {
   NumberInput,
   Validators,
 } from '@spinnaker/core';
-import './Verification.less';
+import './VisibilityApproval.less';
 import { DateTimePicker } from './input/DateTimePickerInput';
 
 /*
@@ -48,7 +48,7 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
           <div className="flex">
             <div className="grid"></div>
             <div className="grid grid-4 form">
-              <div className="grid-span-3">
+              <div className="grid-span-4">
                 <FormikFormField
                   name="gateUrl"
                   label="Gate Url"
@@ -56,62 +56,44 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div>
+              <div className="grid-span-4">
                 <FormikFormField
-                  name="lifeTimeHours"
-                  label="LifeTimeHours"
-                  help={<HelpField id="opsmx.visibilityApproval.lifeTimeHours" />}
+                  name="jiraId"
+                  label="Jira Id"
+                  help={<HelpField id="opsmx.visibilityApproval.jiraId" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <HorizontalRule />
-              <div>
+              <div className="grid-span-4">
                 <FormikFormField
-                  name="minimumCanaryResult"
-                  label="Minimum Canary Result"
-                  help={<HelpField id="opsmx.visibilityApproval.minimumCanaryResult" />}
+                  name="autopilotCanaryId"
+                  label="Autopilot Canary Id"
+                  help={<HelpField id="opsmx.visibilityApproval.autopilotCanaryId" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div>
+              <div className="grid-span-4">
                 <FormikFormField
-                  name="canaryResultScore"
-                  label="canary Result Score"
-                  help={<HelpField id="opsmx.visibilityApproval.canaryResultScore" />}
+                  name="sonarqubeProjectKey"
+                  label="Sonarqube Project Key"
+                  help={<HelpField id="opsmx.visibilityApproval.sonarqubeProjectKey" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div style={{ paddingLeft: '4em' }}>
+              <div className="grid-span-4">
                 <FormikFormField
-                  name="logAnalysis"
-                  label="Log Analysis"
-                  help={<HelpField id="opsmx.visibilityApproval.logAnalysis" />}
-                  input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
+                  name="appScanProjectId"
+                  label="AppScan Project Id"
+                  help={<HelpField id="opsmx.visibilityApproval.appScanProjectId" />}
+                  input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div style={{ paddingLeft: '4em' }}>
+              <div className="grid-span-4">
                 <FormikFormField
-                  name="metricAnalysis"
-                  label="Metric Analysis"
-                  help={<HelpField id="opsmx.visibilityApproval.metricAnalysis" />}
-                  input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
-                />
-              </div>
-              <HorizontalRule />
-              <div className="grid-span-2">
-                <FormikFormField
-                  name="baselineStartTime"
-                  label="Baseline StartTime"
-                  help={<HelpField id="opsmx.visibilityApproval.baselineStartTime" />}
-                  input={(props) => <DateTimePicker {...props} />}
-                />
-              </div>
-              <div className="grid-span-2">
-                <FormikFormField
-                  name="canaryStartTime"
-                  label="Canary StartTime"
-                  help={<HelpField id="opsmx.visibilityApproval.canaryStartTime" />}
-                  input={(props) => <DateTimePicker {...props} />}
+                  name="aquaWaveImageId"
+                  label="Aqua Wave Image Id"
+                  help={<HelpField id="opsmx.visibilityApproval.aquaWaveImageId" />}
+                  input={(props) => <TextInput {...props} />}
                 />
               </div>
               <HorizontalRule />
@@ -131,6 +113,10 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
+              <HorizontalRule />
+              <p>Git</p>
+              <p>Jenkins</p>
+              <p>Custom Connector</p>
             </div>
             <div className="opsmxLogo">
               <img
