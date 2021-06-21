@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 
 import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMessage } from '@spinnaker/core';
-import './Verification.less';
+import './VisibilityApproval.less';
 
 /*
  * You can use this component to provide information to users about
@@ -12,7 +12,7 @@ import './Verification.less';
  * - `props.stage.context` maps to your SimpleStage's `Context` class.
  */
 
-export function VerificationExecutionDetails(props: IExecutionDetailsSectionProps) {
+export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
     if (props.stage.outputs.overallScore < props.stage.context.minimumCanaryResult) {
@@ -95,6 +95,6 @@ export function VerificationExecutionDetails(props: IExecutionDetailsSectionProp
 // The title here will be used as the tab name inside the
 // pipeline stage execution view. Camel case will be mapped
 // to space-delimited text: randomWait -> Random Wait.
-export namespace VerificationExecutionDetails {
-  export const title = 'verification';
+export namespace VisibilityApprovalExecutionDetails {
+  export const title = 'visibilityApproval';
 }

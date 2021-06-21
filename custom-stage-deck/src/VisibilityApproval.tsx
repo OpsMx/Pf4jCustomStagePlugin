@@ -1,8 +1,8 @@
 import React from 'react';
 import { ExecutionDetailsTasks, IStageTypeConfig } from '@spinnaker/core';
 
-import { VerificationExecutionDetails } from './VerificationExecutionDetails';
-import { VerificationConfig, validate } from './VerificationConfig';
+import { VisibilityApprovalExecutionDetails } from './VisibilityApprovalExecutionDetails';
+import { VisibilityApprovalConfig, validate } from './VisibilityApprovalConfig';
 
 /*
   Define Spinnaker Stages with IStageTypeConfig.
@@ -13,11 +13,11 @@ import { VerificationConfig, validate } from './VerificationConfig';
   - component -> The rendered React component
   - validateFn -> A validation function for the stage config form.
  */
-export const verification: IStageTypeConfig = {
-  key: 'verification',
-  label: `Verification`,
-  description: 'Stage for Verification Gate',
-  component: VerificationConfig, // stage config
-  executionDetailsSections: [VerificationExecutionDetails, ExecutionDetailsTasks],
+export const visibilityApproval: IStageTypeConfig = {
+  key: 'visibilityApproval',
+  label: `VisibilityApproval`,
+  description: 'Stage for Visibility Approval',
+  component: VisibilityApprovalConfig, // stage config
+  executionDetailsSections: [VisibilityApprovalExecutionDetails, ExecutionDetailsTasks],
   validateFn: validate,
 };

@@ -34,13 +34,13 @@ const HorizontalRule = () => (
   </div>
 );
 
-export function VerificationConfig(props: IStageConfigProps) {
+export function VisibilityApprovalConfig(props: IStageConfigProps) {
   const ANALYSIS_TYPE_OPTIONS: any = [
     { label: 'True', value: 'true' },
     { label: 'False', value: 'false' },
   ];
   return (
-    <div className="VerificationGateConfig">
+    <div className="VisibilityApprovalConfig">
       <FormikStageConfig
         {...props}
         onChange={props.updateStage}
@@ -52,7 +52,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="gateUrl"
                   label="Gate Url"
-                  help={<HelpField id="opsmx.verification.gateUrl" />}
+                  help={<HelpField id="opsmx.visibilityApproval.gateUrl" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -60,7 +60,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="lifeTimeHours"
                   label="LifeTimeHours"
-                  help={<HelpField id="opsmx.verification.lifeTimeHours" />}
+                  help={<HelpField id="opsmx.visibilityApproval.lifeTimeHours" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -69,7 +69,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="minimumCanaryResult"
                   label="Minimum Canary Result"
-                  help={<HelpField id="opsmx.verification.minimumCanaryResult" />}
+                  help={<HelpField id="opsmx.visibilityApproval.minimumCanaryResult" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -77,7 +77,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="canaryResultScore"
                   label="canary Result Score"
-                  help={<HelpField id="opsmx.verification.canaryResultScore" />}
+                  help={<HelpField id="opsmx.visibilityApproval.canaryResultScore" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -85,7 +85,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="logAnalysis"
                   label="Log Analysis"
-                  help={<HelpField id="opsmx.verification.logAnalysis" />}
+                  help={<HelpField id="opsmx.visibilityApproval.logAnalysis" />}
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
                 />
               </div>
@@ -93,7 +93,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="metricAnalysis"
                   label="Metric Analysis"
-                  help={<HelpField id="opsmx.verification.metricAnalysis" />}
+                  help={<HelpField id="opsmx.visibilityApproval.metricAnalysis" />}
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
                 />
               </div>
@@ -102,7 +102,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="baselineStartTime"
                   label="Baseline StartTime"
-                  help={<HelpField id="opsmx.verification.baselineStartTime" />}
+                  help={<HelpField id="opsmx.visibilityApproval.baselineStartTime" />}
                   input={(props) => <DateTimePicker {...props} />}
                 />
               </div>
@@ -110,7 +110,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="canaryStartTime"
                   label="Canary StartTime"
-                  help={<HelpField id="opsmx.verification.canaryStartTime" />}
+                  help={<HelpField id="opsmx.visibilityApproval.canaryStartTime" />}
                   input={(props) => <DateTimePicker {...props} />}
                 />
               </div>
@@ -119,7 +119,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="gateName"
                   label="Gate Name"
-                  help={<HelpField id="opsmx.verification.gateName" />}
+                  help={<HelpField id="opsmx.visibilityApproval.gateName" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -127,7 +127,7 @@ export function VerificationConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="imageIds"
                   label="Image Ids"
-                  help={<HelpField id="opsmx.verification.imageIds" />}
+                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
