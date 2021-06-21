@@ -46,8 +46,8 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
         onChange={props.updateStage}
         render={() => (
           <div className="flex">
-            <div className="grid"></div>
-            <div className="grid grid-4 form">
+            <div className="grid leftGrid"></div>
+            <div className="grid grid-4 form mainForm">
               <div className="grid-span-4">
                 <FormikFormField
                   name="gateUrl"
@@ -97,7 +97,7 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                 />
               </div>
               <HorizontalRule />
-              <div className="grid-span-2">
+              <div className="grid-span-2 gridHalfSpan">
                 <FormikFormField
                   name="gateName"
                   label="Gate Name"
@@ -105,7 +105,7 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div className="grid-span-2">
+              <div className="grid-span-2 gridHalfSpan">
                 <FormikFormField
                   name="imageIds"
                   label="Image Ids"

@@ -22,7 +22,7 @@ export const initialize = () => {
     'Please enter the Sonarqube Prject Key',
   );
   HelpContentsRegistry.register('opsmx.visibilityApproval.appScanProjectId', 'Please enter the App Scan ID');
-  HelpContentsRegistry.register('opsmx.visibilityApproval.canaryStartTime', 'Please enter the Aqua Wave Image IDs');
+  HelpContentsRegistry.register('opsmx.visibilityApproval.aquaWaveImageId', 'Please enter the Aqua Wave Image IDs');
   HelpContentsRegistry.register('opsmx.visibilityApproval.gateName', 'Please enter Gate Name that is created in OES');
   HelpContentsRegistry.register('opsmx.visibilityApproval.imageIds', 'Please enter the Image IDs');
 };
