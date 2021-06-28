@@ -77,7 +77,7 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
                         </td>
                       ))}
                       <td className="deleteBtn">
-                        <Tooltip value="Remove variable">
+                        <Tooltip value="Remove row">
                           <button className="btn btn-sm btn-default" onClick={onDeleteClicked}>
                             <span className="glyphicon glyphicon-trash" />
                           </button>
@@ -87,7 +87,7 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
                   );
                 })}
                 <tr>
-                  <td colSpan={headers.length}>
+                  <td colSpan={headers.length + 1}>
                     <button
                       type="button"
                       className="btn btn-block btn-sm add-new"

@@ -17,7 +17,7 @@ export const initialize = () => {
   HelpContentsRegistry.register('opsmx.visibilityApproval.autopilotCanaryId', 'Please enter the Autopilot Canary');
   HelpContentsRegistry.register(
     'opsmx.visibilityApproval.sonarqubeProjectKey',
-    'Please enter the Sonarqube Prject Key',
+    'Please enter the Sonarqube Project Key',
   );
   HelpContentsRegistry.register('opsmx.visibilityApproval.appScanProjectId', 'Please enter the App Scan ID');
   HelpContentsRegistry.register('opsmx.visibilityApproval.aquaWaveImageId', 'Please enter the Aqua Wave Image IDs');

@@ -136,9 +136,9 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div className="grid-span-4">
                 <FormikFormField
-                  name="Git"
+                  name="git"
                   label="Git"
-                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
+                  help={<HelpField id="opsmx.visibilityApproval.git" />}
                   input={() => (
                     <LayoutProvider value={StandardFieldLayout}>
                       <div className="flex-container-v margin-between-lg dynamicFieldSection">
@@ -155,9 +155,9 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-4">
                 <FormikFormField
-                  name="Jenkins"
+                  name="jenkins"
                   label="Jenkins"
-                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
+                  help={<HelpField id="opsmx.visibilityApproval.jenkins" />}
                   input={() => (
                     <LayoutProvider value={StandardFieldLayout}>
                       <div className="flex-container-v margin-between-lg dynamicFieldSection">
@@ -174,9 +174,9 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-4">
                 <FormikFormField
-                  name="Custom Connector"
+                  name="customConnector"
                   label="Custom Connector"
-                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
+                  help={<HelpField id="opsmx.visibilityApproval.customConnector" />}
                   input={() => (
                     <LayoutProvider value={StandardFieldLayout}>
                       <div className="flex-container-v margin-between-lg dynamicFieldSection">
