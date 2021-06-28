@@ -15,6 +15,6 @@ export const initialize = () => {
   HelpContentsRegistry.register('opsmx.policyGate.policyProxy', 'Please enter the POLICY Proxy Hostname and Port.');
   HelpContentsRegistry.register('opsmx.policyGate.policyPath', 'Please enter Policy path that applies to this stage.');
   HelpContentsRegistry.register('opsmx.policyGate.payload', 'Please enter the Payload in single line.');
-  HelpContentsRegistry.register('opsmx.policyGate.gateName', 'Gate Name.');
-  HelpContentsRegistry.register('opsmx.policyGate.imageIds', 'Image IDs.');
+  HelpContentsRegistry.register('opsmx.policyGate.gateName', 'Please enter Gate.');
+  HelpContentsRegistry.register('opsmx.policyGate.imageIds', 'Please enter the Image IDs.');
 };
