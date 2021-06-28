@@ -138,9 +138,10 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="Git"
                   label="Git"
+                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
                   input={() => (
                     <LayoutProvider value={StandardFieldLayout}>
-                      <div className="flex-container-v margin-between-lg">
+                      <div className="flex-container-v margin-between-lg dynamicFieldSection">
                         <EvaluateVariablesStageForm
                           blockLabel="git"
                           chosenStage={chosenStage}
@@ -156,9 +157,10 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="Jenkins"
                   label="Jenkins"
+                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
                   input={() => (
                     <LayoutProvider value={StandardFieldLayout}>
-                      <div className="flex-container-v margin-between-lg">
+                      <div className="flex-container-v margin-between-lg dynamicFieldSection">
                         <EvaluateVariablesStageForm
                           blockLabel="jenkins"
                           chosenStage={chosenStage}
@@ -174,9 +176,10 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="Custom Connector"
                   label="Custom Connector"
+                  help={<HelpField id="opsmx.visibilityApproval.imageIds" />}
                   input={() => (
                     <LayoutProvider value={StandardFieldLayout}>
-                      <div className="flex-container-v margin-between-lg">
+                      <div className="flex-container-v margin-between-lg dynamicFieldSection">
                         <EvaluateVariablesStageForm
                           blockLabel="customConnector"
                           chosenStage={chosenStage}
@@ -188,9 +191,6 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                   )}
                 />
               </div>
-
-              <p>Jenkins</p>
-              <p>Custom Connector</p>
             </div>
             <div className="opsmxLogo">
               <img
@@ -214,27 +214,27 @@ export function validate(stageConfig: IStage) {
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('lifeTimeHours')
+    .field('jiraId')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('minimumCanaryResult')
+    .field('autopilotCanaryId')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('canaryResultScore')
+    .field('sonarqubeProjectKey')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('logAnalysis')
+    .field('appScanProjectId')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('metricAnalysis')
+    .field('aquaWaveImageId')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
@@ -247,10 +247,18 @@ export function validate(stageConfig: IStage) {
     .field('imageIds')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
-
-  validator.field('baselineStartTime').required();
-
-  validator.field('canaryStartTime').required();
+  validator
+    .field('git')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+  validator
+    .field('jenkins')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+  validator
+    .field('customConnector')
+    .required()
+    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   return validator.validateForm();
 }

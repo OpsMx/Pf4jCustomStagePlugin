@@ -76,7 +76,7 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
                           />
                         </td>
                       ))}
-                      <td>
+                      <td className="deleteBtn">
                         <Tooltip value="Remove variable">
                           <button className="btn btn-sm btn-default" onClick={onDeleteClicked}>
                             <span className="glyphicon glyphicon-trash" />
