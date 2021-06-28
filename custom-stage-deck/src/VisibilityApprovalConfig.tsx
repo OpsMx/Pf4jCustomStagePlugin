@@ -5,6 +5,7 @@ import {
   FormikFormField,
   FormikStageConfig,
   FormValidator,
+  IFormInputProps,
   HelpContentsRegistry,
   HelpField,
   IExecutionDetailsSectionProps,
@@ -16,9 +17,13 @@ import {
   IStageTypeConfig,
   NumberInput,
   Validators,
+  LayoutProvider,
+  StandardFieldLayout,
+  IFormikStageConfigInjectedProps,
+  IStageForSpelPreview,
 } from '@spinnaker/core';
 import './VisibilityApproval.less';
-import { DateTimePicker } from './input/DateTimePickerInput';
+import { EvaluateVariablesStageForm } from './input/dynamicFormFields';
 
 /*
   IStageConfigProps defines properties passed to all Spinnaker Stages.
@@ -39,12 +44,27 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
     { label: 'True', value: 'true' },
     { label: 'False', value: 'false' },
   ];
+  const [chosenStage] = React.useState({} as IStageForSpelPreview);
+  const gitHeaders = [
+    { label: 'Git Repo', name: 'gitRepo' },
+    { label: 'Git Commit ID', name: 'gitCommitId' },
+  ];
+  const jenkinsHeaders = [
+    { label: 'Job name', name: 'jobName' },
+    { label: 'Build No.', name: 'buildNo' },
+    { label: 'Artifact', name: 'artifact' },
+  ];
+  const customConnectorHeaders = [
+    { label: 'Name', name: 'name' },
+    { label: 'Header', name: 'header' },
+    { label: 'Data', name: 'data' },
+  ];
   return (
     <div className="VisibilityApprovalConfig">
       <FormikStageConfig
         {...props}
         onChange={props.updateStage}
-        render={() => (
+        render={(props: IFormikStageConfigInjectedProps) => (
           <div className="flex">
             <div className="grid leftGrid"></div>
             <div className="grid grid-4 form mainForm">
@@ -114,7 +134,61 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
                 />
               </div>
               <HorizontalRule />
-              <p>Git</p>
+              <div className="grid-span-4">
+                <FormikFormField
+                  name="Git"
+                  label="Git"
+                  input={() => (
+                    <LayoutProvider value={StandardFieldLayout}>
+                      <div className="flex-container-v margin-between-lg">
+                        <EvaluateVariablesStageForm
+                          blockLabel="git"
+                          chosenStage={chosenStage}
+                          headers={gitHeaders}
+                          {...props}
+                        />
+                      </div>
+                    </LayoutProvider>
+                  )}
+                />
+              </div>
+              <div className="grid-span-4">
+                <FormikFormField
+                  name="Jenkins"
+                  label="Jenkins"
+                  input={() => (
+                    <LayoutProvider value={StandardFieldLayout}>
+                      <div className="flex-container-v margin-between-lg">
+                        <EvaluateVariablesStageForm
+                          blockLabel="jenkins"
+                          chosenStage={chosenStage}
+                          headers={jenkinsHeaders}
+                          {...props}
+                        />
+                      </div>
+                    </LayoutProvider>
+                  )}
+                />
+              </div>
+              <div className="grid-span-4">
+                <FormikFormField
+                  name="Custom Connector"
+                  label="Custom Connector"
+                  input={() => (
+                    <LayoutProvider value={StandardFieldLayout}>
+                      <div className="flex-container-v margin-between-lg">
+                        <EvaluateVariablesStageForm
+                          blockLabel="customConnector"
+                          chosenStage={chosenStage}
+                          headers={customConnectorHeaders}
+                          {...props}
+                        />
+                      </div>
+                    </LayoutProvider>
+                  )}
+                />
+              </div>
+
               <p>Jenkins</p>
               <p>Custom Connector</p>
             </div>
