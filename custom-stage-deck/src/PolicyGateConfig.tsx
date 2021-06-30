@@ -39,7 +39,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
         render={() => (
           <div className="flex">
             <div className="grid leftGrid"></div>
-            <div className="grid grid-4 form mainForm">
+            <div className="grid grid-4 form mainForm policyForm">
               <div className="grid-span-2 gridHalfSpan">
                 <FormikFormField
                   name="policyProxy"
@@ -62,7 +62,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                   name="payload"
                   label="Payload"
                   help={<HelpField id="opsmx.policyGate.payload" />}
-                  input={(props) => <TextInput {...props} />}
+                  input={(props) => <textarea className="policyTextArea" {...props}></textarea>}
                 />
               </div>
               <HorizontalRule />
