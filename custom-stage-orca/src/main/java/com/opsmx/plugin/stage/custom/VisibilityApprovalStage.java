@@ -10,10 +10,10 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @Component
-public class VerificationStage implements StageDefinitionBuilder {
+public class VisibilityApprovalStage implements StageDefinitionBuilder {
 
 	@Override
 	public void taskGraph(@NotNull StageExecution stage, @NotNull TaskNode.Builder builder) {
-		builder.withTask("verification", VerificationGateTask.class);
+		builder.withTask("verification", VisibilityApprovalTask.class);
 	}
 }
