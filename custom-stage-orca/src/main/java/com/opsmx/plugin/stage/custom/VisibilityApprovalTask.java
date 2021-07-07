@@ -31,6 +31,7 @@ import com.netflix.spinnaker.orca.api.pipeline.Task;
 import com.netflix.spinnaker.orca.api.pipeline.TaskResult;
 import com.netflix.spinnaker.orca.api.pipeline.models.ExecutionStatus;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
+import com.opsmx.plugin.stage.custom.model.CustomConnector;
 
 @Extension
 @PluginComponent
@@ -211,7 +212,7 @@ public class VisibilityApprovalTask implements Task {
 				.build();
 	}
 
-	private String getPayloadString(VisibilityApprovalContext context) {
+	private String getPayloadString(VisibilityApprovalContext context) throws Exception {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("approvalCallbackURL", "http://oes-platform:8095/callbackurl");
@@ -351,29 +352,36 @@ public class VisibilityApprovalTask implements Task {
 		finalJson.set(TOOL_CONNECTOR_PARAMETERS, toolConnectorPayloads);
 
 
+		ArrayNode customArrayNode = objectMapper.createArrayNode();
 		if (context.getCustomConnector() != null && ! context.getCustomConnector().isEmpty()) {
 
-			context.getCustomConnector().forEach(custom -> {
-				ObjectNode customNode = objectMapper.createObjectNode();
-				customNode.put(CONNECTOR_TYPE, CUSTOM);
-				customNode.put(NAME, custom.getName());
+			for (CustomConnector custom : context.getCustomConnector()) {
+				if (custom != null && custom.getHeader() != null && !custom.getHeader().isEmpty()) {
+					ObjectNode customNode = objectMapper.createObjectNode();
+					customNode.put(CONNECTOR_TYPE, CUSTOM);
+					customNode.put(NAME, custom.getName());
 
-				ArrayNode headerNode = objectMapper.createArrayNode();
-				Arrays.asList(custom.getHeader().split(",")).forEach(a -> {
-					headerNode.add(a.trim());
-				});
+					ArrayNode headerNode = objectMapper.createArrayNode();
+					Arrays.asList(custom.getHeader().split(",")).forEach(a -> {
+						headerNode.add(a.trim());
+					});
 
-				customNode.set(HEADER_DATA, headerNode);
-				try {
-					customNode.set(DATA, objectMapper.readTree(custom.getData()));
-				} catch (JsonProcessingException e) {
-					logger.error("please provide valid json data for custom connector", e);
+					customNode.set(HEADER_DATA, headerNode);
+					try {
+						customNode.set(DATA, objectMapper.readTree(custom.getData()));
+					} catch (Exception e) {
+						logger.error("please provide valid json data for custom connector", e);
+						throw e;
+					}
+					customArrayNode.add(customNode);
 				}
-			});
+			}
 
 		} else {
 			logger.info("CustomConnector is not provided");
 		}
+		
+		finalJson.set("customConnectorData", customArrayNode);
 
 		logger.info("Payload string to visibility approval : {}", finalJson.toString());
 
