@@ -2,7 +2,13 @@ package com.opsmx.plugin.stage.custom;
 
 import java.util.List;
 
+import com.opsmx.plugin.stage.custom.model.CustomConnector;
+import com.opsmx.plugin.stage.custom.model.GitDetails;
+import com.opsmx.plugin.stage.custom.model.JenkinsDetails;
+
 public class VisibilityApprovalContext {
+
+	public VisibilityApprovalContext() {}
 	
     public VisibilityApprovalContext(String gateUrl, String appScanProjectId, String aquaWaveImageId, String autopilotCanaryId,
 			String gateName, String imageIds, String jiraId, String refId, String sonarqubeProjectKey,
@@ -130,114 +136,4 @@ public class VisibilityApprovalContext {
     private List<GitDetails> git;
     private List<JenkinsDetails> jenkins;
     private List<CustomConnector> customConnector;
-    
-          
-    public class GitDetails {
-    	
-    	public GitDetails(String gitRepo, String gitCommitId) {
-			super();
-			this.gitRepo = gitRepo;
-			this.gitCommitId = gitCommitId;
-		}
-
-		private String gitRepo;
-    	
-    	private String gitCommitId;
-
-		public String getGitRepo() {
-			return gitRepo;
-		}
-
-		public void setGitRepo(String gitRepo) {
-			this.gitRepo = gitRepo;
-		}
-
-		public String getGitCommitId() {
-			return gitCommitId;
-		}
-
-		public void setGitCommitId(String gitCommitId) {
-			this.gitCommitId = gitCommitId;
-		}
-    }
-    
-    public class JenkinsDetails {
-
-    	public JenkinsDetails(String jobName, String buildNo, String artifact) {
-			super();
-			this.jobName = jobName;
-			this.buildNo = buildNo;
-			this.artifact = artifact;
-		}
-
-		private String jobName;
-    	
-    	private String buildNo;
-    	
-    	private String artifact;
-
-		public String getJobName() {
-			return jobName;
-		}
-
-		public void setJobName(String jobName) {
-			this.jobName = jobName;
-		}
-
-		public String getBuildNo() {
-			return buildNo;
-		}
-
-		public void setBuildNo(String buildNo) {
-			this.buildNo = buildNo;
-		}
-
-		public String getArtifact() {
-			return artifact;
-		}
-
-		public void setArtifact(String artifact) {
-			this.artifact = artifact;
-		}
-    }
-    
-    public class CustomConnector {
-
-    	public CustomConnector(String name, String header, String data) {
-			super();
-			this.name = name;
-			this.header = header;
-			this.data = data;
-		}
-
-		private String name;
-    
-    	private String header;
-    	
-    	private String data;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getHeader() {
-			return header;
-		}
-
-		public void setHeader(String header) {
-			this.header = header;
-		}
-
-		public String getData() {
-			return data;
-		}
-
-		public void setData(String data) {
-			this.data = data;
-		}
-    }
 }
