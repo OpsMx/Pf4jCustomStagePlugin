@@ -13,19 +13,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
-import org.junit.platform.commons.util.CollectionUtils;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.google.gson.JsonArray;
 import com.netflix.spinnaker.kork.plugins.api.PluginComponent;
 import com.netflix.spinnaker.orca.api.pipeline.Task;
 import com.netflix.spinnaker.orca.api.pipeline.TaskResult;
@@ -131,7 +126,7 @@ public class VisibilityApprovalTask implements Task {
 		try {
 
 			HttpPost request = new HttpPost(context.getGateUrl());
-			request.setEntity(new StringEntity(getPayloadString(context)));
+			request.setEntity(new StringEntity(getPayloadString(context, stage.getExecution().getId())));
 			request.setHeader("Content-type", "application/json");
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -213,12 +208,12 @@ public class VisibilityApprovalTask implements Task {
 				.build();
 	}
 
-	private String getPayloadString(VisibilityApprovalContext context) throws Exception {
+	private String getPayloadString(VisibilityApprovalContext context, String executionId) throws Exception {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("approvalCallbackURL", "http://oes-platform:8095/callbackurl");
 		finalJson.put("rejectionCallbackURL", "http://oes-platform:8095/rejectionbackurl");
-		finalJson.put("executionId", context.getRefId());
+		finalJson.put("executionId", executionId);
 
 		if (context.getImageIds() != null && !context.getImageIds().isEmpty()) {
 			ArrayNode images = objectMapper.createArrayNode();
