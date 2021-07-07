@@ -124,6 +124,7 @@ public class VisibilityApprovalTask implements Task {
 					.outputs(outputs)
 					.build();
 		}
+		
 
 		logger.info("Application name : {}, pipeline name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
@@ -142,6 +143,8 @@ public class VisibilityApprovalTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 
+			logger.info("visibility approval trigger response : {}", registerResponse);
+			
 			if (response.getStatusLine().getStatusCode() != 202) {
 				outputs.put(EXCEPTION, registerResponse);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -215,6 +218,7 @@ public class VisibilityApprovalTask implements Task {
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("approvalCallbackURL", "http://oes-platform:8095/callbackurl");
 		finalJson.put("rejectionCallbackURL", "http://oes-platform:8095/rejectionbackurl");
+		finalJson.put("executionId", context.getRefId());
 
 		if (context.getImageIds() != null && !context.getImageIds().isEmpty()) {
 			ArrayNode images = objectMapper.createArrayNode();
