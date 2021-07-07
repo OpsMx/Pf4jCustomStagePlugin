@@ -12,14 +12,21 @@ import { HelpContentsRegistry } from '@spinnaker/core';
   These registries and their methods may change without warning.
 */
 export const initialize = () => {
-  HelpContentsRegistry.register('opsmx.verification.gateUrl', 'Please enter the Gate URL');
-  HelpContentsRegistry.register('opsmx.verification.lifeTimeHours', 'Please enter the Life Time in Hours like 0.5');
-  HelpContentsRegistry.register('opsmx.verification.minimumCanaryResult', 'Please enter the Minimum Canary Result');
-  HelpContentsRegistry.register('opsmx.verification.canaryResultScore', 'Please enter the Canry Result Score');
-  HelpContentsRegistry.register('opsmx.verification.logAnalysis', 'Please Enable Log Analysis with true / false');
-  HelpContentsRegistry.register('opsmx.verification.metricAnalysis', 'Please Enable Metric Analysis with true / false');
-  HelpContentsRegistry.register('opsmx.verification.baselineStartTime', 'Please select Baseline Start Time');
-  HelpContentsRegistry.register('opsmx.verification.canaryStartTime', 'Please select Canry Start Time');
-  HelpContentsRegistry.register('opsmx.verification.gateName', 'Please enter Gate Name that is created in OES');
-  HelpContentsRegistry.register('opsmx.verification.imageIds', 'Please enter the Image IDs');
+  HelpContentsRegistry.register('opsmx.testVerification.gateUrl', 'Please enter the Gate URL');
+  HelpContentsRegistry.register('opsmx.testVerification.lifeTimeHours', 'Please enter the Life Time in Hours like 0.5');
+  HelpContentsRegistry.register('opsmx.testVerification.minimumCanaryResult', 'Please enter the Minimum Canary Result');
+  HelpContentsRegistry.register('opsmx.testVerification.canaryResultScore', 'Please enter the Canry Result Score');
+  HelpContentsRegistry.register('opsmx.testVerification.logAnalysis', 'Please Enable Log Analysis with true / false');
+  HelpContentsRegistry.register(
+    'opsmx.testVerification.metricAnalysis',
+    'Please Enable Metric Analysis with true / false',
+  );
+  HelpContentsRegistry.register('opsmx.testVerification.baselineStartTime', 'Please select Baseline Start Time');
+  HelpContentsRegistry.register('opsmx.testVerification.canaryStartTime', 'Please select Canry Start Time');
+  HelpContentsRegistry.register('opsmx.testVerification.testRunKey', 'Please enter the Test Run Key');
+  HelpContentsRegistry.register('opsmx.testVerification.baselineTestRunId', 'Please enter the Baseline Test Run Id');
+  HelpContentsRegistry.register('opsmx.testVerification.newTestRunId', 'Please enter the New Test Run Id');
+  HelpContentsRegistry.register('opsmx.testVerification.testRunInfo', 'Please enter the Test Run Info');
+  HelpContentsRegistry.register('opsmx.testVerification.gateName', 'Please enter Gate Name that is created in OES');
+  HelpContentsRegistry.register('opsmx.testVerification.imageIds', 'Please enter the Image IDs');
 };
