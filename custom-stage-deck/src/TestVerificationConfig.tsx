@@ -17,7 +17,7 @@ import {
   NumberInput,
   Validators,
 } from '@spinnaker/core';
-import './Verification.less';
+import './TestVerification.less';
 import { DateTimePicker } from './input/DateTimePickerInput';
 
 /*
