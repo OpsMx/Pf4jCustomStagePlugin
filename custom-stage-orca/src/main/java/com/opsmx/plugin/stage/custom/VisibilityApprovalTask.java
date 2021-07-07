@@ -125,8 +125,6 @@ public class VisibilityApprovalTask implements Task {
 					.build();
 		}
 
-		logger.info("gateurl : {}, git : {}", context.getGit());
-
 		logger.info("Application name : {}, pipeline name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
 		try {
@@ -158,7 +156,7 @@ public class VisibilityApprovalTask implements Task {
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
-			outputs.put(EXCEPTION, e.getMessage());
+			outputs.put(EXCEPTION, e);
 		}
 
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
