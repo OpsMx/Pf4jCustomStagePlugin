@@ -188,6 +188,7 @@ public class VisibilityApprovalTask implements Task {
 								.build();
 					} else if (analysisStatus.equalsIgnoreCase(REJECTED)) {
 						outputs.put(STATUS, analysisStatus);
+						outputs.put(EXCEPTION, "Rejected by approver");
 						return TaskResult.builder(ExecutionStatus.TERMINAL)
 								.outputs(outputs)
 								.build();
