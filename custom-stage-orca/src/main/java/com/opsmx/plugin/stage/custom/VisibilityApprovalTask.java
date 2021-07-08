@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -178,10 +179,6 @@ public class VisibilityApprovalTask implements Task {
 				if (entity != null) {
 					ObjectNode readValue = objectMapper.readValue(EntityUtils.toString(entity), ObjectNode.class);
 					analysisStatus = readValue.get(STATUS).asText();
-					if (!analysisStatus.equalsIgnoreCase(ACTIVATED)) {
-						Thread.sleep(1000);
-						continue;
-					}
 
 					logger.info("Visibility approval status : {}", analysisStatus);
 					if (analysisStatus.equalsIgnoreCase(APPROVED)) {
@@ -194,7 +191,9 @@ public class VisibilityApprovalTask implements Task {
 						return TaskResult.builder(ExecutionStatus.TERMINAL)
 								.outputs(outputs)
 								.build();
-					}						
+					}		
+					
+					Thread.sleep(1000);
 				}
 
 			} catch (Exception e) {
@@ -239,7 +238,7 @@ public class VisibilityApprovalTask implements Task {
 			logger.info("JIRAID is not provided");
 		}
 
-		if (context.getGit() != null && ! context.getGit().isEmpty()) {
+		if (CollectionUtils.isNotEmpty(context.getGit())) {
 			ObjectNode gitObjectNode = objectMapper.createObjectNode();
 			gitObjectNode.put(CONNECTOR_TYPE, GIT);
 			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
@@ -261,7 +260,8 @@ public class VisibilityApprovalTask implements Task {
 			logger.info("Repo is not provided");
 		}
 
-		if (context.getJenkins() != null && ! context.getJenkins().isEmpty()) {
+		if (CollectionUtils.isNotEmpty(context.getJenkins())) {
+			
 			ObjectNode jenkinsObjectNode = objectMapper.createObjectNode();
 			jenkinsObjectNode.put(CONNECTOR_TYPE, JENKINS);
 			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
@@ -350,7 +350,7 @@ public class VisibilityApprovalTask implements Task {
 
 
 		ArrayNode customArrayNode = objectMapper.createArrayNode();
-		if (context.getCustomConnector() != null && ! context.getCustomConnector().isEmpty()) {
+		if (CollectionUtils.isNotEmpty(context.getCustomConnector())) {
 
 			for (CustomConnector custom : context.getCustomConnector()) {
 				if (custom != null && custom.getHeader() != null && !custom.getHeader().isEmpty()) {
