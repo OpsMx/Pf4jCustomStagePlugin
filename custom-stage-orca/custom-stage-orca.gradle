@@ -66,8 +66,6 @@ dependencies {
 
   compile "org.apache.httpcomponents:httpclient:4.5.13"
   
-  compile 'org.apache.commons:commons-collections4:4.4'
-  
   
 }
 

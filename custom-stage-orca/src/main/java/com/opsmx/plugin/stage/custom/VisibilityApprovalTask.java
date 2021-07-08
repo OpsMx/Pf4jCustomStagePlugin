@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -239,7 +238,7 @@ public class VisibilityApprovalTask implements Task {
 			logger.info("JIRAID is not provided");
 		}
 
-		if (CollectionUtils.isNotEmpty(context.getGit())) {
+		if (context.getGit() != null && ! context.getGit().isEmpty()) {
 			ObjectNode gitObjectNode = objectMapper.createObjectNode();
 			gitObjectNode.put(CONNECTOR_TYPE, GIT);
 			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
@@ -261,7 +260,7 @@ public class VisibilityApprovalTask implements Task {
 			logger.info("Repo is not provided");
 		}
 
-		if (CollectionUtils.isNotEmpty(context.getJenkins())) {
+		if (context.getJenkins() != null && ! context.getJenkins().isEmpty()) {
 			
 			ObjectNode jenkinsObjectNode = objectMapper.createObjectNode();
 			jenkinsObjectNode.put(CONNECTOR_TYPE, JENKINS);
@@ -351,7 +350,7 @@ public class VisibilityApprovalTask implements Task {
 
 
 		ArrayNode customArrayNode = objectMapper.createArrayNode();
-		if (CollectionUtils.isNotEmpty(context.getCustomConnector())) {
+		if (context.getCustomConnector() != null && ! context.getCustomConnector().isEmpty()) {
 
 			for (CustomConnector custom : context.getCustomConnector()) {
 				if (custom != null && custom.getHeader() != null && !custom.getHeader().isEmpty()) {
