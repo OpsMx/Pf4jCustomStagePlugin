@@ -115,32 +115,38 @@ export function TestVerificationConfig(props: IStageConfigProps) {
                 />
               </div>
               <HorizontalRule />
-              <div className="grid-span-4">
-                <FormikFormField
-                  name="testRunKey"
-                  label="Test Run Key"
-                  help={<HelpField id="opsmx.testVerification.testRunKey" />}
-                  input={(props) => <TextInput {...props} />}
-                />
-                <FormikFormField
-                  name="baselineTestRunId"
-                  label="Baseline Test Run Id"
-                  help={<HelpField id="opsmx.testVerification.gateName" />}
-                  input={(props) => <TextInput {...props} />}
-                />
-                <FormikFormField
-                  name="newTestRunId"
-                  label="New Test Run Id"
-                  help={<HelpField id="opsmx.testVerification.gateName" />}
-                  input={(props) => <TextInput {...props} />}
-                />
+              <div className="grid grid-span-4">
+                <div className="testCol1">
+                  <FormikFormField
+                    name="testRunKey"
+                    label="Test Run Key"
+                    help={<HelpField id="opsmx.testVerification.testRunKey" />}
+                    input={(props) => <TextInput {...props} />}
+                  />
+                </div>
+                <div className="testCol2">
+                  <FormikFormField
+                    name="baselineTestRunId"
+                    label="Baseline Test Run Id"
+                    help={<HelpField id="opsmx.testVerification.baselineTestRunId" />}
+                    input={(props) => <TextInput {...props} />}
+                  />
+                </div>
+                <div className="testCol3">
+                  <FormikFormField
+                    name="newTestRunId"
+                    label="New Test Run Id"
+                    help={<HelpField id="opsmx.testVerification.newTestRunId" />}
+                    input={(props) => <TextInput {...props} />}
+                  />
+                </div>
               </div>
               <div className="grid-span-4">
                 <FormikFormField
                   name="testRunInfo"
                   label="Test Run Info"
-                  help={<HelpField id="opsmx.policyGate.payload" />}
-                  input={(props) => <textarea className="policyTextArea" {...props}></textarea>}
+                  help={<HelpField id="opsmx.testVerification.testRunInfo" />}
+                  input={(props) => <textarea className="TestRunTextArea" {...props}></textarea>}
                 />
               </div>
               <HorizontalRule />
