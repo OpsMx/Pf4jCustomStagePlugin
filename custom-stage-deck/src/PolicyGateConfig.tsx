@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   ExecutionDetailsSection,
   ExecutionDetailsTasks,
@@ -9,13 +10,14 @@ import {
   HelpField,
   IExecutionDetailsSectionProps,
   IStage,
-  TextInput,
-  TextAreaInput,
   IStageConfigProps,
   IStageTypeConfig,
   NumberInput,
+  TextAreaInput,
+  TextInput,
   Validators,
 } from '@spinnaker/core';
+
 import './PolicyGate.less';
 
 /*
@@ -38,9 +40,9 @@ export function PolicyGateConfig(props: IStageConfigProps) {
         onChange={props.updateStage}
         render={() => (
           <div className="flex">
-            <div className="grid leftGrid"></div>
-            <div className="grid grid-4 form mainForm policyForm">
-              <div className="grid-span-2 gridHalfSpan">
+            <div className="grid"></div>
+            <div className="grid grid-4 form mainform">
+              <div className="grid-span-2">
                 <FormikFormField
                   name="policyProxy"
                   label="Policy Proxy"
@@ -48,7 +50,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div className="grid-span-2 gridHalfSpan">
+              <div className="grid-span-2">
                 <FormikFormField
                   name="policyPath"
                   label="Policy Path"
@@ -57,7 +59,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 />
               </div>
               <HorizontalRule />
-              <div className="grid-span-4">
+              <div className="grid-span-4 payloadTextarea">
                 <FormikFormField
                   name="payload"
                   label="Payload"
@@ -66,7 +68,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 />
               </div>
               <HorizontalRule />
-              <div className="grid-span-2 gridHalfSpan">
+              <div className="grid-span-2">
                 <FormikFormField
                   name="gateName"
                   label="Gate Name"
@@ -74,7 +76,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
-              <div className="grid-span-2 gridHalfSpan">
+              <div className="grid-span-2">
                 <FormikFormField
                   name="imageIDs"
                   label="image IDs"
