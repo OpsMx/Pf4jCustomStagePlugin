@@ -56,11 +56,13 @@ public class TestVerificationTask implements Task {
 
 	private static final String CANARY_ID = "canaryId";
 
-	private static final String RESULT = "exception";
+	private static final String EXCEPTION = "exception";
 
 	private static final String COMPLETED = "COMPLETED";
 
 	private static final String RUNNING = "RUNNING";
+
+	private static final String COMMENT = "comment";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -85,7 +87,7 @@ public class TestVerificationTask implements Task {
 			
 			if (context.getGateUrl() == null || context.getGateUrl().isEmpty()) {
 				logger.info("Gate Url should not be empty");
-				outputs.put(RESULT, "Gate Url should not be empty");
+				outputs.put(EXCEPTION, "Gate Url should not be empty");
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
@@ -106,7 +108,7 @@ public class TestVerificationTask implements Task {
 			}
 
 			if (response.getStatusLine().getStatusCode() != 202) {
-				outputs.put(RESULT, registerResponse);
+				outputs.put(EXCEPTION, registerResponse);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
@@ -117,7 +119,7 @@ public class TestVerificationTask implements Task {
 			String canaryId = readValue.get(CANARY_ID).asText();
 
 			if (canaryId == null || canaryId.isEmpty()) {
-				outputs.put(RESULT, "Something goes wrong while triggering registry analysis");
+				outputs.put(EXCEPTION, "Something goes wrong while triggering registry analysis");
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
@@ -131,7 +133,7 @@ public class TestVerificationTask implements Task {
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
-			outputs.put(RESULT, e.getMessage());
+			outputs.put(EXCEPTION, e.getMessage());
 		}
 
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -169,12 +171,12 @@ public class TestVerificationTask implements Task {
 					
 
 					if (overAllScore == null || Float.compare(overAllScore, minimumScore) < 0 ) {
-						outputs.put(RESULT, "Analysis score is below the minimum canary score");
+						outputs.put(COMMENT, "Analysis score is below the minimum canary score");
 						return TaskResult.builder(ExecutionStatus.TERMINAL)
 								.outputs(outputs)
 								.build();
 					} else if (Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
-						outputs.put(RESULT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
+						outputs.put(COMMENT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
 						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 								.outputs(outputs)
 								.build();
@@ -187,7 +189,7 @@ public class TestVerificationTask implements Task {
 
 			} catch (Exception e) {
 				logger.error("Error occured while getting anaysis result ", e);
-				outputs.put(RESULT, e.getMessage());
+				outputs.put(EXCEPTION, e.getMessage());
 			}
 
 		}
