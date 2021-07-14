@@ -5,7 +5,7 @@ import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VerificationGatePlugin extends Plugin {
+public class TestVerificationPlugin extends Plugin {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -16,16 +16,16 @@ public class VerificationGatePlugin extends Plugin {
      *
      * @param wrapper
      */
-    public VerificationGatePlugin(PluginWrapper wrapper) {
+    public TestVerificationPlugin(PluginWrapper wrapper) {
         super(wrapper);
     }
 
     public void start() {
-        log.info("VerificationGatePlugin.start()");
+        log.info("TestVerificationGatePlugin.start()");
     }
 
     public void stop() {
-        log.info("VerificationGatePlugin.stop()");
+        log.info("TestVerificationGatePlugin.stop()");
     }
 
 }

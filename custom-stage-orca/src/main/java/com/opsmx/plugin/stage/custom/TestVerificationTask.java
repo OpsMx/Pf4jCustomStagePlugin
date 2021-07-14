@@ -28,7 +28,13 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @PluginComponent
-public class VerificationGateTask implements Task {
+public class TestVerificationTask implements Task {
+
+	private static final String CANARY_SUCCESS_CRITERIA = "canarySuccessCriteria";
+
+	private static final String CANARY_HEALTH_CHECK_HANDLER = "canaryHealthCheckHandler";
+
+	private static final String LIFETIME_HOURS = "lifetimeHours";
 
 	private static final String METRIC = "metric";
 
@@ -70,24 +76,24 @@ public class VerificationGateTask implements Task {
 		outputs.put(OesConstants.OVERALL_SCORE, 0.0);
 		outputs.put(OesConstants.OVERALL_RESULT, "Fail");
 
-		logger.info(" VerificationGateStage execute start ");
-		VerificationGateContext context = stage.mapTo(VerificationGateContext.class);
-
-		if (context.getGateUrl() == null || context.getGateUrl().isEmpty()) {
-			logger.info("Gate Url should not be empty");
-			outputs.put(RESULT, "Gate Url should not be empty");
-			return TaskResult.builder(ExecutionStatus.TERMINAL)
-					.context(contextMap)
-					.outputs(outputs)
-					.build();
-		}
+		logger.info(" TestVerificationStage execute start ");
+		TestVerificationContext context = stage.mapTo(TestVerificationContext.class);
 
 		logger.info("Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
 		try {
+			
+			if (context.getGateUrl() == null || context.getGateUrl().isEmpty()) {
+				logger.info("Gate Url should not be empty");
+				outputs.put(RESULT, "Gate Url should not be empty");
+				return TaskResult.builder(ExecutionStatus.TERMINAL)
+						.context(contextMap)
+						.outputs(outputs)
+						.build();
+			}
 
 			HttpPost request = new HttpPost(context.getGateUrl());
-			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context)));
+			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getAuthentication().getUser())));
 			request.setHeader("Content-type", "application/json");
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -160,8 +166,9 @@ public class VerificationGateTask implements Task {
 					outputs.put(OesConstants.OVERALL_RESULT, readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_RESULT).asText());
 					outputs.put(OesConstants.CANARY_REPORTURL, readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText());
 					outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
+					
 
-					if (Float.compare(overAllScore, minimumScore) < 0 ) {
+					if (overAllScore == null || Float.compare(overAllScore, minimumScore) < 0 ) {
 						outputs.put(RESULT, "Analysis score is below the minimum canary score");
 						return TaskResult.builder(ExecutionStatus.TERMINAL)
 								.outputs(outputs)
@@ -190,16 +197,21 @@ public class VerificationGateTask implements Task {
 				.build();
 	}
 
-	private String getPayloadString(String applicationName, String pipelineName, VerificationGateContext context) {
+	private String getPayloadString(String applicationName, String pipelineName, TestVerificationContext context, String user) {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("application", applicationName);
 		finalJson.put("isJsonResponse", true);
 
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
-		canaryConfig.put("lifetimeHours", context.getLifeTimeHours());
-		canaryConfig.set("canaryHealthCheckHandler", objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinimumCanaryResult()));
-		canaryConfig.set("canarySuccessCriteria", objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryResultScore()));
+		canaryConfig.put(LIFETIME_HOURS, context.getLifeTimeHours());
+		canaryConfig.set(CANARY_HEALTH_CHECK_HANDLER, objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinimumCanaryResult()));
+		canaryConfig.set(CANARY_SUCCESS_CRITERIA, objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryResultScore()));
+		canaryConfig.put("combinedCanaryResultStrategy", "AGGREGATE");
+		canaryConfig.put("name", user);
+		canaryConfig.set("canaryAnalysisConfig", objectMapper.createObjectNode()
+				.put("beginCanaryAnalysisAfterMins", 0)
+				.set("notificationHours", objectMapper.createArrayNode()));
 
 		ObjectNode baselinePayload = objectMapper.createObjectNode();
 		ObjectNode canaryPayload = objectMapper.createObjectNode();
@@ -208,12 +220,14 @@ public class VerificationGateTask implements Task {
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGateName())
+							.put(context.getTestRunKey(), context.getBaselineTestRunId())));
 			canaryPayload.set(LOG, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGateName())
+							.put(context.getTestRunKey(), context.getNewTestRunId())));
 		}
 
 		if (context.getMetricAnalysis().equals(Boolean.TRUE)) {
@@ -221,12 +235,14 @@ public class VerificationGateTask implements Task {
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGateName())
+							.put(context.getTestRunKey(), context.getNewTestRunId())));
 			canaryPayload.set(METRIC, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGateName())
+							.put(context.getTestRunKey(), context.getNewTestRunId())));
 		}
 
 		ObjectNode triggerPayload = objectMapper.createObjectNode();
@@ -234,14 +250,15 @@ public class VerificationGateTask implements Task {
 		triggerPayload.set("canary", canaryPayload);
 
 		ArrayNode payloadTriggerNode = objectMapper.createArrayNode();
-		payloadTriggerNode.add(triggerPayload);
 		triggerPayload.put("baselineStartTimeMs", context.getBaselineStartTime());
 		triggerPayload.put("canaryStartTimeMs", context.getCanaryStartTime());
+		triggerPayload.put("runInfo", context.getTestRunInfo());
+		payloadTriggerNode.add(triggerPayload);
 
 		finalJson.set(CANARY_CONFIG, canaryConfig);
 		finalJson.set("canaryDeployments", payloadTriggerNode);
 		String finalPayloadString = finalJson.toString();
-		logger.info("Payload string to trigger analysis : {}", finalPayloadString);
+		logger.info("Payload string to trigger test analysis : {}", finalPayloadString);
 
 		return finalPayloadString;
 	}
