@@ -7,8 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
 @Extension
-@StageDefinitionBuilder.Aliases("customStage")
-public class CustomStage implements StageDefinitionBuilder {
+public class PolicyGateStage implements StageDefinitionBuilder {
 
     /**
      * This function describes the sequence of substeps, or "tasks" that comprise this
@@ -19,6 +18,6 @@ public class CustomStage implements StageDefinitionBuilder {
      */
     @Override
     public void taskGraph(@NotNull StageExecution stage, @NotNull TaskNode.Builder builder) {
-        builder.withTask("customStage", CustomStageTask.class);
+        builder.withTask("policyGateStage", PolicyStageTask.class);
     }
 }
