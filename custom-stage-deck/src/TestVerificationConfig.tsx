@@ -47,7 +47,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
         render={() => (
           <div className="flex">
             <div className="grid"></div>
-            <div className="grid grid-4 form">
+            <div className="grid grid-4 form mainform">
               <div className="grid-span-3">
                 <FormikFormField
                   name="gateUrl"
@@ -89,7 +89,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
                 />
               </div>
-              <div style={{ paddingLeft: '4em' }}>
+              <div style={{ paddingLeft: '2em' }}>
                 <FormikFormField
                   name="metricAnalysis"
                   label="Metric Analysis"
@@ -141,7 +141,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
                   />
                 </div>
               </div>
-              <div className="grid-span-4">
+              <div className="grid-span-4 TestRunTextareaMain">
                 <FormikFormField
                   name="testRunInfo"
                   label="Test Run Info"
