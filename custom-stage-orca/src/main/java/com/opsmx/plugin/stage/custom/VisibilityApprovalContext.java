@@ -2,6 +2,7 @@ package com.opsmx.plugin.stage.custom;
 
 import java.util.List;
 
+import com.opsmx.plugin.stage.custom.model.Bamboo;
 import com.opsmx.plugin.stage.custom.model.CustomConnector;
 import com.opsmx.plugin.stage.custom.model.GitDetails;
 import com.opsmx.plugin.stage.custom.model.JenkinsDetails;
@@ -9,10 +10,26 @@ import com.opsmx.plugin.stage.custom.model.JenkinsDetails;
 public class VisibilityApprovalContext {
 
 	public VisibilityApprovalContext() {}
-	
-    public VisibilityApprovalContext(String gateUrl, String appScanProjectId, String aquaWaveImageId, String autopilotCanaryId,
-			String gateName, String imageIds, String jiraId, String refId, String sonarqubeProjectKey,
-			List<GitDetails> git, List<JenkinsDetails> jenkins, List<CustomConnector> customConnector) {
+
+	private String gateUrl;
+	private String appScanProjectId;
+	private String aquaWaveImageId;
+	private String autopilotCanaryId;
+	private String gateName;
+	private String imageIds;
+	private String jiraId;
+	private String refId;
+	private String sonarqubeProjectKey;
+	private List<GitDetails> git;
+	private List<JenkinsDetails> jenkins;
+	private List<CustomConnector> customConnector;
+	private List<Bamboo> bamboo;
+	private String jfrogWatchName;
+
+	public VisibilityApprovalContext(String gateUrl, String appScanProjectId, String aquaWaveImageId,
+			String autopilotCanaryId, String gateName, String imageIds, String jiraId, String refId,
+			String sonarqubeProjectKey, List<GitDetails> git, List<JenkinsDetails> jenkins,
+			List<CustomConnector> customConnector, List<Bamboo> bamboo, String jfrogWatchName) {
 		super();
 		this.gateUrl = gateUrl;
 		this.appScanProjectId = appScanProjectId;
@@ -26,6 +43,8 @@ public class VisibilityApprovalContext {
 		this.git = git;
 		this.jenkins = jenkins;
 		this.customConnector = customConnector;
+		this.bamboo = bamboo;
+		this.jfrogWatchName = jfrogWatchName;
 	}
 
 	public String getGateUrl() {
@@ -124,16 +143,19 @@ public class VisibilityApprovalContext {
 		this.customConnector = customConnector;
 	}
 
-	private String gateUrl;
-    private String appScanProjectId;
-    private String aquaWaveImageId;
-    private String autopilotCanaryId;
-    private String gateName;
-    private String imageIds;
-    private String jiraId;
-    private String refId;
-    private String sonarqubeProjectKey;
-    private List<GitDetails> git;
-    private List<JenkinsDetails> jenkins;
-    private List<CustomConnector> customConnector;
+	public List<Bamboo> getBamboo() {
+		return bamboo;
+	}
+
+	public void setBamboo(List<Bamboo> bamboo) {
+		this.bamboo = bamboo;
+	}
+
+	public String getJfrogWatchName() {
+		return jfrogWatchName;
+	}
+
+	public void setJfrogWatchName(String jfrogWatchName) {
+		this.jfrogWatchName = jfrogWatchName;
+	}
 }
