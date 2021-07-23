@@ -10,7 +10,7 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @Component
-public class TestVerificationStage implements StageDefinitionBuilder {
+public class TestVerification implements StageDefinitionBuilder {
 
 	@Override
 	public void taskGraph(@NotNull StageExecution stage, @NotNull TaskNode.Builder builder) {
