@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
 @Extension
-public class PolicyGateStage implements StageDefinitionBuilder {
+public class Policy implements StageDefinitionBuilder {
 
     /**
      * This function describes the sequence of substeps, or "tasks" that comprise this
@@ -18,6 +18,6 @@ public class PolicyGateStage implements StageDefinitionBuilder {
      */
     @Override
     public void taskGraph(@NotNull StageExecution stage, @NotNull TaskNode.Builder builder) {
-        builder.withTask("policyGateStage", PolicyStageTask.class);
+        builder.withTask("policy", PolicyTask.class);
     }
 }
