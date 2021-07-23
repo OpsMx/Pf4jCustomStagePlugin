@@ -97,6 +97,7 @@ public class TestVerificationTask implements Task {
 			HttpPost request = new HttpPost(context.getGateUrl());
 			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getAuthentication().getUser())));
 			request.setHeader("Content-type", "application/json");
+			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
@@ -129,7 +130,7 @@ public class TestVerificationTask implements Task {
 			String canaryUrl = response.getLastHeader(LOCATION).getValue();
 			logger.info("Analysis autopilot link : {}", canaryUrl);
 
-			return getVerificationStatus(canaryUrl);
+			return getVerificationStatus(canaryUrl, stage.getExecution().getAuthentication().getUser());
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
@@ -142,7 +143,7 @@ public class TestVerificationTask implements Task {
 				.build();
 	}
 
-	private TaskResult getVerificationStatus(String canaryUrl) {
+	private TaskResult getVerificationStatus(String canaryUrl, String user) {
 		HttpGet request = new HttpGet(canaryUrl);
 
 		Map<String, Object> outputs = new HashMap<>();
@@ -150,6 +151,7 @@ public class TestVerificationTask implements Task {
 		while (analysisStatus.equalsIgnoreCase(RUNNING)) {
 			try {
 				request.setHeader("Content-type", "application/json");
+				request.setHeader("x-spinnaker-user", user);
 				CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(request);
 
@@ -164,27 +166,30 @@ public class TestVerificationTask implements Task {
 					Float overAllScore = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_SCORE).floatValue();
 					Float minimumScore = readValue.get(CANARY_CONFIG).get(MINIMUM_CANARY_RESULT_SCORE).floatValue();
 					Float maximumScore = readValue.get(CANARY_CONFIG).get(MAXIMUM_CANARY_RESULT_SCORE).floatValue(); 
+					String result = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_RESULT).asText();
 
-					outputs.put(OesConstants.OVERALL_RESULT, readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_RESULT).asText());
+					outputs.put(OesConstants.OVERALL_RESULT, result);
 					outputs.put(OesConstants.CANARY_REPORTURL, readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText());
 					outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
 					
 
-					if (overAllScore == null || Float.compare(overAllScore, minimumScore) < 0 ) {
+					if (result.equalsIgnoreCase("FAIL")) {
 						outputs.put(COMMENT, "Analysis score is below the minimum canary score");
 						return TaskResult.builder(ExecutionStatus.TERMINAL)
 								.outputs(outputs)
 								.build();
-					} else if (Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
-						outputs.put(COMMENT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
-						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
-								.outputs(outputs)
-								.build();
-					} else {
+					} else if (result.equalsIgnoreCase("SUCCESS")){
 						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 								.outputs(outputs)
 								.build();
 					}
+					
+					else if (result.equalsIgnoreCase("REVIEW") || Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
+						outputs.put(COMMENT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
+						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
+								.outputs(outputs)
+								.build();
+					} 
 				}
 
 			} catch (Exception e) {
