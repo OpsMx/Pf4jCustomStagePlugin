@@ -7,9 +7,9 @@ import com.opsmx.plugin.stage.custom.model.CustomConnector;
 import com.opsmx.plugin.stage.custom.model.GitDetails;
 import com.opsmx.plugin.stage.custom.model.JenkinsDetails;
 
-public class VisibilityApprovalContext {
+public class ApprovalContext {
 
-	public VisibilityApprovalContext() {}
+	public ApprovalContext() {}
 
 	private String gateUrl;
 	private String appScanProjectId;
@@ -26,7 +26,7 @@ public class VisibilityApprovalContext {
 	private List<Bamboo> bamboo;
 	private String jfrogWatchName;
 
-	public VisibilityApprovalContext(String gateUrl, String appScanProjectId, String aquaWaveImageId,
+	public ApprovalContext(String gateUrl, String appScanProjectId, String aquaWaveImageId,
 			String autopilotCanaryId, String gateName, String imageIds, String jiraId, String refId,
 			String sonarqubeProjectKey, List<GitDetails> git, List<JenkinsDetails> jenkins,
 			List<CustomConnector> customConnector, List<Bamboo> bamboo, String jfrogWatchName) {
