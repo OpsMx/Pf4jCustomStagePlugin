@@ -70,8 +70,6 @@ public class VisibilityApprovalTask implements Task {
 
 	private static final String AQUAWAVE = "AQUAWAVE";
 
-	private static final String ID = "Id";
-
 	private static final String APPSCAN = "APPSCAN";
 
 	private static final String PROJECT_KEY = "projectKey";
@@ -93,10 +91,6 @@ public class VisibilityApprovalTask implements Task {
 	private static final String GIT = "GIT";
 
 	private static final String JIRA_TICKET_NO = "jira_ticket_no";
-
-	private static final String VALUE = "value";
-
-	private static final String KEY = "key";
 
 	private static final String PARAMETERS = "parameters";
 
@@ -121,7 +115,7 @@ public class VisibilityApprovalTask implements Task {
 
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
-		outputs.put(STATUS, "rejected");
+		outputs.put(STATUS, REJECTED);
 
 		logger.info(" Visibility approval execution started");
 		VisibilityApprovalContext context = stage.mapTo(VisibilityApprovalContext.class);
@@ -142,6 +136,7 @@ public class VisibilityApprovalTask implements Task {
 			HttpPost request = new HttpPost(context.getGateUrl());
 			request.setEntity(new StringEntity(getPayloadString(context, stage.getExecution().getId())));
 			request.setHeader("Content-type", "application/json");
+			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
@@ -163,21 +158,21 @@ public class VisibilityApprovalTask implements Task {
 			}
 
 			String approvalUrl = response.getLastHeader(LOCATION).getValue();
-			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(), stage.getExecution().getName(), approvalUrl);
-			return getVerificationStatus(approvalUrl);
+			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(),
+					stage.getExecution().getName(), approvalUrl);
+			return getVerificationStatus(approvalUrl, stage.getExecution().getAuthentication().getUser());
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
 			outputs.put(EXCEPTION, e);
-		}
-
+		} 
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
 				.context(contextMap)
 				.outputs(outputs)
 				.build();
 	}
 
-	private TaskResult getVerificationStatus(String canaryUrl) {
+	private TaskResult getVerificationStatus(String canaryUrl, String user) {
 		HttpGet request = new HttpGet(canaryUrl);
 
 		Map<String, Object> outputs = new HashMap<>();
@@ -185,6 +180,7 @@ public class VisibilityApprovalTask implements Task {
 		while (analysisStatus.equalsIgnoreCase(ACTIVATED)) {
 			try {
 				request.setHeader("Content-type", "application/json");
+				request.setHeader("x-spinnaker-user", user);
 				CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(request);
 
