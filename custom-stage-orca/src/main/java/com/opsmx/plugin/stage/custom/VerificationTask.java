@@ -102,7 +102,7 @@ public class VerificationTask implements Task {
 			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context)));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
-
+			
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
 
@@ -112,7 +112,7 @@ public class VerificationTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 			
-			logger.info("Verification trigger response : {}", registerResponse);
+			logger.info("Verification trigger response : {}, User : {}", registerResponse, stage.getExecution().getAuthentication().getUser());
 
 			if (response.getStatusLine().getStatusCode() != 202) {
 				outputs.put(RESULT, registerResponse);
