@@ -182,9 +182,12 @@ public class TestVerificationTask implements Task {
 						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 								.outputs(outputs)
 								.build();
-					}
-					
-					else if (result.equalsIgnoreCase("REVIEW") || Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
+					} else if (result.equalsIgnoreCase("CANCEL")) {
+						outputs.put(COMMENT, "Analysis got canceled");
+						return TaskResult.builder(ExecutionStatus.TERMINAL)
+								.outputs(outputs)
+								.build();
+					} else if (result.equalsIgnoreCase("REVIEW") || Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
 						outputs.put(COMMENT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
 						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 								.outputs(outputs)
