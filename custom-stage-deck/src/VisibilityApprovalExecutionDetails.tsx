@@ -15,17 +15,10 @@ import './VisibilityApproval.less';
 export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
-    if (props.stage.outputs.overallScore < props.stage.context.minimumCanaryResult) {
-      classes = 'verificationScoreDanger';
-    } else if (props.stage.outputs.overallScore > props.stage.context.canaryResultScore - 1) {
-      classes = 'verificationScoreSuccess';
-    } else if (
-      props.stage.outputs.overallScore < props.stage.context.canaryResultScore + 1 &&
-      props.stage.outputs.overallScore > props.stage.context.minimumCanaryResult - 1
-    ) {
-      classes = 'verificationScoreAlert';
-    } else {
-      classes = '';
+    if (props.stage.outputs.status == 'approved') {
+      classes = 'approvalStatusSuccess';
+    } else if (props.stage.outputs.status == 'rejected') {
+      classes = 'approvalStatusDanger';
     }
     return classes;
   };
@@ -42,10 +35,10 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
 
   return (
     <ExecutionDetailsSection name={props.name} current={props.current}>
-      {props.stage.outputs.overallScore >= 0 ? (
+      {props.stage.outputs.status !== undefined ? (
         <div>
           <div className="detailpagelogo">
-            <span className={'score ' + getClasses()}>{props.stage.outputs.overallScore}</span>
+            <span className={'status ' + getClasses()}>{props.stage.outputs.status}</span>
             <img
               src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
               alt="logo"
@@ -55,21 +48,17 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
           <table className="table">
             <thead>
               <tr>
-                <th>Result</th>
-                <th>Report</th>
+                <th>Status</th>
+                <th>Comment</th>
                 <th>Last Updated</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>
-                  <span className={'scoreSmall ' + getClasses()}>{props.stage.outputs.overallScore}</span>
+                  <span className={'statusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
                 </td>
-                <td>
-                  <a href={props.stage.outputs.canaryReportURL} target="_blank">
-                    Report
-                  </a>
-                </td>
+                <td>-</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>
               </tr>
             </tbody>
