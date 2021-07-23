@@ -2,7 +2,7 @@ package com.opsmx.plugin.stage.custom;
 
 import com.netflix.spinnaker.kork.plugins.api.PluginComponent;
 
-public class VerificationGateContext {
+public class VerificationContext {
 
     private String gateUrl;
     private String lifeTimeHours;
@@ -15,9 +15,9 @@ public class VerificationGateContext {
     private Long baselineStartTime;
     private Long canaryStartTime;
     
-    public VerificationGateContext(){}
+    public VerificationContext(){}
 
-    public VerificationGateContext(String gateUrl, String lifeTimeHours, Integer minimumCanaryResult, Integer canaryResultScore, String gateName, String imageIds, Boolean logAnalysis, Boolean metricAnalysis, Long baselineStartTime, Long canaryStartTime) {
+    public VerificationContext(String gateUrl, String lifeTimeHours, Integer minimumCanaryResult, Integer canaryResultScore, String gateName, String imageIds, Boolean logAnalysis, Boolean metricAnalysis, Long baselineStartTime, Long canaryStartTime) {
         this.gateUrl = gateUrl;
         this.lifeTimeHours = lifeTimeHours;
         this.minimumCanaryResult = minimumCanaryResult;

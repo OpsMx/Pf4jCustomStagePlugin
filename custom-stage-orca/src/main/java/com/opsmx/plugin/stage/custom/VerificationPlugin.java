@@ -5,7 +5,7 @@ import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VerificationGatePlugin extends Plugin {
+public class VerificationPlugin extends Plugin {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -16,7 +16,7 @@ public class VerificationGatePlugin extends Plugin {
      *
      * @param wrapper
      */
-    public VerificationGatePlugin(PluginWrapper wrapper) {
+    public VerificationPlugin(PluginWrapper wrapper) {
         super(wrapper);
     }
 
