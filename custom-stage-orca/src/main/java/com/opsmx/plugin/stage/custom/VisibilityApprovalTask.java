@@ -32,6 +32,20 @@ import com.opsmx.plugin.stage.custom.model.CustomConnector;
 @PluginComponent
 public class VisibilityApprovalTask implements Task {
 
+	private static final String BUILD_NUMBER = "buildNumber";
+
+	private static final String PLAN_NAME = "planName";
+
+	private static final String PROJECT_NAME = "projectName";
+
+	private static final String WATCH_NAME = "watch_name";
+
+	private static final String JFROG = "JFROG";
+
+	private static final String BAMBOO = "BAMBOO";
+
+	private static final String REPORT_ID = "reportId";
+
 	private static final String REJECTED = "rejected";
 
 	private static final String APPROVED = "approved";
@@ -56,8 +70,6 @@ public class VisibilityApprovalTask implements Task {
 
 	private static final String AQUAWAVE = "AQUAWAVE";
 
-	private static final String ID = "Id";
-
 	private static final String APPSCAN = "APPSCAN";
 
 	private static final String PROJECT_KEY = "projectKey";
@@ -79,10 +91,6 @@ public class VisibilityApprovalTask implements Task {
 	private static final String GIT = "GIT";
 
 	private static final String JIRA_TICKET_NO = "jira_ticket_no";
-
-	private static final String VALUE = "value";
-
-	private static final String KEY = "key";
 
 	private static final String PARAMETERS = "parameters";
 
@@ -107,7 +115,7 @@ public class VisibilityApprovalTask implements Task {
 
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
-		outputs.put(STATUS, "rejected");
+		outputs.put(STATUS, REJECTED);
 
 		logger.info(" Visibility approval execution started");
 		VisibilityApprovalContext context = stage.mapTo(VisibilityApprovalContext.class);
@@ -119,7 +127,7 @@ public class VisibilityApprovalTask implements Task {
 					.outputs(outputs)
 					.build();
 		}
-		
+
 
 		logger.info("Application name : {}, pipeline name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
@@ -128,6 +136,7 @@ public class VisibilityApprovalTask implements Task {
 			HttpPost request = new HttpPost(context.getGateUrl());
 			request.setEntity(new StringEntity(getPayloadString(context, stage.getExecution().getId())));
 			request.setHeader("Content-type", "application/json");
+			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
@@ -139,7 +148,7 @@ public class VisibilityApprovalTask implements Task {
 			}
 
 			logger.info("visibility approval trigger response : {}", registerResponse);
-			
+
 			if (response.getStatusLine().getStatusCode() != 202) {
 				outputs.put(EXCEPTION, registerResponse);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -149,21 +158,21 @@ public class VisibilityApprovalTask implements Task {
 			}
 
 			String approvalUrl = response.getLastHeader(LOCATION).getValue();
-			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(), stage.getExecution().getName(), approvalUrl);
-			return getVerificationStatus(approvalUrl);
+			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(),
+					stage.getExecution().getName(), approvalUrl);
+			return getVerificationStatus(approvalUrl, stage.getExecution().getAuthentication().getUser());
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
 			outputs.put(EXCEPTION, e);
-		}
-
+		} 
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
 				.context(contextMap)
 				.outputs(outputs)
 				.build();
 	}
 
-	private TaskResult getVerificationStatus(String canaryUrl) {
+	private TaskResult getVerificationStatus(String canaryUrl, String user) {
 		HttpGet request = new HttpGet(canaryUrl);
 
 		Map<String, Object> outputs = new HashMap<>();
@@ -171,6 +180,7 @@ public class VisibilityApprovalTask implements Task {
 		while (analysisStatus.equalsIgnoreCase(ACTIVATED)) {
 			try {
 				request.setHeader("Content-type", "application/json");
+				request.setHeader("x-spinnaker-user", user);
 				CloseableHttpClient httpClient = HttpClients.createDefault();
 				CloseableHttpResponse response = httpClient.execute(request);
 
@@ -192,7 +202,7 @@ public class VisibilityApprovalTask implements Task {
 								.outputs(outputs)
 								.build();
 					}		
-					
+
 					Thread.sleep(1000);
 				}
 
@@ -226,12 +236,13 @@ public class VisibilityApprovalTask implements Task {
 		if (context.getJiraId() != null && ! context.getJiraId().isEmpty()) {
 			ObjectNode jiraObjectNode = objectMapper.createObjectNode();
 			jiraObjectNode.put(CONNECTOR_TYPE, JIRA);
-			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
+			ArrayNode jiraTickets = objectMapper.createArrayNode();
+
 			Arrays.asList(context.getJiraId().split(",")).forEach(a -> {
-				parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, JIRA_TICKET_NO).put(VALUE, a.trim()));
+				jiraTickets.add(a.trim());
 			});
 
-			jiraObjectNode.set(PARAMETERS, parameterArrayNode);
+			jiraObjectNode.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(JIRA_TICKET_NO, jiraTickets)));
 			toolConnectorPayloads.add(jiraObjectNode);
 
 		} else {
@@ -244,14 +255,14 @@ public class VisibilityApprovalTask implements Task {
 			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
 			context.getGit().forEach(git -> {
 				if (git != null && git.getGitCommitId() != null && !git.getGitCommitId().isEmpty()) {
-					if (parameterArrayNode.size() == 0) {
-						parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, REPO).put(VALUE, git.getGitRepo()));
-					}
+					ArrayNode commitIds = objectMapper.createArrayNode();
 					Arrays.asList(git.getGitCommitId().split(",")).forEach(a -> {
-						parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, COMMIT_ID).put(VALUE, a.trim()));
+						commitIds.add(a.trim());
 					});
+					parameterArrayNode.add(objectMapper.createObjectNode().put(REPO, git.getGitRepo()).set(COMMIT_ID, commitIds));
 				} 
 			});
+			
 			if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
 				gitObjectNode.set(PARAMETERS, parameterArrayNode);
 				toolConnectorPayloads.add(gitObjectNode);
@@ -261,20 +272,17 @@ public class VisibilityApprovalTask implements Task {
 		}
 
 		if (context.getJenkins() != null && ! context.getJenkins().isEmpty()) {
-			
+
 			ObjectNode jenkinsObjectNode = objectMapper.createObjectNode();
 			jenkinsObjectNode.put(CONNECTOR_TYPE, JENKINS);
 			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
 			context.getJenkins().forEach(jenkins -> {
 				if (jenkins != null && jenkins.getBuildNo() != null && ! jenkins.getBuildNo().isEmpty()) {
-					parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, JOB).put(VALUE, jenkins.getJobName()));
-					Arrays.asList(jenkins.getBuildNo().split(",")).forEach(a -> {
-						parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, BUILD_ID).put(VALUE, a.trim()));
-					});
-
-					Arrays.asList(jenkins.getArtifact().split(",")).forEach(a -> {
-						parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, ARTIFACT).put(VALUE, a.trim()));
-					});
+					
+					parameterArrayNode.add(objectMapper.createObjectNode()
+							.put(JOB, jenkins.getJobName())
+							.put(BUILD_ID, jenkins.getBuildNo().trim())
+							.put(ARTIFACT, jenkins.getArtifact().trim()));
 				} 
 			});
 
@@ -285,66 +293,95 @@ public class VisibilityApprovalTask implements Task {
 		} else {
 			logger.info("Jenkins job is not provided");
 		}
+		
+		if (context.getBamboo() != null && ! context.getBamboo().isEmpty()) {
 
-		if (context.getSonarqubeProjectKey() != null && ! context.getSonarqubeProjectKey().isEmpty()) {
-			ObjectNode sonarObjectNode = objectMapper.createObjectNode();
-			sonarObjectNode.put(CONNECTOR_TYPE, SONARQUBE);
+			ObjectNode bambooNode = objectMapper.createObjectNode();
+			bambooNode.put(CONNECTOR_TYPE, BAMBOO);
 			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
-			Arrays.asList(context.getSonarqubeProjectKey().split(",")).forEach(a -> {
-				parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, PROJECT_KEY).put(VALUE, a.trim()));
+			context.getBamboo().forEach(bamboo -> {
+				if (bamboo != null && bamboo.getProjectName() != null && ! bamboo.getProjectName().isEmpty()
+						&& bamboo.getBuildNumber() != null && bamboo.getPlanName() != null) {
+					
+					parameterArrayNode.add(objectMapper.createObjectNode()
+							.put(PROJECT_NAME, bamboo.getProjectName().trim())
+							.put(PLAN_NAME, bamboo.getPlanName().trim())
+							.put(BUILD_NUMBER, bamboo.getBuildNumber().trim()));
+				} 
 			});
 
-			sonarObjectNode.set(PARAMETERS, parameterArrayNode);
-			toolConnectorPayloads.add(sonarObjectNode);
+			if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
+				bambooNode.set(PARAMETERS, parameterArrayNode);
+				toolConnectorPayloads.add(bambooNode);
+			}
+		} else {
+			logger.info("Bamboo details is not provided");
+		}
+		
+		if (context.getAutopilotCanaryId() != null && ! context.getAutopilotCanaryId().isEmpty()) {
+			ArrayNode commitIds = objectMapper.createArrayNode();
+			Arrays.asList(context.getAutopilotCanaryId().split(",")).forEach(a -> {
+				commitIds.add(a.trim());
+			});
 
+			toolConnectorPayloads.add(
+					objectMapper.createObjectNode().put(CONNECTOR_TYPE, AUTOPILOT)
+					.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(CANARY_ID, commitIds))));
+		} else {
+			logger.info("Autopilot id is not provided");
+		}
+		
+		if (context.getJfrogWatchName() != null && ! context.getJfrogWatchName().isEmpty()) {
+			ArrayNode commitIds = objectMapper.createArrayNode();
+			Arrays.asList(context.getJfrogWatchName().split(",")).forEach(a -> {
+				commitIds.add(a.trim());
+			});
+
+			toolConnectorPayloads.add(
+					objectMapper.createObjectNode().put(CONNECTOR_TYPE, JFROG)
+					.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(WATCH_NAME, commitIds))));
+		} else {
+			logger.info("Jrog is not provided");
+		}
+
+		if (context.getSonarqubeProjectKey() != null && ! context.getSonarqubeProjectKey().isEmpty()) {
+			ArrayNode projIds = objectMapper.createArrayNode();
+			Arrays.asList(context.getSonarqubeProjectKey().split(",")).forEach(a -> {
+				projIds.add(a.trim());
+			});
+			
+			toolConnectorPayloads.add(
+					objectMapper.createObjectNode().put(CONNECTOR_TYPE, SONARQUBE)
+					.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(PROJECT_KEY, projIds))));
 		} else {
 			logger.info("Sonarqube projectid is not provided");
 		} 
 
 		if (context.getAppScanProjectId() != null && ! context.getAppScanProjectId().isEmpty()) {
-
-			ObjectNode appscanNode = objectMapper.createObjectNode();
-			appscanNode.put(CONNECTOR_TYPE, APPSCAN);
-			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
+			ArrayNode projIds = objectMapper.createArrayNode();
 			Arrays.asList(context.getAppScanProjectId().split(",")).forEach(a -> {
-				parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, ID).put(VALUE, a.trim()));
+				projIds.add(a.trim());
 			});
 
-			appscanNode.set(PARAMETERS, parameterArrayNode);
-			toolConnectorPayloads.add(appscanNode);
+			toolConnectorPayloads.add(
+					objectMapper.createObjectNode().put(CONNECTOR_TYPE, APPSCAN)
+					.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(REPORT_ID, projIds))));
 		} else {
 			logger.info("APPSCAN projectid is not provided");
 		} 
 
 		if (context.getAquaWaveImageId() != null && ! context.getAquaWaveImageId().isEmpty()) {
-
-			ObjectNode aquaNode = objectMapper.createObjectNode();
-			aquaNode.put(CONNECTOR_TYPE, AQUAWAVE);
-			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
+			ArrayNode projIds = objectMapper.createArrayNode();
 			Arrays.asList(context.getAquaWaveImageId().split(",")).forEach(a -> {
-				parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, IMAGE_ID).put(VALUE, a.trim()));
+				projIds.add(a.trim());
 			});
 
-			aquaNode.set(PARAMETERS, parameterArrayNode);
-			toolConnectorPayloads.add(aquaNode);
+			toolConnectorPayloads.add(
+					objectMapper.createObjectNode().put(CONNECTOR_TYPE, AQUAWAVE)
+					.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(IMAGE_ID, projIds))));
 		} else {
 			logger.info("AQUAWAVE image is not provided");
-		} 
-
-		if (context.getAutopilotCanaryId() != null && ! context.getAutopilotCanaryId().isEmpty()) {
-
-			ObjectNode aquaNode = objectMapper.createObjectNode();
-			aquaNode.put(CONNECTOR_TYPE, AUTOPILOT);
-			ArrayNode parameterArrayNode = objectMapper.createArrayNode();
-			Arrays.asList(context.getAutopilotCanaryId().split(",")).forEach(a -> {
-				parameterArrayNode.add(objectMapper.createObjectNode().put(KEY, CANARY_ID).put(VALUE, a.trim()));
-			});
-
-			aquaNode.set(PARAMETERS, parameterArrayNode);
-			toolConnectorPayloads.add(aquaNode);
-		} else {
-			logger.info("AQUAWAVE image is not provided");
-		}		
+		} 	
 
 		finalJson.set(TOOL_CONNECTOR_PARAMETERS, toolConnectorPayloads);
 
@@ -377,7 +414,7 @@ public class VisibilityApprovalTask implements Task {
 		} else {
 			logger.info("CustomConnector is not provided");
 		}
-		
+
 		finalJson.set("customConnectorData", customArrayNode);
 
 		logger.info("Payload string to visibility approval : {}", finalJson.toString());
