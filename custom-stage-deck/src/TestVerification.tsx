@@ -16,7 +16,7 @@ import { TestVerificationConfig, validate } from './TestVerificationConfig';
 export const testVerification: IStageTypeConfig = {
   key: 'testVerification',
   label: `Test Verification`,
-  description: 'Stage for Test Verification Gate',
+  description: 'Stage for Test Verification',
   component: TestVerificationConfig, // stage config
   executionDetailsSections: [TestVerificationExecutionDetails, ExecutionDetailsTasks],
   validateFn: validate,

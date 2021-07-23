@@ -96,5 +96,5 @@ export function TestVerificationExecutionDetails(props: IExecutionDetailsSection
 // pipeline stage execution view. Camel case will be mapped
 // to space-delimited text: randomWait -> Random Wait.
 export namespace TestVerificationExecutionDetails {
-  export const title = 'Testverification';
+  export const title = 'Test Verification';
 }
