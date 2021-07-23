@@ -26,8 +26,6 @@ import com.netflix.spinnaker.orca.api.pipeline.TaskResult;
 import com.netflix.spinnaker.orca.api.pipeline.models.ExecutionStatus;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
-import jline.internal.Log;
-
 @Extension
 @PluginComponent
 public class VerificationTask implements Task {
