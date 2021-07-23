@@ -46,7 +46,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="policyProxy"
                   label="Policy Proxy"
-                  help={<HelpField id="opsmx.policyGate.policyProxy" />}
+                  help={<HelpField id="opsmx.policy.policyProxy" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -54,7 +54,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="policyPath"
                   label="Policy Path"
-                  help={<HelpField id="opsmx.policyGate.policyPath" />}
+                  help={<HelpField id="opsmx.policy.policyPath" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -63,7 +63,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="payload"
                   label="Payload"
-                  help={<HelpField id="opsmx.policyGate.payload" />}
+                  help={<HelpField id="opsmx.policy.payload" />}
                   input={(props) => <textarea className="policyTextArea" {...props}></textarea>}
                 />
               </div>
@@ -72,7 +72,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="gateName"
                   label="Gate Name"
-                  help={<HelpField id="opsmx.policyGate.gateName" />}
+                  help={<HelpField id="opsmx.policy.gateName" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>
@@ -80,7 +80,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
                 <FormikFormField
                   name="imageIDs"
                   label="image IDs"
-                  help={<HelpField id="opsmx.policyGate.imageIds" />}
+                  help={<HelpField id="opsmx.policy.imageIds" />}
                   input={(props) => <TextInput {...props} />}
                 />
               </div>

@@ -13,9 +13,9 @@ import { PolicyGateConfig, validate } from './PolicyGateConfig';
   - component -> The rendered React component
   - validateFn -> A validation function for the stage config form.
  */
-export const policyGate: IStageTypeConfig = {
-  key: 'policyGate',
-  label: `Policy Gate`,
+export const policy: IStageTypeConfig = {
+  key: 'policy',
+  label: `Policy`,
   description: 'Spinnaker Policy Evaluation and Decision Stage',
   component: PolicyGateConfig, // stage config
   executionDetailsSections: [PolicyGateExecutionDetails, ExecutionDetailsTasks],

@@ -1,8 +1,8 @@
 import { IDeckPlugin } from '@spinnaker/core';
-import { policyGate } from './PolicyGate';
+import { policy } from './PolicyGate';
 import { initialize } from './initialize';
 
 export const plugin: IDeckPlugin = {
   initialize,
-  stages: [policyGate],
+  stages: [policy],
 };
