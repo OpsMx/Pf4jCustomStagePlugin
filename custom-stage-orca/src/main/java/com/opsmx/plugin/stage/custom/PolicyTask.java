@@ -33,7 +33,7 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @PluginComponent
-public class PolicyStageTask implements Task {
+public class PolicyTask implements Task {
 
 	private static final String USER2 = "user";
 
@@ -52,7 +52,7 @@ public class PolicyStageTask implements Task {
 	@Autowired
 	private ObjectMapper objectMapper = new ObjectMapper();
 
-	public PolicyStageTask() {
+	public PolicyTask() {
 	}
 
 
@@ -90,6 +90,7 @@ public class PolicyStageTask implements Task {
 			request.setEntity(new StringEntity(getPayloadString(context, stage.getExecution().getApplication(), stage.getExecution().getName(),
 					stage.getExecution().getId(), stage.getExecution().getAuthentication().getUser(), "")));
 			request.setHeader("Content-type", "application/json");
+			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
