@@ -50,7 +50,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
             <div className="grid grid-4 form mainform">
               <div className="grid-span-3">
                 <FormikFormField
-                  name="gateUrl"
+                  name="parameters.gateurl"
                   label="Gate Url"
                   help={<HelpField id="opsmx.testVerification.gateUrl" />}
                   input={(props) => <TextInput {...props} />}
@@ -58,7 +58,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div>
                 <FormikFormField
-                  name="lifeTimeHours"
+                  name="parameters.lifetime"
                   label="LifeTimeHours"
                   help={<HelpField id="opsmx.testVerification.lifeTimeHours" />}
                   input={(props) => <TextInput {...props} />}
@@ -67,7 +67,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div>
                 <FormikFormField
-                  name="minimumCanaryResult"
+                  name="parameters.minicanaryresult"
                   label="Minimum Canary Result"
                   help={<HelpField id="opsmx.testVerification.minimumCanaryResult" />}
                   input={(props) => <TextInput {...props} />}
@@ -75,7 +75,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div>
                 <FormikFormField
-                  name="canaryResultScore"
+                  name="parameters.canaryresultscore"
                   label="canary Result Score"
                   help={<HelpField id="opsmx.testVerification.canaryResultScore" />}
                   input={(props) => <TextInput {...props} />}
@@ -83,7 +83,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div style={{ paddingLeft: '4em' }}>
                 <FormikFormField
-                  name="logAnalysis"
+                  name="parameters.log"
                   label="Log Analysis"
                   help={<HelpField id="opsmx.testVerification.logAnalysis" />}
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
@@ -91,7 +91,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div style={{ paddingLeft: '2em' }}>
                 <FormikFormField
-                  name="metricAnalysis"
+                  name="parameters.metric"
                   label="Metric Analysis"
                   help={<HelpField id="opsmx.testVerification.metricAnalysis" />}
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
@@ -100,7 +100,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div className="grid-span-2">
                 <FormikFormField
-                  name="baselineStartTime"
+                  name="parameters.baselinestarttime"
                   label="Baseline StartTime"
                   help={<HelpField id="opsmx.testVerification.baselineStartTime" />}
                   input={(props) => <DateTimePicker {...props} />}
@@ -108,7 +108,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-2">
                 <FormikFormField
-                  name="canaryStartTime"
+                  name="parameters.canarystarttime"
                   label="Canary StartTime"
                   help={<HelpField id="opsmx.testVerification.canaryStartTime" />}
                   input={(props) => <DateTimePicker {...props} />}
@@ -118,7 +118,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               <div className="grid grid-span-4">
                 <div className="testCol1">
                   <FormikFormField
-                    name="testRunKey"
+                    name="parameters.testrunkey"
                     label="Test Run Key"
                     help={<HelpField id="opsmx.testVerification.testRunKey" />}
                     input={(props) => <TextInput {...props} />}
@@ -126,7 +126,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
                 </div>
                 <div className="testCol2">
                   <FormikFormField
-                    name="baselineTestRunId"
+                    name="parameters.baselinetestrunid"
                     label="Baseline Test Run Id"
                     help={<HelpField id="opsmx.testVerification.baselineTestRunId" />}
                     input={(props) => <TextInput {...props} />}
@@ -134,7 +134,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
                 </div>
                 <div className="testCol3">
                   <FormikFormField
-                    name="newTestRunId"
+                    name="parameters.newtestrunid"
                     label="New Test Run Id"
                     help={<HelpField id="opsmx.testVerification.newTestRunId" />}
                     input={(props) => <TextInput {...props} />}
@@ -143,7 +143,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-4 TestRunTextareaMain">
                 <FormikFormField
-                  name="testRunInfo"
+                  name="parameters.testruninfo"
                   label="Test Run Info"
                   help={<HelpField id="opsmx.testVerification.testRunInfo" />}
                   input={(props) => <textarea className="TestRunTextArea" {...props}></textarea>}
@@ -152,7 +152,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div className="grid-span-2">
                 <FormikFormField
-                  name="gateName"
+                  name="parameters.gate"
                   label="Gate Name"
                   help={<HelpField id="opsmx.testVerification.gateName" />}
                   input={(props) => <TextInput {...props} />}
@@ -160,7 +160,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-2">
                 <FormikFormField
-                  name="imageIds"
+                  name="parameters.imageids"
                   label="Image Ids"
                   help={<HelpField id="opsmx.testVerification.imageIds" />}
                   input={(props) => <TextInput {...props} />}
