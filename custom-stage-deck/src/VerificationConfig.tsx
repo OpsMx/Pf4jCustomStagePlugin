@@ -50,7 +50,7 @@ export function VerificationConfig(props: IStageConfigProps) {
             <div className="grid grid-4 form mainform">
               <div className="grid-span-3">
                 <FormikFormField
-                  name="gateUrl"
+                  name="parameters.gateurl"
                   label="Gate Url"
                   help={<HelpField id="opsmx.verification.gateUrl" />}
                   input={(props) => <TextInput {...props} />}
@@ -58,7 +58,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               </div>
               <div>
                 <FormikFormField
-                  name="lifeTimeHours"
+                  name="parameters.lifetime"
                   label="LifeTimeHours"
                   help={<HelpField id="opsmx.verification.lifeTimeHours" />}
                   input={(props) => <TextInput {...props} />}
@@ -67,7 +67,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div>
                 <FormikFormField
-                  name="minimumCanaryResult"
+                  name="parameters.minicanaryresult"
                   label="Minimum Canary Result"
                   help={<HelpField id="opsmx.verification.minimumCanaryResult" />}
                   input={(props) => <TextInput {...props} />}
@@ -75,7 +75,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               </div>
               <div>
                 <FormikFormField
-                  name="canaryResultScore"
+                  name="parameters.canaryresultscore"
                   label="canary Result Score"
                   help={<HelpField id="opsmx.verification.canaryResultScore" />}
                   input={(props) => <TextInput {...props} />}
@@ -83,7 +83,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               </div>
               <div style={{ paddingLeft: '4em' }}>
                 <FormikFormField
-                  name="logAnalysis"
+                  name="parameters.log"
                   label="Log Analysis"
                   help={<HelpField id="opsmx.verification.logAnalysis" />}
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
@@ -91,7 +91,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               </div>
               <div style={{ paddingLeft: '2em' }}>
                 <FormikFormField
-                  name="metricAnalysis"
+                  name="parameters.metric"
                   label="Metric Analysis"
                   help={<HelpField id="opsmx.verification.metricAnalysis" />}
                   input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
@@ -100,7 +100,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div className="grid-span-2">
                 <FormikFormField
-                  name="baselineStartTime"
+                  name="parameters.baselinestarttime"
                   label="Baseline StartTime"
                   help={<HelpField id="opsmx.verification.baselineStartTime" />}
                   input={(props) => <DateTimePicker {...props} />}
@@ -108,16 +108,16 @@ export function VerificationConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-2">
                 <FormikFormField
-                  name="canaryStartTime"
+                  name="parameters.canarystarttime"
                   label="Canary StartTime"
-                  help={<HelpField id="opsmx.verification.canaryStartTime" />}
+                  help={<HelpField id="opsmx.verification.canarystarttime" />}
                   input={(props) => <DateTimePicker {...props} />}
                 />
               </div>
               <HorizontalRule />
               <div className="grid-span-2">
                 <FormikFormField
-                  name="gateName"
+                  name="parameters.gate"
                   label="Gate Name"
                   help={<HelpField id="opsmx.verification.gateName" />}
                   input={(props) => <TextInput {...props} />}
@@ -125,7 +125,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-2">
                 <FormikFormField
-                  name="imageIds"
+                  name="parameters.imageids"
                   label="Image Ids"
                   help={<HelpField id="opsmx.verification.imageIds" />}
                   input={(props) => <TextInput {...props} />}
