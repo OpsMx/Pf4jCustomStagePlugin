@@ -44,7 +44,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
             <div className="grid grid-4 form mainform">
               <div className="grid-span-2">
                 <FormikFormField
-                  name="policyProxy"
+                  name="parameters.policyurl"
                   label="Policy Proxy"
                   help={<HelpField id="opsmx.policy.policyProxy" />}
                   input={(props) => <TextInput {...props} />}
@@ -52,7 +52,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-2">
                 <FormikFormField
-                  name="policyPath"
+                  name="parameters.policypath"
                   label="Policy Path"
                   help={<HelpField id="opsmx.policy.policyPath" />}
                   input={(props) => <TextInput {...props} />}
@@ -61,7 +61,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div className="grid-span-4 payloadTextarea">
                 <FormikFormField
-                  name="payload"
+                  name="parameters.payload"
                   label="Payload"
                   help={<HelpField id="opsmx.policy.payload" />}
                   input={(props) => <textarea className="policyTextArea" {...props}></textarea>}
@@ -70,7 +70,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
               <HorizontalRule />
               <div className="grid-span-2">
                 <FormikFormField
-                  name="gateName"
+                  name="parameters.gate"
                   label="Gate Name"
                   help={<HelpField id="opsmx.policy.gateName" />}
                   input={(props) => <TextInput {...props} />}
@@ -78,7 +78,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
               </div>
               <div className="grid-span-2">
                 <FormikFormField
-                  name="imageIDs"
+                  name="parameters.imageids"
                   label="image IDs"
                   help={<HelpField id="opsmx.policy.imageIds" />}
                   input={(props) => <TextInput {...props} />}
