@@ -116,6 +116,8 @@ public class TestVerificationTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 
+			logger.info("Testverification trigger response : {}, User : {}", registerResponse, stage.getExecution().getAuthentication().getUser());
+			
 			if (response.getStatusLine().getStatusCode() != 202) {
 				outputs.put(EXCEPTION, registerResponse);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
