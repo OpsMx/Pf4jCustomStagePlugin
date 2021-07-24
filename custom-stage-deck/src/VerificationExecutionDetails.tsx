@@ -15,13 +15,13 @@ import './Verification.less';
 export function VerificationExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
-    if (props.stage.outputs.overallScore < props.stage.context.parameters.minimumCanaryResult) {
+    if (props.stage.outputs.overallScore < props.stage.context.parameters.minicanaryresult) {
       classes = 'verificationScoreDanger';
-    } else if (props.stage.outputs.overallScore > props.stage.context.parameters.canaryResultScore - 1) {
+    } else if (props.stage.outputs.overallScore > props.stage.context.parameters.canaryresultscore - 1) {
       classes = 'verificationScoreSuccess';
     } else if (
-      props.stage.outputs.overallScore < props.stage.context.parameters.canaryResultScore + 1 &&
-      props.stage.outputs.overallScore > props.stage.context.parameters.minimumCanaryResult - 1
+      props.stage.outputs.overallScore < props.stage.context.parameters.canaryresultscore + 1 &&
+      props.stage.outputs.overallScore > props.stage.context.parameters.minicanaryresult - 1
     ) {
       classes = 'verificationScoreAlert';
     } else {
