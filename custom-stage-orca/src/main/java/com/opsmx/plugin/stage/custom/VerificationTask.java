@@ -79,12 +79,7 @@ public class VerificationTask implements Task {
 		outputs.put(OesConstants.OVERALL_RESULT, "Fail");
 
 		logger.info(" VerificationGateStage execute start ");
-		Map<String, Object> testVariables = stage.getContext();
-		testVariables.entrySet().forEach(a -> {
-			logger.info("CONTEXT KEY : {}, VALUE : {}", a.getKey(), a.getValue());
-		});
 		VerificationContext context = stage.mapTo("/parameters", VerificationContext.class);
-
 		if (context.getGateurl() == null || context.getGateurl().isEmpty()) {
 			logger.info("Gate Url should not be empty");
 			outputs.put(RESULT, "Gate Url should not be empty");
