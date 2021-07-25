@@ -2,185 +2,182 @@ package com.opsmx.plugin.stage.custom;
 
 public class TestVerificationContext {
 
-    private String gateUrl;
-    private String lifeTimeHours;
-    private Integer minimumCanaryResult;
-    private Integer canaryResultScore;
-    private String gateName;
-    private String imageIds;
-    private Boolean logAnalysis;
-    private Boolean metricAnalysis;
-    private Long baselineStartTime;
-    private Long canaryStartTime;
-    private String testRunKey;
-    private String baselineTestRunId;
-    private String newTestRunId;
-    private String testRunInfo;
+	private String gateurl;
+    private String lifetime;
+    private Integer minicanaryresult;
+    private Integer canaryresultscore;
+    private String gate;
+    private String imageids;
+    private Boolean log;
+    private Boolean metric = Boolean.FALSE;
+    private Long baselinestarttime;
+    private Long canarystarttime;
+    private String testrunkey;
+    private String baselinetestrunid;
+    private String newtestrunid;
+    private String testruninfo;
     
     
     public TestVerificationContext(){}
 
 
-	public TestVerificationContext(String gateUrl, String lifeTimeHours, Integer minimumCanaryResult,
-			Integer canaryResultScore, String gateName, String imageIds, Boolean logAnalysis, Boolean metricAnalysis,
-			Long baselineStartTime, Long canaryStartTime, String testRunKey, String baselineTestRunId,
-			String newTestRunId, String testRunInfo) {
+	public TestVerificationContext(String gateurl, String lifetime, Integer minicanaryresult, Integer canaryresultscore,
+			String gate, String imageids, Boolean log, Boolean metric, Long baselinestarttime, Long canarystarttime,
+			String testrunkey, String baselinetestrunid, String newtestrunid, String testruninfo) {
 		super();
-		this.gateUrl = gateUrl;
-		this.lifeTimeHours = lifeTimeHours;
-		this.minimumCanaryResult = minimumCanaryResult;
-		this.canaryResultScore = canaryResultScore;
-		this.gateName = gateName;
-		this.imageIds = imageIds;
-		this.logAnalysis = logAnalysis;
-		this.metricAnalysis = metricAnalysis;
-		this.baselineStartTime = baselineStartTime;
-		this.canaryStartTime = canaryStartTime;
-		this.testRunKey = testRunKey;
-		this.baselineTestRunId = baselineTestRunId;
-		this.newTestRunId = newTestRunId;
-		this.testRunInfo = testRunInfo;
+		this.gateurl = gateurl;
+		this.lifetime = lifetime;
+		this.minicanaryresult = minicanaryresult;
+		this.canaryresultscore = canaryresultscore;
+		this.gate = gate;
+		this.imageids = imageids;
+		this.log = log;
+		this.metric = metric;
+		this.baselinestarttime = baselinestarttime;
+		this.canarystarttime = canarystarttime;
+		this.testrunkey = testrunkey;
+		this.baselinetestrunid = baselinetestrunid;
+		this.newtestrunid = newtestrunid;
+		this.testruninfo = testruninfo;
 	}
 
 
-	public String getGateUrl() {
-		return gateUrl;
+	public String getGateurl() {
+		return gateurl;
 	}
 
 
-	public void setGateUrl(String gateUrl) {
-		this.gateUrl = gateUrl;
+	public void setGateurl(String gateurl) {
+		this.gateurl = gateurl;
 	}
 
 
-	public String getLifeTimeHours() {
-		return lifeTimeHours;
+	public String getLifetime() {
+		return lifetime;
 	}
 
 
-	public void setLifeTimeHours(String lifeTimeHours) {
-		this.lifeTimeHours = lifeTimeHours;
+	public void setLifetime(String lifetime) {
+		this.lifetime = lifetime;
 	}
 
 
-	public Integer getMinimumCanaryResult() {
-		return minimumCanaryResult;
+	public Integer getMinicanaryresult() {
+		return minicanaryresult;
 	}
 
 
-	public void setMinimumCanaryResult(Integer minimumCanaryResult) {
-		this.minimumCanaryResult = minimumCanaryResult;
+	public void setMinicanaryresult(Integer minicanaryresult) {
+		this.minicanaryresult = minicanaryresult;
 	}
 
 
-	public Integer getCanaryResultScore() {
-		return canaryResultScore;
+	public Integer getCanaryresultscore() {
+		return canaryresultscore;
 	}
 
 
-	public void setCanaryResultScore(Integer canaryResultScore) {
-		this.canaryResultScore = canaryResultScore;
+	public void setCanaryresultscore(Integer canaryresultscore) {
+		this.canaryresultscore = canaryresultscore;
 	}
 
 
-	public String getGateName() {
-		return gateName;
+	public String getGate() {
+		return gate;
 	}
 
 
-	public void setGateName(String gateName) {
-		this.gateName = gateName;
+	public void setGate(String gate) {
+		this.gate = gate;
 	}
 
 
-	public String getImageIds() {
-		return imageIds;
+	public String getImageids() {
+		return imageids;
 	}
 
 
-	public void setImageIds(String imageIds) {
-		this.imageIds = imageIds;
+	public void setImageids(String imageids) {
+		this.imageids = imageids;
 	}
 
 
-	public Boolean getLogAnalysis() {
-		return logAnalysis;
+	public Boolean getLog() {
+		return log;
 	}
 
 
-	public void setLogAnalysis(Boolean logAnalysis) {
-		this.logAnalysis = logAnalysis;
+	public void setLog(Boolean log) {
+		this.log = log;
 	}
 
 
-	public Boolean getMetricAnalysis() {
-		return metricAnalysis;
+	public Boolean getMetric() {
+		return metric;
 	}
 
 
-	public void setMetricAnalysis(Boolean metricAnalysis) {
-		this.metricAnalysis = metricAnalysis;
+	public void setMetric(Boolean metric) {
+		this.metric = metric;
 	}
 
 
-	public Long getBaselineStartTime() {
-		return baselineStartTime;
+	public Long getBaselinestarttime() {
+		return baselinestarttime;
 	}
 
 
-	public void setBaselineStartTime(Long baselineStartTime) {
-		this.baselineStartTime = baselineStartTime;
+	public void setBaselinestarttime(Long baselinestarttime) {
+		this.baselinestarttime = baselinestarttime;
 	}
 
 
-	public Long getCanaryStartTime() {
-		return canaryStartTime;
+	public Long getCanarystarttime() {
+		return canarystarttime;
 	}
 
 
-	public void setCanaryStartTime(Long canaryStartTime) {
-		this.canaryStartTime = canaryStartTime;
+	public void setCanarystarttime(Long canarystarttime) {
+		this.canarystarttime = canarystarttime;
 	}
 
 
-	public String getTestRunKey() {
-		return testRunKey;
+	public String getTestrunkey() {
+		return testrunkey;
 	}
 
 
-	public void setTestRunKey(String testRunKey) {
-		this.testRunKey = testRunKey;
+	public void setTestrunkey(String testrunkey) {
+		this.testrunkey = testrunkey;
 	}
 
 
-	public String getBaselineTestRunId() {
-		return baselineTestRunId;
+	public String getBaselinetestrunid() {
+		return baselinetestrunid;
 	}
 
 
-	public void setBaselineTestRunId(String baselineTestRunId) {
-		this.baselineTestRunId = baselineTestRunId;
+	public void setBaselinetestrunid(String baselinetestrunid) {
+		this.baselinetestrunid = baselinetestrunid;
 	}
 
 
-	public String getNewTestRunId() {
-		return newTestRunId;
+	public String getNewtestrunid() {
+		return newtestrunid;
 	}
 
 
-	public void setNewTestRunId(String newTestRunId) {
-		this.newTestRunId = newTestRunId;
+	public void setNewtestrunid(String newtestrunid) {
+		this.newtestrunid = newtestrunid;
 	}
 
 
-	public String getTestRunInfo() {
-		return testRunInfo;
+	public String getTestruninfo() {
+		return testruninfo;
 	}
 
 
-	public void setTestRunInfo(String testRunInfo) {
-		this.testRunInfo = testRunInfo;
+	public void setTestruninfo(String testruninfo) {
+		this.testruninfo = testruninfo;
 	}
-
-    
 }
