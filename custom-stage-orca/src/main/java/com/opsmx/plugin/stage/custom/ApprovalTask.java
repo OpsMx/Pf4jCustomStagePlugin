@@ -118,7 +118,7 @@ public class ApprovalTask implements Task {
 		outputs.put(STATUS, REJECTED);
 
 		logger.info(" Visibility approval execution started");
-		ApprovalContext context = stage.mapTo(ApprovalContext.class);
+		ApprovalContext context = stage.mapTo("/parameters", ApprovalContext.class);
 		if (context.getGateUrl() == null || context.getGateUrl().isEmpty()) {
 			logger.info("Gate Url should not be empty");
 			outputs.put(EXCEPTION, "Gate Url should not be empty");
