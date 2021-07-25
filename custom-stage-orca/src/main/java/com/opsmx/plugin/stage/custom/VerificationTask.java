@@ -81,9 +81,9 @@ public class VerificationTask implements Task {
 		outputs.put(OesConstants.OVERALL_RESULT, "Fail");
 
 		logger.info(" VerificationGateStage execute start ");
-		VerificationContext context = stage.mapTo(VerificationContext.class);
+		VerificationContext context = stage.mapTo("parameters", VerificationContext.class);
 
-		if (context.getGateUrl() == null || context.getGateUrl().isEmpty()) {
+		if (context.getGateurl() == null || context.getGateurl().isEmpty()) {
 			logger.info("Gate Url should not be empty");
 			outputs.put(RESULT, "Gate Url should not be empty");
 			return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -96,7 +96,7 @@ public class VerificationTask implements Task {
 
 		try {
 
-			HttpPost request = new HttpPost(context.getGateUrl());
+			HttpPost request = new HttpPost(context.getGateurl());
 			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context)));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
@@ -227,36 +227,36 @@ public class VerificationTask implements Task {
 		finalJson.put("isJsonResponse", true);
 
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
-		canaryConfig.put("lifetimeHours", context.getLifeTimeHours());
-		canaryConfig.set("canaryHealthCheckHandler", objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinimumCanaryResult()));
-		canaryConfig.set("canarySuccessCriteria", objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryResultScore()));
+		canaryConfig.put("lifetimeHours", context.getLifetime());
+		canaryConfig.set("canaryHealthCheckHandler", objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
+		canaryConfig.set("canarySuccessCriteria", objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryresultscore()));
 
 		ObjectNode baselinePayload = objectMapper.createObjectNode();
 		ObjectNode canaryPayload = objectMapper.createObjectNode();
-		if (context.getLogAnalysis().equals(Boolean.TRUE)) {
+		if (context.getLog().equals(Boolean.TRUE)) {
 			baselinePayload.set(LOG, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGate())));
 			canaryPayload.set(LOG, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGate())));
 		}
 
-		if (context.getMetricAnalysis().equals(Boolean.TRUE)) {
+		if (context.getMetric().equals(Boolean.TRUE)) {
 			baselinePayload.set(METRIC, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGate())));
 			canaryPayload.set(METRIC, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())));
+							.put(SERVICE_GATE, context.getGate())));
 		}
 
 		ObjectNode triggerPayload = objectMapper.createObjectNode();
@@ -265,8 +265,8 @@ public class VerificationTask implements Task {
 
 		ArrayNode payloadTriggerNode = objectMapper.createArrayNode();
 		payloadTriggerNode.add(triggerPayload);
-		triggerPayload.put("baselineStartTimeMs", context.getBaselineStartTime());
-		triggerPayload.put("canaryStartTimeMs", context.getCanaryStartTime());
+		triggerPayload.put("baselineStartTimeMs", context.getBaselinestarttime());
+		triggerPayload.put("canaryStartTimeMs", context.getCanarystarttime());
 
 		finalJson.set(CANARY_CONFIG, canaryConfig);
 		finalJson.set("canaryDeployments", payloadTriggerNode);

@@ -10,6 +10,7 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @Component
+@StageDefinitionBuilder.Aliases("preconfiguredJob")
 public class VerificationStage implements StageDefinitionBuilder {
 
 	@Override
