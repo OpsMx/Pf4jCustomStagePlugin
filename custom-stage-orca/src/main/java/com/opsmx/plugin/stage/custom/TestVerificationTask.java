@@ -87,7 +87,7 @@ public class TestVerificationTask implements Task {
 		outputs.put(OesConstants.OVERALL_RESULT, "Fail");
 
 		logger.info(" TestVerificationStage execute start ");
-		TestVerificationContext context = stage.mapTo(TestVerificationContext.class);
+		TestVerificationContext context = stage.mapTo("/parameters", TestVerificationContext.class);
 
 		logger.info("Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
