@@ -63,7 +63,7 @@ public class PolicyTask implements Task {
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
 		logger.info("Policy gate execution start ");
-		PolicyContext context = stage.mapTo(PolicyContext.class);
+		PolicyContext context = stage.mapTo("/parameters", PolicyContext.class);
 
 
 		try {  
