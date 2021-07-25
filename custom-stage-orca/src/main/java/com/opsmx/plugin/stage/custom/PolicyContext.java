@@ -2,57 +2,57 @@ package com.opsmx.plugin.stage.custom;
 
 public class PolicyContext {
 	
-	private String policyProxy;
+	private String policyurl;
     
-    private String policyPath;
+    private String policypath;
     
-    private String gateName;
+    private String gate;
     
-    private String imageIDs;
+    private String imageids;
 
     private String payload;
 
     public PolicyContext(){}
-	
-	public PolicyContext(String policyProxy, String policyPath, String gateName, String imageIDs, String payload) {
+
+	public PolicyContext(String policyurl, String policypath, String gate, String imageids, String payload) {
 		super();
-		this.policyProxy = policyProxy;
-		this.policyPath = policyPath;
-		this.gateName = gateName;
-		this.imageIDs = imageIDs;
+		this.policyurl = policyurl;
+		this.policypath = policypath;
+		this.gate = gate;
+		this.imageids = imageids;
 		this.payload = payload;
 	}
 
-    public String getPolicyProxy() {
-		return policyProxy;
+	public String getPolicyurl() {
+		return policyurl;
 	}
 
-	public void setPolicyProxy(String policyProxy) {
-		this.policyProxy = policyProxy;
+	public void setPolicyurl(String policyurl) {
+		this.policyurl = policyurl;
 	}
 
-	public String getPolicyPath() {
-		return policyPath;
+	public String getPolicypath() {
+		return policypath;
 	}
 
-	public void setPolicyPath(String policyPath) {
-		this.policyPath = policyPath;
+	public void setPolicypath(String policypath) {
+		this.policypath = policypath;
 	}
 
-	public String getGateName() {
-		return gateName;
+	public String getGate() {
+		return gate;
 	}
 
-	public void setGateName(String gateName) {
-		this.gateName = gateName;
+	public void setGate(String gate) {
+		this.gate = gate;
 	}
 
-	public String getImageIDs() {
-		return imageIDs;
+	public String getImageids() {
+		return imageids;
 	}
 
-	public void setImageIDs(String imageIDs) {
-		this.imageIDs = imageIDs;
+	public void setImageids(String imageids) {
+		this.imageids = imageids;
 	}
 
 	public String getPayload() {

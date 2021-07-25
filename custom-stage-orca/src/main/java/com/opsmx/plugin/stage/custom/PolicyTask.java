@@ -67,7 +67,7 @@ public class PolicyTask implements Task {
 
 
 		try {  
-			if (context.getPolicyProxy() == null || context.getPolicyProxy().isEmpty()) {
+			if (context.getPolicyurl() == null || context.getPolicyurl().isEmpty()) {
 				logger.info("Policyproxy Url should not be empty");
 				outputs.put(EXCEPTION, "Policyproxy Url should not be empty");
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -76,15 +76,15 @@ public class PolicyTask implements Task {
 						.build();
 			}     
 
-			if (context.getPolicyProxy().endsWith("/")) {
-				context.setPolicyProxy(context.getPolicyProxy().replaceAll(".$", ""));
+			if (context.getPolicyurl().endsWith("/")) {
+				context.setPolicyurl(context.getPolicyurl().replaceAll(".$", ""));
 			}
 
-			if (context.getPolicyPath().startsWith("/")) {
-				context.setPolicyPath(context.getPolicyPath().substring(1));
+			if (context.getPolicypath().startsWith("/")) {
+				context.setPolicypath(context.getPolicypath().substring(1));
 			}
 
-			String url = context.getPolicyProxy().concat("/").concat(context.getPolicyPath());
+			String url = context.getPolicyurl().concat("/").concat(context.getPolicypath());
 
 			HttpPost request = new HttpPost(url);
 			request.setEntity(new StringEntity(getPayloadString(context, stage.getExecution().getApplication(), stage.getExecution().getName(),
@@ -165,12 +165,12 @@ public class PolicyTask implements Task {
 			finalJson.put(START_TIME, System.currentTimeMillis());
 			finalJson.put(APPLICATION2, application);
 			finalJson.put(NAME2, name);
-			finalJson.put("stage", context.getGateName());
+			finalJson.put("stage", context.getGate());
 			finalJson.put("executionId", executionId);
 			finalJson.set(TRIGGER, objectMapper.createObjectNode().put(USER2, user));
-			if (context.getImageIDs() != null && !context.getImageIDs().isEmpty()) {
+			if (context.getImageids() != null && !context.getImageids().isEmpty()) {
 				ArrayNode images = objectMapper.createArrayNode();
-				Arrays.asList(context.getImageIDs().split(",")).forEach(a -> {
+				Arrays.asList(context.getImageids().split(",")).forEach(a -> {
 					images.add(a.trim());
 				});
 				finalJson.set("imageIds", images);
