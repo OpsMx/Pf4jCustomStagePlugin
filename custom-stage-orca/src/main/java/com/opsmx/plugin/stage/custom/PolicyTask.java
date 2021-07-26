@@ -127,13 +127,13 @@ public class PolicyTask implements Task {
 		       
 		     if (deny == null || deny.isEmpty()) {
 		    	 outputs.put("result", registerResponse);
-		    	 TaskResult.builder(ExecutionStatus.SUCCEEDED)
+		    	return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 					.context(contextMap)
 					.outputs(outputs)
 					.build();
 		     } else {
 		    	 outputs.put("result", registerResponse);
-		    	 TaskResult.builder(ExecutionStatus.TERMINAL)
+		    	 return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
 					.build();
