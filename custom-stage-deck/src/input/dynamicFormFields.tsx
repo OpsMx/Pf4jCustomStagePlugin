@@ -9,24 +9,26 @@ import {
   Tooltip,
   useIsMountedRef,
   ValidationMessage,
+  HelpContentsRegistry,
+  HelpField,
 } from '@spinnaker/core';
 import { FieldArray, FormikProvider } from 'formik';
 
 interface IEvaluateVariablesStageFormProps extends IFormikStageConfigInjectedProps {
   chosenStage: IStageForSpelPreview;
-  headers: Array<{ name: string; label: string }>;
+  headers: [];
   blockLabel: string;
+  isMultiSupported: boolean;
+  parentIndex: number;
 }
 export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormProps) {
-  const { formik, headers, blockLabel } = props;
+  const { formik, headers, blockLabel, isMultiSupported, parentIndex } = props;
   const stage = props.formik.values;
-  // const { variables = [] } = stage;
-  // eslint-disable-next-line no-debugger
-  const variables = stage[blockLabel] ?? [];
+  const variables = stage.parameters.connectors[parentIndex].value ?? [];
   const isMountedRef = useIsMountedRef();
   const emptyValue = (() => {
     const obj: any = {};
-    headers.forEach((header) => {
+    headers.forEach((header: any) => {
       obj[header.name] = null;
     });
     return obj;
@@ -37,7 +39,10 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
       // causes this component to get mounted multiple times.  The second time it gets mounted, the initial
       // variable is already added to the array, and then gets auto-touched by SpinFormik.tsx.
       // The end effect is that the red validation warnings are shown immediately when the Evaluate Variables stage is added.
-      setTimeout(() => isMountedRef.current && formik.setFieldValue(blockLabel, [emptyValue]), 100);
+      setTimeout(
+        () => isMountedRef.current && formik.setFieldValue(`parameters.connectors[${parentIndex}].value`, [emptyValue]),
+        100,
+      );
     }
   }, [variables]);
   const FieldLayoutComponent = React.useContext(LayoutContext);
@@ -47,15 +52,20 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
       <table>
         <thead>
           <tr>
-            {headers.map((header) => (
-              <th key={header.name}>{header.label}</th>
-            ))}
+            {headers.map((header: any) => {
+              HelpContentsRegistry.register('approval' + blockLabel + header.name, header.helpText);
+              return (
+                <th key={header.name}>
+                  {header.label} <HelpField id={'approval' + blockLabel + header.name} />
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <FormikProvider value={formik}>
           <FieldArray
             key={deleteCount}
-            name={blockLabel}
+            name={`parameters.connectors[${parentIndex}].value`}
             render={(arrayHelpers) => (
               <>
                 <FieldLayoutComponent input={null} validation={{ hidden: true } as any} />
@@ -66,37 +76,41 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
                   };
                   return (
                     <tr key={`${deleteCount}-${index}`}>
-                      {headers.map((header) => (
+                      {headers.map((header: any) => (
                         <td key={`${header.name}-td`}>
                           <FormikFormField
-                            name={`${blockLabel}[${index}][${header.name}]`}
+                            name={`parameters.connectors[${parentIndex}].value[${index}][${header.name}]`}
                             required={true}
                             input={(inputProps) => <TextInput {...inputProps} placeholder={` Enter ${header.label}`} />}
                             layout={VariableNameFormLayout}
                           />
                         </td>
                       ))}
-                      <td className="deleteBtn">
-                        <Tooltip value="Remove row">
-                          <button className="btn btn-sm btn-default" onClick={onDeleteClicked}>
-                            <span className="glyphicon glyphicon-trash" />
-                          </button>
-                        </Tooltip>
-                      </td>
+                      {isMultiSupported === true ? (
+                        <td className="deleteBtn">
+                          <Tooltip value="Remove row">
+                            <button className="btn btn-sm btn-default" onClick={onDeleteClicked}>
+                              <span className="glyphicon glyphicon-trash" />
+                            </button>
+                          </Tooltip>
+                        </td>
+                      ) : null}
                     </tr>
                   );
                 })}
                 <tr>
-                  <td colSpan={headers.length + 1}>
-                    <button
-                      type="button"
-                      className="btn btn-block btn-sm add-new"
-                      onClick={arrayHelpers.handlePush(emptyValue)}
-                    >
-                      <span className="glyphicon glyphicon-plus-sign" />
-                      Add {blockLabel}
-                    </button>
-                  </td>
+                  {isMultiSupported ? (
+                    <td colSpan={headers.length + 1}>
+                      <button
+                        type="button"
+                        className="btn btn-block btn-sm add-new"
+                        onClick={arrayHelpers.handlePush(emptyValue)}
+                      >
+                        <span className="glyphicon glyphicon-plus-sign" />
+                        Add {blockLabel}
+                      </button>
+                    </td>
+                  ) : null}
                 </tr>
               </>
             )}

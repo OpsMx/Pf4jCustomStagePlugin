@@ -13,10 +13,10 @@ import { VisibilityApprovalConfig, validate } from './VisibilityApprovalConfig';
   - component -> The rendered React component
   - validateFn -> A validation function for the stage config form.
  */
-export const visibilityApproval: IStageTypeConfig = {
-  key: 'visibilityApproval',
-  label: `VisibilityApproval`,
-  description: 'Stage for Visibility Approval',
+export const approval: IStageTypeConfig = {
+  key: 'approval',
+  label: `Approval`,
+  description: 'Stage for Approval',
   component: VisibilityApprovalConfig, // stage config
   executionDetailsSections: [VisibilityApprovalExecutionDetails, ExecutionDetailsTasks],
   validateFn: validate,

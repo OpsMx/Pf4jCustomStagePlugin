@@ -70,20 +70,12 @@
 }
 
 .VisibilityApprovalConfig {
-  .leftGrid {
-    width: 10%;
-  }
-  .mainForm {
-    width: 60%;
-    .gridHalfSpan {
-      max-width: 395px;
-    }
-  }
   .dynamicFieldSection {
     padding: 10px;
     border: 1px solid #eeeeee;
     border-radius: 3px;
     background-color: #f8f8f86b;
+    width: 100%;
     th {
       padding-left: 5px;
     }
@@ -92,6 +84,19 @@
     }
     .deleteBtn {
       text-align: center;
+    }
+  }
+
+  .mainform {
+    width: 75%;
+  }
+
+  .fullWidthField {
+    width: 100%;
+  }
+  .fullWidthContainer {
+    .sp-formItem {
+      max-width: 1200px !important;
     }
   }
 }

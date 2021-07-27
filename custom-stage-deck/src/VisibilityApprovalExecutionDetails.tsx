@@ -85,5 +85,5 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
 // pipeline stage execution view. Camel case will be mapped
 // to space-delimited text: randomWait -> Random Wait.
 export namespace VisibilityApprovalExecutionDetails {
-  export const title = 'visibilityApproval';
+  export const title = 'Approval';
 }
