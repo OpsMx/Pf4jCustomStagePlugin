@@ -5,7 +5,7 @@ import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VisibilityApprovalPlugin extends Plugin {
+public class ApprovalPlugin extends Plugin {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -16,7 +16,7 @@ public class VisibilityApprovalPlugin extends Plugin {
      *
      * @param wrapper
      */
-    public VisibilityApprovalPlugin(PluginWrapper wrapper) {
+    public ApprovalPlugin(PluginWrapper wrapper) {
         super(wrapper);
     }
 
