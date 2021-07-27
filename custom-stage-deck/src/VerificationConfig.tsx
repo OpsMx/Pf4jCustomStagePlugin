@@ -149,48 +149,48 @@ export function validate(stageConfig: IStage) {
   const validator = new FormValidator(stageConfig);
 
   validator
-    .field('gateUrl')
+    .field('parameters.gateurl')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('lifeTimeHours')
+    .field('parameters.lifetime')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('minimumCanaryResult')
+    .field('parameters.minicanaryresult')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('canaryResultScore')
+    .field('parameters.canaryresultscore')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('logAnalysis')
+    .field('parameters.log')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('metricAnalysis')
+    .field('parameters.metric')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('gateName')
+    .field('parameters.gate')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
   validator
-    .field('imageIds')
+    .field('parameters.imageids')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
 
-  validator.field('baselineStartTime').required();
+  validator.field('parameters.baselinestarttime').required();
 
-  validator.field('canaryStartTime').required();
+  validator.field('parameters.canarystarttime').required();
 
   return validator.validateForm();
 }
