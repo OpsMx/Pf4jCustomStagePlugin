@@ -53,7 +53,7 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
         return (
           <div className="grid-span-2">
             <FormikFormField
-              name={`parameters.connectors[${index}].value[0].${dynamicField.supportedParams[0].name}`}
+              name={`parameters.connectors[${index}].values[0].${dynamicField.supportedParams[0].name}`}
               label={dynamicField.supportedParams[0].label}
               help={<HelpField id={'approval' + dynamicField.connectorType + dynamicField.supportedParams[0].name} />}
               input={(props) => <TextInput {...props} />}
@@ -115,20 +115,12 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
               input={(props) => <TextInput className="fullWidthField" {...props} />}
             />
           </div>
-          <div className="grid-span-2">
+          <div className="grid-span-4 fullWidthContainer">
             <FormikFormField
-              name="parameters.gate"
-              label="Gate Name"
-              help={<HelpField id="opsmx.approval.gateName" />}
-              input={(props) => <TextInput {...props} />}
-            />
-          </div>
-          <div className="grid-span-2">
-            <FormikFormField
-              name="parameters.imageids"
+              name="parameters.imageIds"
               label="Image Ids"
               help={<HelpField id="opsmx.approval.imageIds" />}
-              input={(props) => <TextInput {...props} />}
+              input={(props) => <TextInput className="fullWidthField" {...props} />}
             />
           </div>
           <HorizontalRule />
@@ -152,7 +144,7 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
         render={(props: IFormikStageConfigInjectedProps) => (
           <div className="flex">
             <div className="grid leftGrid"></div>
-            <div className="grid grid-4 form mainForm">{renderComponent({ ...props })}</div>
+            <div className="grid grid-4 mainForm">{renderComponent({ ...props })}</div>
             <div className="opsmxLogo">
               <img
                 src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
@@ -173,13 +165,13 @@ export function validate(stageConfig: IStage) {
     .field('parameters.gateUrl')
     .required()
     .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
-  validator
-    .field('parameters.gate')
-    .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
-  validator
-    .field('parameters.imageids')
-    .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+  // validator
+  //   .field('parameters.gate')
+  //   .required()
+  //   .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+  // validator
+  //   .field('parameters.imageids')
+  //   .required()
+  //   .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
   return validator.validateForm();
 }
