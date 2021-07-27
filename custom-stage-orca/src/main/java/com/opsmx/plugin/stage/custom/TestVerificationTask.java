@@ -66,8 +66,6 @@ public class TestVerificationTask implements Task {
 
 	private static final String EXCEPTION = "exception";
 
-	private static final String COMPLETED = "COMPLETED";
-
 	private static final String RUNNING = "RUNNING";
 
 	private static final String COMMENT = "comment";
@@ -87,13 +85,13 @@ public class TestVerificationTask implements Task {
 		outputs.put(OesConstants.OVERALL_RESULT, "Fail");
 
 		logger.info(" TestVerificationStage execute start ");
-		TestVerificationContext context = stage.mapTo(TestVerificationContext.class);
+		TestVerificationContext context = stage.mapTo("/parameters", TestVerificationContext.class);
 
 		logger.info("Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
 		try {
 			
-			if (context.getGateUrl() == null || context.getGateUrl().isEmpty()) {
+			if (context.getGate() == null || context.getGate().isEmpty()) {
 				logger.info("Gate Url should not be empty");
 				outputs.put(EXCEPTION, "Gate Url should not be empty");
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -102,7 +100,7 @@ public class TestVerificationTask implements Task {
 						.build();
 			}
 
-			HttpPost request = new HttpPost(context.getGateUrl());
+			HttpPost request = new HttpPost(context.getGate());
 			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getAuthentication().getUser())));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
@@ -232,9 +230,9 @@ public class TestVerificationTask implements Task {
 		finalJson.put("isJsonResponse", true);
 
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
-		canaryConfig.put(LIFETIME_HOURS, context.getLifeTimeHours());
-		canaryConfig.set(CANARY_HEALTH_CHECK_HANDLER, objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinimumCanaryResult()));
-		canaryConfig.set(CANARY_SUCCESS_CRITERIA, objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryResultScore()));
+		canaryConfig.put(LIFETIME_HOURS, context.getLifetime());
+		canaryConfig.set(CANARY_HEALTH_CHECK_HANDLER, objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
+		canaryConfig.set(CANARY_SUCCESS_CRITERIA, objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryresultscore()));
 		canaryConfig.put("combinedCanaryResultStrategy", "AGGREGATE");
 		canaryConfig.put("name", user);
 		canaryConfig.set("canaryAnalysisConfig", objectMapper.createObjectNode()
@@ -243,34 +241,34 @@ public class TestVerificationTask implements Task {
 
 		ObjectNode baselinePayload = objectMapper.createObjectNode();
 		ObjectNode canaryPayload = objectMapper.createObjectNode();
-		if (context.getLogAnalysis().equals(Boolean.TRUE)) {
+		if (context.getLog().equals(Boolean.TRUE)) {
 			baselinePayload.set(LOG, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())
-							.put(context.getTestRunKey(), context.getBaselineTestRunId())));
+							.put(SERVICE_GATE, context.getGate())
+							.put(context.getTestrunkey(), context.getBaselinetestrunid())));
 			canaryPayload.set(LOG, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())
-							.put(context.getTestRunKey(), context.getNewTestRunId())));
+							.put(SERVICE_GATE, context.getGate())
+							.put(context.getTestrunkey(), context.getNewtestrunid())));
 		}
 
-		if (context.getMetricAnalysis().equals(Boolean.TRUE)) {
+		if (context.getMetric().equals(Boolean.TRUE)) {
 			baselinePayload.set(METRIC, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())
-							.put(context.getTestRunKey(), context.getNewTestRunId())));
+							.put(SERVICE_GATE, context.getGate())
+							.put(context.getTestrunkey(), context.getBaselinetestrunid())));
 			canaryPayload.set(METRIC, 
 					objectMapper.createObjectNode().set(pipelineName, 
 							objectMapper.createObjectNode()
 							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGateName())
-							.put(context.getTestRunKey(), context.getNewTestRunId())));
+							.put(SERVICE_GATE, context.getGate())
+							.put(context.getTestrunkey(), context.getNewtestrunid())));
 		}
 
 		ObjectNode triggerPayload = objectMapper.createObjectNode();
@@ -278,9 +276,9 @@ public class TestVerificationTask implements Task {
 		triggerPayload.set("canary", canaryPayload);
 
 		ArrayNode payloadTriggerNode = objectMapper.createArrayNode();
-		triggerPayload.put("baselineStartTimeMs", context.getBaselineStartTime());
-		triggerPayload.put("canaryStartTimeMs", context.getCanaryStartTime());
-		triggerPayload.put("runInfo", context.getTestRunInfo());
+		triggerPayload.put("baselineStartTimeMs", context.getBaselinestarttime());
+		triggerPayload.put("canaryStartTimeMs", context.getCanarystarttime());
+		triggerPayload.put("runInfo", context.getTestruninfo());
 		payloadTriggerNode.add(triggerPayload);
 
 		finalJson.set(CANARY_CONFIG, canaryConfig);
