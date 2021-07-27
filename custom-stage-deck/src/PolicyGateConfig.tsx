@@ -79,7 +79,7 @@ export function PolicyGateConfig(props: IStageConfigProps) {
               <div className="grid-span-2">
                 <FormikFormField
                   name="parameters.imageids"
-                  label="image IDs"
+                  label="Image IDs"
                   help={<HelpField id="opsmx.policy.imageIds" />}
                   input={(props) => <TextInput {...props} />}
                 />
@@ -102,9 +102,25 @@ export function validate(stageConfig: IStage) {
   const validator = new FormValidator(stageConfig);
 
   validator
-    .field('maxWaitTime')
+    .field('parameters.policyurl')
     .required()
-    .withValidators((value, label) => (value < 0 ? `${label} must be non-negative` : undefined));
+    .withValidators((value, label) => (value = '' ? `Policy Proxy is required` : undefined));
+  validator
+    .field('parameters.policypath')
+    .required()
+    .withValidators((value, label) => (value = '' ? `Policy Path is required` : undefined));
+  validator
+    .field('parameters.gate')
+    .required()
+    .withValidators((value, label) => (value = '' ? `Gate Name is required` : undefined));
+  validator
+    .field('parameters.imageids')
+    .required()
+    .withValidators((value, label) => (value = '' ? `Image IDs is required` : undefined));
+  validator
+    .field('parameters.payload')
+    .required()
+    .withValidators((value, label) => (value = '' ? `Payload is required` : undefined));
 
   return validator.validateForm();
 }
