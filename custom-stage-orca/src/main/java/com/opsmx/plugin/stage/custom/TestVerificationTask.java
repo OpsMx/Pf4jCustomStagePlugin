@@ -99,6 +99,8 @@ public class TestVerificationTask implements Task {
 						.outputs(outputs)
 						.build();
 			}
+			
+			logger.info("Trigger URL : {}", context.getGateurl());
 
 			HttpPost request = new HttpPost(context.getGateurl());
 			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getAuthentication().getUser())));
