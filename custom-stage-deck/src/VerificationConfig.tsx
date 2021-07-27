@@ -76,7 +76,7 @@ export function VerificationConfig(props: IStageConfigProps) {
               <div>
                 <FormikFormField
                   name="parameters.canaryresultscore"
-                  label="canary Result Score"
+                  label="Canary Result Score"
                   help={<HelpField id="opsmx.verification.canaryResultScore" />}
                   input={(props) => <TextInput {...props} />}
                 />
@@ -151,42 +151,42 @@ export function validate(stageConfig: IStage) {
   validator
     .field('parameters.gateurl')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Gate Url is required` : undefined));
 
   validator
     .field('parameters.lifetime')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `LifeTimeHours is required` : undefined));
 
   validator
     .field('parameters.minicanaryresult')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Minimum Canary Result is required` : undefined));
 
   validator
     .field('parameters.canaryresultscore')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Canary Result Score is required` : undefined));
 
   validator
     .field('parameters.log')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Log Analysis is required` : undefined));
 
   validator
     .field('parameters.metric')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Metric Analysis is required` : undefined));
 
   validator
     .field('parameters.gate')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Gate Name is required` : undefined));
 
   validator
     .field('parameters.imageids')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Image Ids is required` : undefined));
 
   validator.field('parameters.baselinestarttime').required();
 
