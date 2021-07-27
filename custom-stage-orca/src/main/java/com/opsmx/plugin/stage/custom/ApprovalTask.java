@@ -34,6 +34,8 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class ApprovalTask implements Task {
 
+	private static final String CONNECTORS = "connectors";
+
 	private static final String GATE_URL = "gateUrl";
 
 	private static final String VALUES = "values";
@@ -158,8 +160,8 @@ public class ApprovalTask implements Task {
 			logger.info("visibility approval trigger response : {}", registerResponse);
 
 			if (response.getStatusLine().getStatusCode() != 202) {
-				logger.info("Failed to trigger approval request with Status code : {}", response.getStatusLine().getStatusCode());
-				outputs.put(EXCEPTION, String.format("Failed to trigger approval request with Status code : %s", response.getStatusLine().getStatusCode()));
+				logger.info("Failed to trigger approval request with Status code : {}, Response : {}", response.getStatusLine().getStatusCode(), registerResponse);
+				outputs.put(EXCEPTION, String.format("Failed to trigger approval request with Status code : %s and Response : %s", response.getStatusLine().getStatusCode(), registerResponse));
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
@@ -242,7 +244,7 @@ public class ApprovalTask implements Task {
 		}
 		
 		finalJson.set("imageIds", imageIdsNode);
-		String connectorJson = objectMapper.writeValueAsString(parameterContext.get("connectors"));
+		String connectorJson = objectMapper.writeValueAsString(parameterContext.get(CONNECTORS));
 		ArrayNode connectorNode = (ArrayNode) objectMapper.readTree(connectorJson);
 		ArrayNode toolConnectorPayloads = objectMapper.createArrayNode();
 		connectorNode.forEach(connector -> {
@@ -250,6 +252,7 @@ public class ApprovalTask implements Task {
 		});
 		
 		finalJson.set(TOOL_CONNECTOR_PARAMETERS, toolConnectorPayloads);
+		finalJson.set("customConnectorData", objectMapper.createArrayNode());
 		logger.info("Payload string to trigger approval : {}", finalJson.toString());
 
 		return finalJson.toString();
