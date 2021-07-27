@@ -91,7 +91,7 @@ public class TestVerificationTask implements Task {
 
 		try {
 			
-			if (context.getGate() == null || context.getGate().isEmpty()) {
+			if (context.getGateurl() == null || context.getGateurl().isEmpty()) {
 				logger.info("Gate Url should not be empty");
 				outputs.put(EXCEPTION, "Gate Url should not be empty");
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -100,7 +100,7 @@ public class TestVerificationTask implements Task {
 						.build();
 			}
 
-			HttpPost request = new HttpPost(context.getGate());
+			HttpPost request = new HttpPost(context.getGateurl());
 			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getAuthentication().getUser())));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
