@@ -20,14 +20,6 @@ import {
 import './TestVerification.less';
 import { DateTimePicker } from './input/DateTimePickerInput';
 
-/*
-  IStageConfigProps defines properties passed to all Spinnaker Stages.
-  See IStageConfigProps.ts (https://github.com/spinnaker/deck/blob/master/app/scripts/modules/core/src/pipeline/config/stages/common/IStageConfigProps.ts) for a complete list of properties.
-  Pass a JSON object to the `updateStageField` method to add the `maxWaitTime` to the Stage.
-
-  This method returns JSX (https://reactjs.org/docs/introducing-jsx.html) that gets displayed in the Spinnaker UI.
- */
-
 const HorizontalRule = () => (
   <div className="grid-span-4">
     <hr />
@@ -76,7 +68,7 @@ export function TestVerificationConfig(props: IStageConfigProps) {
               <div>
                 <FormikFormField
                   name="parameters.canaryresultscore"
-                  label="canary Result Score"
+                  label="Canary Result Score"
                   help={<HelpField id="opsmx.testVerification.canaryResultScore" />}
                   input={(props) => <TextInput {...props} />}
                 />
@@ -184,48 +176,48 @@ export function validate(stageConfig: IStage) {
   const validator = new FormValidator(stageConfig);
 
   validator
-    .field('gateUrl')
+    .field('parameters.gateurl')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Gate Url is required` : undefined));
 
   validator
-    .field('lifeTimeHours')
+    .field('parameters.lifetime')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `LifeTimeHours is required` : undefined));
 
   validator
-    .field('minimumCanaryResult')
+    .field('parameters.minicanaryresult')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Minimum Canary Result is required` : undefined));
 
   validator
-    .field('canaryResultScore')
+    .field('parameters.canaryresultscore')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Canary Result Score is required` : undefined));
 
   validator
-    .field('logAnalysis')
+    .field('parameters.log')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Log Analysis is required` : undefined));
 
   validator
-    .field('metricAnalysis')
+    .field('parameters.metric')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Metric Analysis is required` : undefined));
 
   validator
-    .field('gateName')
+    .field('parameters.gate')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Gate Name is required` : undefined));
 
   validator
-    .field('imageIds')
+    .field('parameters.imageids')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Image Ids is required` : undefined));
 
-  validator.field('baselineStartTime').required();
+  validator.field('parameters.baselinestarttime').required();
 
-  validator.field('canaryStartTime').required();
+  validator.field('parameters.canarystarttime').required();
 
   return validator.validateForm();
 }
