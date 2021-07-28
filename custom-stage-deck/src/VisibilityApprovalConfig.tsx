@@ -164,7 +164,7 @@ export function validate(stageConfig: IStage) {
   validator
     .field('parameters.gateUrl')
     .required()
-    .withValidators((value, label) => (value = '' ? `${label} is required` : undefined));
+    .withValidators((value, label) => (value = '' ? `Gate Url is required` : undefined));
   // validator
   //   .field('parameters.gate')
   //   .required()
