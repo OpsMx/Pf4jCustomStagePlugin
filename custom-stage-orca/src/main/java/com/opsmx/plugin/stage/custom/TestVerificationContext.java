@@ -9,7 +9,6 @@ public class TestVerificationContext {
     private String gate;
     private String imageids;
     private Boolean log;
-    private Boolean metric = Boolean.FALSE;
     private Long baselinestarttime;
     private Long canarystarttime;
     private String testrunkey;
@@ -22,7 +21,7 @@ public class TestVerificationContext {
 
 
 	public TestVerificationContext(String gateurl, String lifetime, Integer minicanaryresult, Integer canaryresultscore,
-			String gate, String imageids, Boolean log, Boolean metric, Long baselinestarttime, Long canarystarttime,
+			String gate, String imageids, Boolean log, Long baselinestarttime, Long canarystarttime,
 			String testrunkey, String baselinetestrunid, String newtestrunid, String testruninfo) {
 		super();
 		this.gateurl = gateurl;
@@ -32,7 +31,6 @@ public class TestVerificationContext {
 		this.gate = gate;
 		this.imageids = imageids;
 		this.log = log;
-		this.metric = metric;
 		this.baselinestarttime = baselinestarttime;
 		this.canarystarttime = canarystarttime;
 		this.testrunkey = testrunkey;
@@ -109,16 +107,6 @@ public class TestVerificationContext {
 
 	public void setLog(Boolean log) {
 		this.log = log;
-	}
-
-
-	public Boolean getMetric() {
-		return metric;
-	}
-
-
-	public void setMetric(Boolean metric) {
-		this.metric = metric;
 	}
 
 

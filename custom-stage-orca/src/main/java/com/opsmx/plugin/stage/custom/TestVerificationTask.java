@@ -44,8 +44,6 @@ public class TestVerificationTask implements Task {
 
 	private static final String LIFETIME_HOURS = "lifetimeHours";
 
-	private static final String METRIC = "metric";
-
 	private static final String LOG = "log";
 
 	private static final String SERVICE_GATE = "serviceGate";
@@ -90,7 +88,7 @@ public class TestVerificationTask implements Task {
 		logger.info("Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 
 		try {
-			
+
 			if (context.getGateurl() == null || context.getGateurl().isEmpty()) {
 				logger.info("Gate Url should not be empty");
 				outputs.put(EXCEPTION, "Gate Url should not be empty");
@@ -99,7 +97,7 @@ public class TestVerificationTask implements Task {
 						.outputs(outputs)
 						.build();
 			}
-			
+
 			logger.info("Trigger URL : {}", context.getGateurl());
 
 			HttpPost request = new HttpPost(context.getGateurl());
@@ -117,7 +115,7 @@ public class TestVerificationTask implements Task {
 			}
 
 			logger.info("Testverification trigger response : {}, User : {}", registerResponse, stage.getExecution().getAuthentication().getUser());
-			
+
 			if (response.getStatusLine().getStatusCode() != 202) {
 				outputs.put(EXCEPTION, registerResponse);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
@@ -172,9 +170,9 @@ public class TestVerificationTask implements Task {
 					if (analysisStatus.equalsIgnoreCase(RUNNING)) {
 						continue;
 					} 
-					
+
 					String canaryUiUrl = readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText();
-					
+
 					if (analysisStatus.equalsIgnoreCase(CANCELLED)) {
 						outputs.put(OesConstants.OVERALL_RESULT, CANCELLED);
 						outputs.put(OesConstants.CANARY_REPORTURL, canaryUiUrl);
@@ -184,8 +182,8 @@ public class TestVerificationTask implements Task {
 								.outputs(outputs)
 								.build();
 					}
-					
-					
+
+
 					Float overAllScore = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_SCORE).floatValue();
 					Float minimumScore = readValue.get(CANARY_CONFIG).get(MINIMUM_CANARY_RESULT_SCORE).floatValue();
 					Float maximumScore = readValue.get(CANARY_CONFIG).get(MAXIMUM_CANARY_RESULT_SCORE).floatValue(); 
@@ -194,7 +192,7 @@ public class TestVerificationTask implements Task {
 					outputs.put(OesConstants.OVERALL_RESULT, result);
 					outputs.put(OesConstants.CANARY_REPORTURL, canaryUiUrl);
 					outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
-					
+
 
 					if (result.equalsIgnoreCase(FAIL)) {
 						outputs.put(COMMENT, "Analysis score is below the minimum canary score");
@@ -243,35 +241,18 @@ public class TestVerificationTask implements Task {
 
 		ObjectNode baselinePayload = objectMapper.createObjectNode();
 		ObjectNode canaryPayload = objectMapper.createObjectNode();
-		if (context.getLog().equals(Boolean.TRUE)) {
-			baselinePayload.set(LOG, 
-					objectMapper.createObjectNode().set(pipelineName, 
-							objectMapper.createObjectNode()
-							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGate())
-							.put(context.getTestrunkey(), context.getBaselinetestrunid())));
-			canaryPayload.set(LOG, 
-					objectMapper.createObjectNode().set(pipelineName, 
-							objectMapper.createObjectNode()
-							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGate())
-							.put(context.getTestrunkey(), context.getNewtestrunid())));
-		}
-
-		if (context.getMetric().equals(Boolean.TRUE)) {
-			baselinePayload.set(METRIC, 
-					objectMapper.createObjectNode().set(pipelineName, 
-							objectMapper.createObjectNode()
-							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGate())
-							.put(context.getTestrunkey(), context.getBaselinetestrunid())));
-			canaryPayload.set(METRIC, 
-					objectMapper.createObjectNode().set(pipelineName, 
-							objectMapper.createObjectNode()
-							.put(PIPELINE_NAME, pipelineName)
-							.put(SERVICE_GATE, context.getGate())
-							.put(context.getTestrunkey(), context.getNewtestrunid())));
-		}
+		baselinePayload.set(LOG, 
+				objectMapper.createObjectNode().set(pipelineName, 
+						objectMapper.createObjectNode()
+						.put(PIPELINE_NAME, pipelineName)
+						.put(SERVICE_GATE, context.getGate())
+						.put(context.getTestrunkey(), context.getBaselinetestrunid())));
+		canaryPayload.set(LOG, 
+				objectMapper.createObjectNode().set(pipelineName, 
+						objectMapper.createObjectNode()
+						.put(PIPELINE_NAME, pipelineName)
+						.put(SERVICE_GATE, context.getGate())
+						.put(context.getTestrunkey(), context.getNewtestrunid())));
 
 		ObjectNode triggerPayload = objectMapper.createObjectNode();
 		triggerPayload.set("baseline", baselinePayload);
