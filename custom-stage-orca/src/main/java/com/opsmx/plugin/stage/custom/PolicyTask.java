@@ -88,7 +88,7 @@ public class PolicyTask implements Task {
 
 			HttpPost request = new HttpPost(url);
 			request.setEntity(new StringEntity(getPayloadString(context, stage.getExecution().getApplication(), stage.getExecution().getName(),
-					stage.getExecution().getId(), stage.getExecution().getAuthentication().getUser(), "")));
+					stage.getExecution().getId(), stage.getExecution().getAuthentication().getUser(), context.getPayload())));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
@@ -141,10 +141,11 @@ public class PolicyTask implements Task {
 			
 
 		} catch (Exception e) {
-			logger.error("Error occured while getting policy result ", e);
+			logger.error("Error occured", e);
 			outputs.put(EXCEPTION, e.getMessage());
 		}
 
+		
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
 				.context(contextMap)
 				.outputs(outputs)
@@ -154,7 +155,7 @@ public class PolicyTask implements Task {
 
 	private String getPayloadString(PolicyContext context, String application, String name, String executionId, String user, String payload) throws JsonMappingException, JsonProcessingException {
 		ObjectNode finalJson = objectMapper.createObjectNode();
-		if (payload != null && ! payload.isEmpty()) {
+		if (payload != null && ! payload.trim().isEmpty()) {
 			finalJson = (ObjectNode) objectMapper.readTree(payload);
 			finalJson.put(START_TIME, System.currentTimeMillis());
 			finalJson.put(APPLICATION2, application);
