@@ -17,10 +17,6 @@ export const initialize = () => {
   HelpContentsRegistry.register('opsmx.testVerification.minimumCanaryResult', 'Please enter the Minimum Canary Result');
   HelpContentsRegistry.register('opsmx.testVerification.canaryResultScore', 'Please enter the Canry Result Score');
   HelpContentsRegistry.register('opsmx.testVerification.logAnalysis', 'Please Enable Log Analysis with true / false');
-  HelpContentsRegistry.register(
-    'opsmx.testVerification.metricAnalysis',
-    'Please Enable Metric Analysis with true / false',
-  );
   HelpContentsRegistry.register('opsmx.testVerification.baselineStartTime', 'Please select Baseline Start Time');
   HelpContentsRegistry.register('opsmx.testVerification.canaryStartTime', 'Please select Canry Start Time');
   HelpContentsRegistry.register('opsmx.testVerification.testRunKey', 'Please enter the Test Run Key');

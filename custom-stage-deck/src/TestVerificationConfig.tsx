@@ -57,37 +57,31 @@ export function TestVerificationConfig(props: IStageConfigProps) {
                 />
               </div>
               <HorizontalRule />
-              <div>
-                <FormikFormField
-                  name="parameters.minicanaryresult"
-                  label="Minimum Canary Result"
-                  help={<HelpField id="opsmx.testVerification.minimumCanaryResult" />}
-                  input={(props) => <TextInput {...props} />}
-                />
-              </div>
-              <div>
-                <FormikFormField
-                  name="parameters.canaryresultscore"
-                  label="Canary Result Score"
-                  help={<HelpField id="opsmx.testVerification.canaryResultScore" />}
-                  input={(props) => <TextInput {...props} />}
-                />
-              </div>
-              <div style={{ paddingLeft: '4em' }}>
-                <FormikFormField
-                  name="parameters.log"
-                  label="Log Analysis"
-                  help={<HelpField id="opsmx.testVerification.logAnalysis" />}
-                  input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
-                />
-              </div>
-              <div style={{ paddingLeft: '2em' }}>
-                <FormikFormField
-                  name="parameters.metric"
-                  label="Metric Analysis"
-                  help={<HelpField id="opsmx.testVerification.metricAnalysis" />}
-                  input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
-                />
+              <div className="grid grid-span-4">
+                <div className="testCol1">
+                  <FormikFormField
+                    name="parameters.minicanaryresult"
+                    label="Minimum Canary Result"
+                    help={<HelpField id="opsmx.testVerification.minimumCanaryResult" />}
+                    input={(props) => <TextInput {...props} />}
+                  />
+                </div>
+                <div className="testCol2">
+                  <FormikFormField
+                    name="parameters.canaryresultscore"
+                    label="Canary Result Score"
+                    help={<HelpField id="opsmx.testVerification.canaryResultScore" />}
+                    input={(props) => <TextInput {...props} />}
+                  />
+                </div>
+                <div className="testCol3" style={{ paddingLeft: '6em' }}>
+                  <FormikFormField
+                    name="parameters.log"
+                    label="Log Analysis"
+                    help={<HelpField id="opsmx.testVerification.logAnalysis" />}
+                    input={(props) => <RadioButtonInput {...props} inline={true} options={ANALYSIS_TYPE_OPTIONS} />}
+                  />
+                </div>
               </div>
               <HorizontalRule />
               <div className="grid-span-2">
@@ -199,11 +193,6 @@ export function validate(stageConfig: IStage) {
     .field('parameters.log')
     .required()
     .withValidators((value, label) => (value = '' ? `Log Analysis is required` : undefined));
-
-  validator
-    .field('parameters.metric')
-    .required()
-    .withValidators((value, label) => (value = '' ? `Metric Analysis is required` : undefined));
 
   validator
     .field('parameters.gate')
