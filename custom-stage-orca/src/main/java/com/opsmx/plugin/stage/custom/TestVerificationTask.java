@@ -1,5 +1,6 @@
 package com.opsmx.plugin.stage.custom;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -101,7 +102,8 @@ public class TestVerificationTask implements Task {
 			logger.info("Trigger URL : {}", context.getGateurl());
 
 			HttpPost request = new HttpPost(context.getGateurl());
-			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getAuthentication().getUser())));
+			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, 
+					stage.getExecution().getAuthentication().getUser(), stage.getExecution().getId())));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
@@ -223,11 +225,21 @@ public class TestVerificationTask implements Task {
 				.build();
 	}
 
-	private String getPayloadString(String applicationName, String pipelineName, TestVerificationContext context, String user) {
+	private String getPayloadString(String applicationName, String pipelineName, TestVerificationContext context, String user, String executionId) {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("application", applicationName);
 		finalJson.put("isJsonResponse", true);
+		finalJson.put("executionId", executionId);
+		ArrayNode imageIdsNode = objectMapper.createArrayNode();
+		String imageIds = context.getImageids();
+		if (imageIds != null && ! imageIds.isEmpty()) {
+			Arrays.asList(imageIds.split(",")).forEach(tic -> {
+				imageIdsNode.add(tic.trim());
+			});
+		}
+		
+		finalJson.set("imageIds", imageIdsNode);
 
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
 		canaryConfig.put(LIFETIME_HOURS, context.getLifetime());
