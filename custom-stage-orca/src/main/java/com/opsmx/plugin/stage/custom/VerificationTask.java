@@ -1,5 +1,6 @@
 package com.opsmx.plugin.stage.custom;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,7 +95,7 @@ public class VerificationTask implements Task {
 		try {
 
 			HttpPost request = new HttpPost(context.getGateurl());
-			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context)));
+			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getId())));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 			
@@ -217,12 +218,21 @@ public class VerificationTask implements Task {
 				.build();
 	}
 
-	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context) {
+	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context, String executionId) {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("application", applicationName);
 		finalJson.put("isJsonResponse", true);
-
+		finalJson.put("executionId", executionId);
+		ArrayNode imageIdsNode = objectMapper.createArrayNode();
+		String imageIds = context.getImageids();
+		if (imageIds != null && ! imageIds.isEmpty()) {
+			Arrays.asList(imageIds.split(",")).forEach(tic -> {
+				imageIdsNode.add(tic.trim());
+			});
+		}
+		
+		finalJson.set("imageIds", imageIdsNode);
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
 		canaryConfig.put("lifetimeHours", context.getLifetime());
 		canaryConfig.set("canaryHealthCheckHandler", objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
