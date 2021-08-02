@@ -38,7 +38,7 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
       {props.stage.outputs.status !== undefined ? (
         <div>
           <div className="detailpagelogo">
-            <span className={'status ' + getClasses()}>{props.stage.outputs.status}</span>
+            <span className={'approvalStatus ' + getClasses()}>{props.stage.outputs.status}</span>
             <img
               src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
               alt="logo"
@@ -56,7 +56,7 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
             <tbody>
               <tr>
                 <td>
-                  <span className={'statusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
+                  <span className={'approvalStatusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
                 </td>
                 <td>-</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>

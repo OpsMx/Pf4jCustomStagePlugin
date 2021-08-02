@@ -54,7 +54,7 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
           <div className="grid-span-2">
             <FormikFormField
               name={`parameters.connectors[${index}].values[0].${dynamicField.supportedParams[0].name}`}
-              label={dynamicField.supportedParams[0].label}
+              label={dynamicField.connectorType + ' ' + dynamicField.supportedParams[0].label}
               help={<HelpField id={'approval' + dynamicField.connectorType + dynamicField.supportedParams[0].name} />}
               input={(props) => <TextInput {...props} />}
             />
@@ -115,6 +115,8 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
               input={(props) => <TextInput className="fullWidthField" {...props} />}
             />
           </div>
+          {singleFieldComponent(fieldParams)}
+          {multiFieldComp({ ...props }, fieldParams)}
           <div className="grid-span-4 fullWidthContainer">
             <FormikFormField
               name="parameters.imageIds"
@@ -123,11 +125,6 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
               input={(props) => <TextInput className="fullWidthField" {...props} />}
             />
           </div>
-          <HorizontalRule />
-          {singleFieldComponent(fieldParams)}
-          <HorizontalRule />
-          {multiFieldComp({ ...props }, fieldParams)}
-          <HorizontalRule />
         </>
       );
     } else {

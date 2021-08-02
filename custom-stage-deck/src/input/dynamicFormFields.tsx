@@ -108,7 +108,7 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
                         onClick={arrayHelpers.handlePush(emptyValue)}
                       >
                         <span className="glyphicon glyphicon-plus-sign" />
-                        Add {blockLabel}
+                        Add row
                       </button>
                     </td>
                   ) : null}
