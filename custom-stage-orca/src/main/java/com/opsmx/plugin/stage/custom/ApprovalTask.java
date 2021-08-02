@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -33,6 +32,8 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @Extension
 @PluginComponent
 public class ApprovalTask implements Task {
+
+	private static final String TRIGGER_JSON = "trigger_json";
 
 	private static final String CONNECTORS = "connectors";
 
@@ -59,14 +60,6 @@ public class ApprovalTask implements Task {
 	private static final String APPROVED = "approved";
 
 	private static final String LOCATION = "location";
-
-	private static final String HEADER_DATA = "headerData";
-
-	private static final String DATA = "data";
-
-	private static final String NAME = "name";
-
-	private static final String CUSTOM = "CUSTOM";
 
 	private static final String TOOL_CONNECTOR_PARAMETERS = "toolConnectorParameters";
 
@@ -144,7 +137,9 @@ public class ApprovalTask implements Task {
 			logger.info("Application name : {}, pipeline name : {}, GateUrl : {}", stage.getExecution().getApplication(), stage.getExecution().getName(), gateUrl);
 
 			HttpPost request = new HttpPost(gateUrl);
-			request.setEntity(new StringEntity(preparePayload(jsonContext, stage.getExecution().getId())));
+			String triggerPayload = preparePayload(jsonContext, stage.getExecution().getId());
+			outputs.put(TRIGGER_JSON, String.format("Payload json :: %s", triggerPayload));
+			request.setEntity(new StringEntity(triggerPayload));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
@@ -175,7 +170,7 @@ public class ApprovalTask implements Task {
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
-			outputs.put(EXCEPTION, e);
+			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
 		} 
 		return TaskResult.builder(ExecutionStatus.TERMINAL)
 				.context(contextMap)
@@ -219,7 +214,7 @@ public class ApprovalTask implements Task {
 
 			} catch (Exception e) {
 				logger.error("Error occured while getting approval result ", e);
-				outputs.put(EXCEPTION, e.getMessage());
+				outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
 			}
 		}
 
@@ -228,7 +223,7 @@ public class ApprovalTask implements Task {
 				.build();
 	}
 
-	private String preparePayload(Map<String, Object> parameterContext, String executionId) throws JsonMappingException, JsonProcessingException {
+	private String preparePayload(Map<String, Object> parameterContext, String executionId) throws JsonProcessingException {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 
@@ -253,7 +248,7 @@ public class ApprovalTask implements Task {
 		
 		finalJson.set(TOOL_CONNECTOR_PARAMETERS, toolConnectorPayloads);
 		finalJson.set("customConnectorData", objectMapper.createArrayNode());
-		logger.info("Payload string to trigger approval : {}", finalJson.toString());
+		logger.info("Payload string to trigger approval : {}", finalJson);
 
 		return finalJson.toString();
 	}
