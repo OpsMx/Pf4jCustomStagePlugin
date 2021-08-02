@@ -37,7 +37,7 @@ export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps)
       {props.stage.outputs.status !== undefined ? (
         <div>
           <div className="detailpagelogo">
-            <span className={'status ' + getClasses()}>{props.stage.outputs.status}</span>
+            <span className={'PolicyStatus ' + getClasses()}>{props.stage.outputs.status}</span>
             <img
               src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
               alt="logo"
@@ -55,7 +55,7 @@ export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps)
             <tbody>
               <tr>
                 <td>
-                  <span className={'statusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
+                  <span className={'PolicyStatusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
                 </td>
                 <td>-</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>
