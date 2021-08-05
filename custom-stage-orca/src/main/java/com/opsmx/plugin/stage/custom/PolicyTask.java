@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -136,7 +135,7 @@ public class PolicyTask implements Task {
 					.outputs(outputs)
 					.build();
 		     } else {
-		    	 outputs.put("result", String.format("reason for failure, %s", deny));
+		    	 outputs.put("reason", String.format("Stage failed because of %s", deny));
 		    	 return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
