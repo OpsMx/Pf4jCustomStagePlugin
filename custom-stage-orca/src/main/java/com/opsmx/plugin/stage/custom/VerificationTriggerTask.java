@@ -29,13 +29,7 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @PluginComponent
-public class VerificationTask implements Task {
-
-	private static final String REVIEW = "REVIEW";
-
-	private static final String SUCCESS = "SUCCESS";
-
-	private static final String FAIL = "FAIL";
+public class VerificationTriggerTask implements Task {
 
 	private static final String METRIC = "metric";
 
@@ -47,23 +41,9 @@ public class VerificationTask implements Task {
 
 	private static final String MINIMUM_CANARY_RESULT_SCORE = "minimumCanaryResultScore";
 
-	private static final String MAXIMUM_CANARY_RESULT_SCORE = "maximumCanaryResultScore";
-
 	private static final String CANARY_CONFIG = "canaryConfig";
 
-	private static final String CANARY_RESULT = "canaryResult";
-
-	private static final String LOCATION = "location";
-
 	private static final String CANARY_ID = "canaryId";
-
-	private static final String RESULT = "exception";
-
-	private static final String RUNNING = "RUNNING";
-
-	private static final String COMMENT = "comment";
-	
-	private static final String CANCELLED = "CANCELLED";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -76,14 +56,15 @@ public class VerificationTask implements Task {
 
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
-		outputs.put(OesConstants.OVERALL_SCORE, 0.0);
-		outputs.put(OesConstants.OVERALL_RESULT, "Fail");
 
 		logger.info(" VerificationGateStage execute start ");
 		VerificationContext context = stage.mapTo("/parameters", VerificationContext.class);
 		if (context.getGateurl() == null || context.getGateurl().isEmpty()) {
 			logger.info("Gate Url should not be empty");
-			outputs.put(RESULT, "Gate Url should not be empty");
+			outputs.put(OesConstants.REASON, "Gate Url should not be empty");
+			outputs.put(OesConstants.OVERALL_SCORE, 0.0);
+			outputs.put(OesConstants.OVERALL_RESULT, "Fail");
+			outputs.put(OesConstants.TRIGGER, OesConstants.FAILED);
 			return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
@@ -111,7 +92,11 @@ public class VerificationTask implements Task {
 			logger.info("Verification trigger response : {}, User : {}", registerResponse, stage.getExecution().getAuthentication().getUser());
 
 			if (response.getStatusLine().getStatusCode() != 202) {
-				outputs.put(RESULT, registerResponse);
+				outputs.put(OesConstants.EXCEPTION, String.format("Failed to trigger request with Status code : %s and Response : %s", 
+						response.getStatusLine().getStatusCode(), registerResponse));
+				outputs.put(OesConstants.OVERALL_SCORE, 0.0);
+				outputs.put(OesConstants.OVERALL_RESULT, "Fail");
+				outputs.put(OesConstants.TRIGGER, OesConstants.FAILED);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
@@ -122,100 +107,38 @@ public class VerificationTask implements Task {
 			String canaryId = readValue.get(CANARY_ID).asText();
 
 			if (canaryId == null || canaryId.isEmpty()) {
-				outputs.put(RESULT, "Something goes wrong while triggering registry analysis");
+				outputs.put(OesConstants.EXCEPTION, "Something went wrong while triggering registry analysis");
+				outputs.put(OesConstants.OVERALL_SCORE, 0.0);
+				outputs.put(OesConstants.OVERALL_RESULT, "Fail");
+				outputs.put(OesConstants.TRIGGER, OesConstants.FAILED);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
 						.build();
 			}
 
-			String canaryUrl = response.getLastHeader(LOCATION).getValue();
+			String canaryUrl = response.getLastHeader(OesConstants.LOCATION).getValue();
 			logger.info("Analysis autopilot link : {}", canaryUrl);
+			
+			outputs.put(OesConstants.LOCATION, canaryUrl);
+			outputs.put(OesConstants.TRIGGER, OesConstants.SUCCESS);
 
-			return getVerificationStatus(canaryUrl, stage.getExecution().getAuthentication().getUser());
+			return TaskResult.builder(ExecutionStatus.SUCCEEDED)
+					.context(contextMap)
+					.outputs(outputs)
+					.build();
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
-			outputs.put(RESULT, e.getMessage());
+			outputs.put(OesConstants.EXCEPTION, String.format("Error occured while processing, %s", e));
+			outputs.put(OesConstants.OVERALL_SCORE, 0.0);
+			outputs.put(OesConstants.OVERALL_RESULT, "Fail");
+			outputs.put(OesConstants.TRIGGER, OesConstants.FAILED);
+			return TaskResult.builder(ExecutionStatus.TERMINAL)
+					.context(contextMap)
+					.outputs(outputs)
+					.build();
 		}
-
-		return TaskResult.builder(ExecutionStatus.TERMINAL)
-				.context(contextMap)
-				.outputs(outputs)
-				.build();
-	}
-
-	private TaskResult getVerificationStatus(String canaryUrl, String user) {
-		HttpGet request = new HttpGet(canaryUrl);
-
-		Map<String, Object> outputs = new HashMap<>();
-		String analysisStatus = RUNNING;
-		while (analysisStatus.equalsIgnoreCase(RUNNING)) {
-			try {
-				request.setHeader("Content-type", "application/json");
-				request.setHeader("x-spinnaker-user", user);
-				CloseableHttpClient httpClient = HttpClients.createDefault();
-				CloseableHttpResponse response = httpClient.execute(request);
-
-				HttpEntity entity = response.getEntity();
-				if (entity != null) {
-					ObjectNode readValue = objectMapper.readValue(EntityUtils.toString(entity), ObjectNode.class);
-					analysisStatus = readValue.get(OesConstants.STATUS).get(OesConstants.STATUS).asText();
-					if (analysisStatus.equalsIgnoreCase(RUNNING)) {
-						continue;
-					}
-
-					String canaryUiUrl = readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText();
-
-					if (analysisStatus.equalsIgnoreCase(CANCELLED)) {
-						outputs.put(OesConstants.OVERALL_RESULT, CANCELLED);
-						outputs.put(OesConstants.CANARY_REPORTURL, canaryUiUrl);
-						outputs.put(OesConstants.OVERALL_SCORE, 0.0);
-						outputs.put(COMMENT, "Analysis got cancelled");
-						
-						return TaskResult.builder(ExecutionStatus.TERMINAL)
-								.outputs(outputs)
-								.build();
-					}
-
-					Float overAllScore = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_SCORE).floatValue();
-					Float minimumScore = readValue.get(CANARY_CONFIG).get(MINIMUM_CANARY_RESULT_SCORE).floatValue();
-					Float maximumScore = readValue.get(CANARY_CONFIG).get(MAXIMUM_CANARY_RESULT_SCORE).floatValue(); 
-					String result = readValue.get(CANARY_RESULT).get(OesConstants.OVERALL_RESULT).asText();
-
-					outputs.put(OesConstants.OVERALL_RESULT, result);
-					outputs.put(OesConstants.CANARY_REPORTURL, readValue.get(CANARY_RESULT).get(OesConstants.CANARY_REPORTURL).asText());
-					outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
-
-					if (result.equalsIgnoreCase(FAIL)) {
-						outputs.put(COMMENT, "Analysis score is below the minimum canary score");
-						return TaskResult.builder(ExecutionStatus.TERMINAL)
-								.outputs(outputs)
-								.build();
-					} else if (result.equalsIgnoreCase(SUCCESS)){
-						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
-								.outputs(outputs)
-								.build();
-					}
-
-					else if (result.equalsIgnoreCase(REVIEW) || Float.compare(minimumScore, overAllScore) == 0 || ( Float.compare(minimumScore, overAllScore) < 0 &&  Float.compare(overAllScore, maximumScore) < 0 )) {
-						outputs.put(COMMENT, "Analysis score is between 'minimum canary result score' and 'maximum canary result score'.");
-						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
-								.outputs(outputs)
-								.build();
-					} 
-				}
-
-			} catch (Exception e) {
-				logger.error("Error occured while getting anaysis result ", e);
-				outputs.put(RESULT, e.getMessage());
-			}
-
-		}
-
-		return TaskResult.builder(ExecutionStatus.TERMINAL)
-				.outputs(outputs)
-				.build();
 	}
 
 	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context, String executionId) {
