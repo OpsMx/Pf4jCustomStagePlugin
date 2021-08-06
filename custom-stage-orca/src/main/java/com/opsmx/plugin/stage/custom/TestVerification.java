@@ -14,6 +14,7 @@ public class TestVerification implements StageDefinitionBuilder {
 
 	@Override
 	public void taskGraph(@NotNull StageExecution stage, @NotNull TaskNode.Builder builder) {
-		builder.withTask("testVerification", TestVerificationTask.class);
+		builder.withTask("testVerification", TestVerificationTriggerTask.class)
+		.withTask("testVerificationMonitor", TestVerificationMonitorTask.class);
 	}
 }
