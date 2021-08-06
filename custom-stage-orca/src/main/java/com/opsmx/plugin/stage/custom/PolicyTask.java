@@ -1,5 +1,6 @@
 package com.opsmx.plugin.stage.custom;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,7 +67,7 @@ public class PolicyTask implements Task {
 		logger.info("Policy gate execution start ");
 		PolicyContext context = stage.mapTo("/parameters", PolicyContext.class);
 
-
+		CloseableHttpClient httpClient = null;
 		try {  
 			if (context.getPolicyurl() == null || context.getPolicyurl().isEmpty()) {
 				logger.info("Policyproxy Url should not be empty");
@@ -95,7 +96,7 @@ public class PolicyTask implements Task {
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
-			CloseableHttpClient httpClient = HttpClients.createDefault();
+			httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
 
 			HttpEntity entity = response.getEntity();
@@ -104,7 +105,8 @@ public class PolicyTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 
-			logger.info("Policy trigger response : {}", registerResponse);
+			logger.info("Policy trigger application : {}, pipeline : {},  response : {}", 
+					stage.getExecution().getApplication(), stage.getExecution().getName(), registerResponse);
 
 			if (response.getStatusLine().getStatusCode() != 200) {
 				outputs.put(EXCEPTION, String.format("Failed to trigger request with Status code : %s and Response : %s",
@@ -146,13 +148,17 @@ public class PolicyTask implements Task {
 		} catch (Exception e) {
 			logger.error("Error occured", e);
 			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
+			return TaskResult.builder(ExecutionStatus.TERMINAL)
+					.context(contextMap)
+					.outputs(outputs)
+					.build();
+		} finally {
+			if (httpClient != null) {
+				try {
+					httpClient.close();
+				} catch (IOException e) {}
+			}
 		}
-
-		
-		return TaskResult.builder(ExecutionStatus.TERMINAL)
-				.context(contextMap)
-				.outputs(outputs)
-				.build();
 	}
 
 
