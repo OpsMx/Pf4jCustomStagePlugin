@@ -19,5 +19,6 @@ export const testVerification: IStageTypeConfig = {
   description: 'Stage for Test Verification',
   component: TestVerificationConfig, // stage config
   executionDetailsSections: [TestVerificationExecutionDetails, ExecutionDetailsTasks],
+  supportsCustomTimeout: true,
   validateFn: validate,
 };
