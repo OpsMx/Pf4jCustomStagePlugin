@@ -76,7 +76,10 @@ public class VerificationTriggerTask implements Task {
 		try {
 
 			HttpPost request = new HttpPost(context.getGateurl());
-			request.setEntity(new StringEntity(getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context, stage.getExecution().getId())));
+			String triggerPayload = getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context,
+					stage.getExecution().getAuthentication().getUser(), stage.getExecution().getId());
+			outputs.put("trigger_json", String.format("Payload Json :: %s", triggerPayload));
+			request.setEntity(new StringEntity(triggerPayload));
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 			
@@ -141,7 +144,7 @@ public class VerificationTriggerTask implements Task {
 		}
 	}
 
-	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context, String executionId) {
+	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context,String user, String executionId) {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("application", applicationName);
@@ -160,6 +163,7 @@ public class VerificationTriggerTask implements Task {
 		canaryConfig.put("lifetimeHours", context.getLifetime());
 		canaryConfig.set("canaryHealthCheckHandler", objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
 		canaryConfig.set("canarySuccessCriteria", objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryresultscore()));
+		canaryConfig.put("name", user);
 
 		ObjectNode baselinePayload = objectMapper.createObjectNode();
 		ObjectNode canaryPayload = objectMapper.createObjectNode();
