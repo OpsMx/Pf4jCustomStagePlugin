@@ -119,7 +119,7 @@ public class ApprovalTriggerTask implements Task {
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
 
-		logger.info(" Visibility approval execution started");
+		logger.info("Approval execution started, Application name : {}, Pipeline name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 		CloseableHttpClient httpClient = null;
 		try {
 
@@ -155,7 +155,7 @@ public class ApprovalTriggerTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 
-			logger.info("visibility approval trigger response : {}", registerResponse);
+			logger.info("Approval trigger response : {}", registerResponse);
 
 			if (response.getStatusLine().getStatusCode() != 202) {
 				logger.info("Failed to trigger approval request with Status code : {}, Response : {}", response.getStatusLine().getStatusCode(), registerResponse);
@@ -168,10 +168,7 @@ public class ApprovalTriggerTask implements Task {
 						.build();
 			}
 
-			String approvalUrl = response.getLastHeader(LOCATION).getValue();
-			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(),
-					stage.getExecution().getName(), approvalUrl);
-			outputs.put(LOCATION, approvalUrl);
+			outputs.put(LOCATION, response.getLastHeader(LOCATION).getValue());
 			outputs.put(TRIGGER, SUCCESS);
 
 			return TaskResult.builder(ExecutionStatus.SUCCEEDED)
@@ -180,7 +177,7 @@ public class ApprovalTriggerTask implements Task {
 					.build();
 
 		} catch (Exception e) {
-			logger.error("Failed to execute verification gate", e);
+			logger.error("Error occured while processing approval", e);
 			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
 			outputs.put(TRIGGER, FAILED);
 			outputs.put(STATUS, REJECTED);
