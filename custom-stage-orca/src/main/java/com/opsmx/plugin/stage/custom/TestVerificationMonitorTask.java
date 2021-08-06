@@ -41,17 +41,20 @@ public class TestVerificationMonitorTask implements RetryableTask {
 		String trigger = (String) outputs.getOrDefault(OesConstants.TRIGGER, "NOTYET");
 
 		if (trigger.equals(OesConstants.FAILED)) {
-			logger.info("Verification Monitoring terminating because trigger task failed");
+			logger.info("TestVerification Monitoring terminating because trigger task failed application : {}, pipeline : {}", 
+					stage.getExecution().getApplication(), stage.getExecution().getName());
 			return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
 					.build();
 		} else if (trigger.equals(OesConstants.SUCCESS)) {
-			logger.info("Verification Monitoring started");
+			logger.info("TestVerification Monitoring started application : {}, pipeline : {}", 
+					stage.getExecution().getApplication(), stage.getExecution().getName());
 			String approvalUrl = (String) outputs.get(OesConstants.LOCATION);
 			return getVerificationStatus(approvalUrl, stage.getExecution().getAuthentication().getUser(), outputs);
 		} else {
-			logger.info("Verification Monitoring not starting because trigger task not completed");
+			logger.info("TestVerification Monitoring not starting because trigger task not completed, application : {}, pipeline : {}",
+					stage.getExecution().getApplication(), stage.getExecution().getName());
 			return TaskResult.builder(ExecutionStatus.RUNNING)
 					.context(contextMap)
 					.outputs(outputs)
@@ -84,7 +87,7 @@ public class TestVerificationMonitorTask implements RetryableTask {
 				outputs.put(OesConstants.OVERALL_RESULT, OesConstants.CANCELLED);
 				outputs.put(OesConstants.CANARY_REPORTURL, canaryUiUrl);
 				outputs.put(OesConstants.OVERALL_SCORE, 0.0);
-				outputs.put(OesConstants.REASON, "Analysis got cancelled");
+				outputs.put(OesConstants.EXCEPTION, "Analysis got cancelled");
 
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.outputs(outputs)
@@ -101,7 +104,7 @@ public class TestVerificationMonitorTask implements RetryableTask {
 			outputs.put(OesConstants.OVERALL_SCORE, overAllScore);
 
 			if (result.equalsIgnoreCase(OesConstants.FAIL)) {
-				outputs.put(OesConstants.REASON, "Analysis score is below the minimum canary score");
+				outputs.put(OesConstants.EXCEPTION, "Analysis score is below the minimum canary score");
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.outputs(outputs)
 						.build();

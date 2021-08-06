@@ -1,12 +1,12 @@
 package com.opsmx.plugin.stage.custom;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -31,14 +31,6 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class TestVerificationTriggerTask implements Task {
 
-	private static final String REVIEW = "REVIEW";
-
-	private static final String SUCCESS = "SUCCESS";
-
-	private static final String FAIL = "FAIL";
-
-	private static final String CANCELLED = "CANCELLED";
-
 	private static final String CANARY_SUCCESS_CRITERIA = "canarySuccessCriteria";
 
 	private static final String CANARY_HEALTH_CHECK_HANDLER = "canaryHealthCheckHandler";
@@ -51,23 +43,7 @@ public class TestVerificationTriggerTask implements Task {
 
 	private static final String PIPELINE_NAME = "pipelineName";
 
-	private static final String MINIMUM_CANARY_RESULT_SCORE = "minimumCanaryResultScore";
-
-	private static final String MAXIMUM_CANARY_RESULT_SCORE = "maximumCanaryResultScore";
-
-	private static final String CANARY_CONFIG = "canaryConfig";
-
-	private static final String CANARY_RESULT = "canaryResult";
-
-	private static final String LOCATION = "location";
-
 	private static final String CANARY_ID = "canaryId";
-
-	private static final String EXCEPTION = "exception";
-
-	private static final String RUNNING = "RUNNING";
-
-	private static final String COMMENT = "comment";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -81,7 +57,7 @@ public class TestVerificationTriggerTask implements Task {
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
 
-		logger.info(" VerificationGateStage execute start ");
+		logger.info(" TestVerification execute start, Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 		TestVerificationContext context = stage.mapTo("/parameters", TestVerificationContext.class);
 		if (context.getGateurl() == null || context.getGateurl().isEmpty()) {
 			logger.info("Gate Url should not be empty");
@@ -95,8 +71,7 @@ public class TestVerificationTriggerTask implements Task {
 					.build();
 		}
 
-		logger.info("Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
-
+		CloseableHttpClient httpClient = null;
 		try {
 
 			HttpPost request = new HttpPost(context.getGateurl());
@@ -107,7 +82,7 @@ public class TestVerificationTriggerTask implements Task {
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
-			CloseableHttpClient httpClient = HttpClients.createDefault();
+			httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
 
 			HttpEntity entity = response.getEntity();
@@ -116,7 +91,7 @@ public class TestVerificationTriggerTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 
-			logger.info("Verification trigger response : {}, User : {}", registerResponse, stage.getExecution().getAuthentication().getUser());
+			logger.info("TestVerification trigger response : {}, User : {}", registerResponse, stage.getExecution().getAuthentication().getUser());
 
 			if (response.getStatusLine().getStatusCode() != 202) {
 				outputs.put(OesConstants.EXCEPTION, String.format("Failed to trigger request with Status code : %s and Response : %s", 
@@ -144,10 +119,7 @@ public class TestVerificationTriggerTask implements Task {
 						.build();
 			}
 
-			String canaryUrl = response.getLastHeader(OesConstants.LOCATION).getValue();
-			logger.info("Analysis autopilot link : {}", canaryUrl);
-
-			outputs.put(OesConstants.LOCATION, canaryUrl);
+			outputs.put(OesConstants.LOCATION, response.getLastHeader(OesConstants.LOCATION).getValue());
 			outputs.put(OesConstants.TRIGGER, OesConstants.SUCCESS);
 
 			return TaskResult.builder(ExecutionStatus.SUCCEEDED)
@@ -156,7 +128,7 @@ public class TestVerificationTriggerTask implements Task {
 					.build();
 
 		} catch (Exception e) {
-			logger.error("Failed to execute verification gate", e);
+			logger.error("Error occured while processing", e);
 			outputs.put(OesConstants.EXCEPTION, String.format("Error occured while processing, %s", e));
 			outputs.put(OesConstants.OVERALL_SCORE, 0.0);
 			outputs.put(OesConstants.OVERALL_RESULT, "Fail");
@@ -165,6 +137,12 @@ public class TestVerificationTriggerTask implements Task {
 					.context(contextMap)
 					.outputs(outputs)
 					.build();
+		} finally {
+			if (httpClient != null) {
+				try {
+					httpClient.close();
+				} catch (IOException e) {}
+			}
 		}
 	}
 
@@ -177,16 +155,16 @@ public class TestVerificationTriggerTask implements Task {
 		ArrayNode imageIdsNode = objectMapper.createArrayNode();
 		String imageIds = context.getImageids();
 		if (imageIds != null && ! imageIds.isEmpty()) {
-			Arrays.asList(imageIds.split(",")).forEach(tic -> {
-				imageIdsNode.add(tic.trim());
-			});
+			Arrays.asList(imageIds.split(",")).forEach(tic -> 
+				imageIdsNode.add(tic.trim())
+			);
 		}
 
 		finalJson.set("imageIds", imageIdsNode);
 
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
 		canaryConfig.put(LIFETIME_HOURS, context.getLifetime());
-		canaryConfig.set(CANARY_HEALTH_CHECK_HANDLER, objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
+		canaryConfig.set(CANARY_HEALTH_CHECK_HANDLER, objectMapper.createObjectNode().put(OesConstants.MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
 		canaryConfig.set(CANARY_SUCCESS_CRITERIA, objectMapper.createObjectNode().put("canaryResultScore", context.getCanaryresultscore()));
 		canaryConfig.put("combinedCanaryResultStrategy", "AGGREGATE");
 		canaryConfig.put("name", user);
@@ -219,7 +197,7 @@ public class TestVerificationTriggerTask implements Task {
 		triggerPayload.put("runInfo", context.getTestruninfo());
 		payloadTriggerNode.add(triggerPayload);
 
-		finalJson.set(CANARY_CONFIG, canaryConfig);
+		finalJson.set(OesConstants.CANARY_CONFIG, canaryConfig);
 		finalJson.set("canaryDeployments", payloadTriggerNode);
 		String finalPayloadString = finalJson.toString();
 		logger.info("Payload string to trigger test analysis : {}", finalPayloadString);
