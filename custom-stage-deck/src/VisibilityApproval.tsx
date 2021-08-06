@@ -17,7 +17,8 @@ export const approval: IStageTypeConfig = {
   key: 'approval',
   label: `Approval`,
   description: 'Stage for Approval',
-  component: VisibilityApprovalConfig, // stage config
+  component: VisibilityApprovalConfig,
   executionDetailsSections: [VisibilityApprovalExecutionDetails, ExecutionDetailsTasks],
+  supportsCustomTimeout: true,
   validateFn: validate,
 };

@@ -22,6 +22,16 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
     }
     return classes;
   };
+
+  const getStatus = () => {
+    let classes = '';
+    if (props.stage.outputs.status == 'approved') {
+      classes = 'Approved';
+    } else if (props.stage.outputs.status == 'rejected') {
+      classes = 'Rejected';
+    }
+    return classes;
+  };
   const exceptionDiv = props.stage.outputs.exception ? (
     <div className="alert alert-danger">
       <div>
@@ -38,7 +48,7 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
       {props.stage.outputs.status !== undefined ? (
         <div>
           <div className="detailpagelogo">
-            <span className={'approvalStatus ' + getClasses()}>{props.stage.outputs.status}</span>
+            <span className={'approvalStatus ' + getClasses()}>{getStatus()}</span>
             <img
               src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
               alt="logo"
@@ -56,7 +66,7 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
             <tbody>
               <tr>
                 <td>
-                  <span className={'approvalStatusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
+                  <span className={'approvalStatusSmall ' + getClasses()}>{getStatus()}</span>
                 </td>
                 <td>-</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>

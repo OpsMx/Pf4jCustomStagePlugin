@@ -81,7 +81,6 @@ export function EvaluateVariablesStageForm(props: IEvaluateVariablesStageFormPro
                         <td key={`${header.name}-td`}>
                           <FormikFormField
                             name={`parameters.connectors[${parentIndex}].values[${index}][${header.name}]`}
-                            required={true}
                             input={(inputProps) => <TextInput {...inputProps} placeholder={` Enter ${header.label}`} />}
                             layout={VariableNameFormLayout}
                           />
