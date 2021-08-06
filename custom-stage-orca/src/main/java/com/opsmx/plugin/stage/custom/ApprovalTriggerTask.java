@@ -1,12 +1,12 @@
 package com.opsmx.plugin.stage.custom;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -31,7 +31,13 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 
 @Extension
 @PluginComponent
-public class ApprovalTask implements Task {
+public class ApprovalTriggerTask implements Task {
+
+	public static final String FAILED = "FAILED";
+
+	public static final String SUCCESS = "SUCCESS";
+
+	public static final String TRIGGER = "trigger";
 
 	private static final String TRIGGER_JSON = "trigger_json";
 
@@ -56,8 +62,6 @@ public class ApprovalTask implements Task {
 	private static final String REPORT_ID = "reportId";
 
 	private static final String REJECTED = "rejected";
-
-	private static final String APPROVED = "approved";
 
 	private static final String LOCATION = "location";
 
@@ -101,8 +105,6 @@ public class ApprovalTask implements Task {
 
 	private static final String EXCEPTION = "exception";
 
-	private static final String ACTIVATED = "activated";
-
 	public static final String STATUS = "status";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -116,23 +118,24 @@ public class ApprovalTask implements Task {
 
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
-		outputs.put(STATUS, REJECTED);
 
 		logger.info(" Visibility approval execution started");
-
+		CloseableHttpClient httpClient = null;
 		try {
-			
+
 			Map<String, Object> jsonContext = (Map<String, Object>) stage.getContext().get("parameters");
 
 			if (jsonContext.get(GATE_URL) == null || ((String) jsonContext.get(GATE_URL)).isEmpty()) {
 				logger.info("Gate Url should not be empty");
 				outputs.put(EXCEPTION, "Gate Url should not be empty");
+				outputs.put(TRIGGER, FAILED);
+				outputs.put(STATUS, REJECTED);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
 						.build();
 			}
-			
+
 			String gateUrl = (String) jsonContext.get(GATE_URL);
 			logger.info("Application name : {}, pipeline name : {}, GateUrl : {}", stage.getExecution().getApplication(), stage.getExecution().getName(), gateUrl);
 
@@ -143,7 +146,7 @@ public class ApprovalTask implements Task {
 			request.setHeader("Content-type", "application/json");
 			request.setHeader("x-spinnaker-user", stage.getExecution().getAuthentication().getUser());
 
-			CloseableHttpClient httpClient = HttpClients.createDefault();
+			httpClient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpClient.execute(request);
 
 			HttpEntity entity = response.getEntity();
@@ -157,6 +160,8 @@ public class ApprovalTask implements Task {
 			if (response.getStatusLine().getStatusCode() != 202) {
 				logger.info("Failed to trigger approval request with Status code : {}, Response : {}", response.getStatusLine().getStatusCode(), registerResponse);
 				outputs.put(EXCEPTION, String.format("Failed to trigger approval request with Status code : %s and Response : %s", response.getStatusLine().getStatusCode(), registerResponse));
+				outputs.put(TRIGGER, FAILED);
+				outputs.put(STATUS, REJECTED);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
@@ -166,61 +171,31 @@ public class ApprovalTask implements Task {
 			String approvalUrl = response.getLastHeader(LOCATION).getValue();
 			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(),
 					stage.getExecution().getName(), approvalUrl);
-			return getVerificationStatus(approvalUrl, stage.getExecution().getAuthentication().getUser());
+			outputs.put(LOCATION, approvalUrl);
+			outputs.put(TRIGGER, SUCCESS);
+
+			return TaskResult.builder(ExecutionStatus.SUCCEEDED)
+					.context(contextMap)
+					.outputs(outputs)
+					.build();
 
 		} catch (Exception e) {
 			logger.error("Failed to execute verification gate", e);
 			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
-		} 
-		return TaskResult.builder(ExecutionStatus.TERMINAL)
-				.context(contextMap)
-				.outputs(outputs)
-				.build();
-	}
-
-	private TaskResult getVerificationStatus(String canaryUrl, String user) {
-		HttpGet request = new HttpGet(canaryUrl);
-
-		Map<String, Object> outputs = new HashMap<>();
-		String analysisStatus = ACTIVATED;
-		while (analysisStatus.equalsIgnoreCase(ACTIVATED)) {
-			try {
-				request.setHeader("Content-type", "application/json");
-				request.setHeader("x-spinnaker-user", user);
-				CloseableHttpClient httpClient = HttpClients.createDefault();
-				CloseableHttpResponse response = httpClient.execute(request);
-
-				HttpEntity entity = response.getEntity();
-				if (entity != null) {
-					ObjectNode readValue = objectMapper.readValue(EntityUtils.toString(entity), ObjectNode.class);
-					analysisStatus = readValue.get(STATUS).asText();
-
-					logger.info("Visibility approval status : {}", analysisStatus);
-					if (analysisStatus.equalsIgnoreCase(APPROVED)) {
-						outputs.put(STATUS, analysisStatus);
-						return TaskResult.builder(ExecutionStatus.SUCCEEDED)
-								.outputs(outputs)
-								.build();
-					} else if (analysisStatus.equalsIgnoreCase(REJECTED)) {
-						outputs.put(STATUS, analysisStatus);
-						outputs.put(EXCEPTION, "Rejected by approver");
-						return TaskResult.builder(ExecutionStatus.TERMINAL)
-								.outputs(outputs)
-								.build();
-					}		
-
-					Thread.sleep(1000);
+			outputs.put(TRIGGER, FAILED);
+			outputs.put(STATUS, REJECTED);
+			return TaskResult.builder(ExecutionStatus.TERMINAL)
+					.context(contextMap)
+					.outputs(outputs)
+					.build();
+		}  finally {
+			if (httpClient != null) {
+				try {
+					httpClient.close();
+				} catch (IOException e) {
 				}
-
-			} catch (Exception e) {
-				logger.error("Error occured while getting approval result ", e);
-				outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
 			}
 		}
-
-		return TaskResult.builder(ExecutionStatus.TERMINAL)
-				.outputs(outputs)
-				.build();
 	}
 
 	private String preparePayload(Map<String, Object> parameterContext, String executionId) throws JsonProcessingException {
@@ -233,19 +208,19 @@ public class ApprovalTask implements Task {
 		ArrayNode imageIdsNode = objectMapper.createArrayNode();
 		String imageIds = (String) parameterContext.get("imageIds");
 		if (imageIds != null && ! imageIds.isEmpty()) {
-			Arrays.asList(imageIds.split(",")).forEach(tic -> {
-				imageIdsNode.add(tic.trim());
-			});
+			Arrays.asList(imageIds.split(",")).forEach(tic -> 
+			imageIdsNode.add(tic.trim())
+					);
 		}
-		
+
 		finalJson.set("imageIds", imageIdsNode);
 		String connectorJson = objectMapper.writeValueAsString(parameterContext.get(CONNECTORS));
 		ArrayNode connectorNode = (ArrayNode) objectMapper.readTree(connectorJson);
 		ArrayNode toolConnectorPayloads = objectMapper.createArrayNode();
-		connectorNode.forEach(connector -> {
-			setParameters(toolConnectorPayloads, connector);
-		});
-		
+		connectorNode.forEach(connector -> 
+		setParameters(toolConnectorPayloads, connector)
+				);
+
 		finalJson.set(TOOL_CONNECTOR_PARAMETERS, toolConnectorPayloads);
 		finalJson.set("customConnectorData", objectMapper.createArrayNode());
 		logger.info("Payload string to trigger approval : {}", finalJson);
@@ -285,13 +260,13 @@ public class ApprovalTask implements Task {
 			if (bambooNode != null && bambooNode.get(PROJECT_NAME) != null && ! (bambooNode.get(PROJECT_NAME).asText()).isEmpty() 
 					&& bambooNode.get(PLAN_NAME) != null && ! bambooNode.get(PLAN_NAME).asText().isEmpty()
 					&& bambooNode.get(BUILD_NUMBER) != null && ! bambooNode.get(BUILD_NUMBER).asText().isEmpty()) {
-					parameterArrayNode.add(objectMapper.createObjectNode()
-							.put(PROJECT_NAME, bambooNode.get(PROJECT_NAME).asText().trim())
-							.put(PLAN_NAME, bambooNode.get(PLAN_NAME).asText().trim())
-							.put(BUILD_NUMBER, bambooNode.get(BUILD_NUMBER) != null ?  bambooNode.get(BUILD_NUMBER).asText().trim() : ""));
+				parameterArrayNode.add(objectMapper.createObjectNode()
+						.put(PROJECT_NAME, bambooNode.get(PROJECT_NAME).asText().trim())
+						.put(PLAN_NAME, bambooNode.get(PLAN_NAME).asText().trim())
+						.put(BUILD_NUMBER, bambooNode.get(BUILD_NUMBER) != null ?  bambooNode.get(BUILD_NUMBER).asText().trim() : ""));
 			}
 		});
-		
+
 		if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
 			bambooObjectNode.set(PARAMETERS, parameterArrayNode);
 			toolConnectorPayloads.add(bambooObjectNode);
@@ -306,13 +281,13 @@ public class ApprovalTask implements Task {
 		valuesNode.forEach(jenkinsNode -> {
 			if (jenkinsNode != null && jenkinsNode.get(JOB) != null && ! (jenkinsNode.get(JOB).asText()).isEmpty() 
 					&& jenkinsNode.get(BUILD_ID) != null && ! (jenkinsNode.get(BUILD_ID).asText()).isEmpty()) {
-					parameterArrayNode.add(objectMapper.createObjectNode()
-							.put(JOB, jenkinsNode.get(JOB).asText().trim())
-							.put(BUILD_ID, jenkinsNode.get(BUILD_ID).asText().trim())
-							.put(ARTIFACT, jenkinsNode.get(ARTIFACT) != null ?  jenkinsNode.get(ARTIFACT).asText().trim() : ""));
+				parameterArrayNode.add(objectMapper.createObjectNode()
+						.put(JOB, jenkinsNode.get(JOB).asText().trim())
+						.put(BUILD_ID, jenkinsNode.get(BUILD_ID).asText().trim())
+						.put(ARTIFACT, jenkinsNode.get(ARTIFACT) != null ?  jenkinsNode.get(ARTIFACT).asText().trim() : ""));
 			}
 		});
-		
+
 		if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
 			jenkinsObjectNode.set(PARAMETERS, parameterArrayNode);
 			toolConnectorPayloads.add(jenkinsObjectNode);
@@ -327,15 +302,15 @@ public class ApprovalTask implements Task {
 		valuesNode.forEach(gitNode -> {
 			if (gitNode != null && gitNode.get(REPO) != null && ! gitNode.get(REPO).asText().isEmpty() 
 					&& gitNode.get(COMMIT_ID) != null && ! gitNode.get(COMMIT_ID).asText().isEmpty()) {
-					ArrayNode commitIds = objectMapper.createArrayNode();
-					Arrays.asList(gitNode.get(COMMIT_ID).asText().split(",")).forEach(a -> {
-						commitIds.add(a.trim());
-					});
+				ArrayNode commitIds = objectMapper.createArrayNode();
+				Arrays.asList(gitNode.get(COMMIT_ID).asText().split(",")).forEach(a -> 
+				commitIds.add(a.trim())
+						);
 
-					parameterArrayNode.add(objectMapper.createObjectNode().put(REPO, gitNode.get(REPO).asText()).set(COMMIT_ID, commitIds));
+				parameterArrayNode.add(objectMapper.createObjectNode().put(REPO, gitNode.get(REPO).asText()).set(COMMIT_ID, commitIds));
 			}
 		});
-		
+
 		if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
 			gitObjectNode.set(PARAMETERS, parameterArrayNode);
 			toolConnectorPayloads.add(gitObjectNode);
@@ -349,9 +324,9 @@ public class ApprovalTask implements Task {
 		ArrayNode valuesNode = (ArrayNode) connector.get(VALUES);
 		valuesNode.forEach(a -> {
 			if (a != null) {
-				Arrays.asList(a.get(param).asText().split(",")).forEach(tic -> {
-					paramsNode.add(tic.trim());
-				});
+				Arrays.asList(a.get(param).asText().split(",")).forEach(tic -> 
+				paramsNode.add(tic.trim())
+						);
 			}
 		});
 		singleObjectNode.set(PARAMETERS, objectMapper.createArrayNode().add(objectMapper.createObjectNode().set(param, paramsNode)));

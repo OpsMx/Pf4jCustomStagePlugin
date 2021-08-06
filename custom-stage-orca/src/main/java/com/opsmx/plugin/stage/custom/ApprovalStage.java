@@ -14,6 +14,7 @@ public class ApprovalStage implements StageDefinitionBuilder {
 
 	@Override
 	public void taskGraph(@NotNull StageExecution stage, @NotNull TaskNode.Builder builder) {
-		builder.withTask("approval", ApprovalTask.class);
+		builder.withTask("approvalTrigger", ApprovalTriggerTask.class)
+		.withTask("approvalMonitor", ApprovalMonitorTask.class);
 	}
 }
