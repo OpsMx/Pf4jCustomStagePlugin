@@ -19,5 +19,6 @@ export const verification: IStageTypeConfig = {
   description: 'Stage for Verification Gate',
   component: VerificationConfig, // stage config
   executionDetailsSections: [VerificationExecutionDetails, ExecutionDetailsTasks],
+  supportsCustomTimeout: true,
   validateFn: validate,
 };
