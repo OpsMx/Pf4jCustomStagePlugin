@@ -19,5 +19,6 @@ export const policy: IStageTypeConfig = {
   description: 'Spinnaker Policy Evaluation and Decision Stage',
   component: PolicyGateConfig, // stage config
   executionDetailsSections: [PolicyGateExecutionDetails, ExecutionDetailsTasks],
+  supportsCustomTimeout: true,
   validateFn: validate,
 };
