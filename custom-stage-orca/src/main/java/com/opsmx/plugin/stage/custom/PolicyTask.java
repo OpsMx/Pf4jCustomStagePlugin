@@ -137,7 +137,7 @@ public class PolicyTask implements Task {
 					.outputs(outputs)
 					.build();
 		     } else {
-		    	 outputs.put("reason", String.format("Stage failed because of %s", deny));
+		    	 outputs.put(EXCEPTION, String.format("Stage failed because of %s", deny));
 		    	 return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
