@@ -13,9 +13,9 @@ import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMes
 export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
-    if (props.stage.outputs.status == 'approved') {
+    if (props.stage.status == 'SUCCEEDED') {
       classes = 'policyStatusSuccess';
-    } else if (props.stage.outputs.status == 'rejected') {
+    } else if (props.stage.status == 'TERMINAL') {
       classes = 'policyStatusDanger';
     }
     return classes;
@@ -34,30 +34,28 @@ export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps)
 
   return (
     <ExecutionDetailsSection name={props.name} current={props.current}>
-      {props.stage.outputs.status !== undefined ? (
+      {props.stage.outputs.trigger_json !== undefined ? (
         <div>
           <div className="detailpagelogo">
-            <span className={'PolicyStatus ' + getClasses()}>{props.stage.outputs.status}</span>
             <img
               src="https://cd.foundation/wp-content/uploads/sites/78/2020/05/opsmx-logo-march2019.png"
               alt="logo"
               width="70px"
+              style={{ marginLeft: 'auto' }}
             ></img>
           </div>
           <table className="table">
             <thead>
               <tr>
                 <th>Status</th>
-                <th>Comment</th>
                 <th>Last Updated</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>
-                  <span className={'PolicyStatusSmall ' + getClasses()}>{props.stage.outputs.status}</span>
+                  <span className={'PolicyStatusSmall ' + getClasses()}>{props.stage.status}</span>
                 </td>
-                <td>-</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>
               </tr>
             </tbody>
