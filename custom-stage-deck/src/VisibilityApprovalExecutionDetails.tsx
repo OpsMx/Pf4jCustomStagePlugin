@@ -68,7 +68,7 @@ export function VisibilityApprovalExecutionDetails(props: IExecutionDetailsSecti
                 <td>
                   <span className={'approvalStatusSmall ' + getClasses()}>{getStatus()}</span>
                 </td>
-                <td>-</td>
+                <td>{props.stage.outputs.comments}</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>
               </tr>
             </tbody>
