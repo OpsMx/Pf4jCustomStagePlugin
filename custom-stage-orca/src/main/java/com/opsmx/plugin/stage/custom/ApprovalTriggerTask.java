@@ -33,6 +33,10 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class ApprovalTriggerTask implements Task {
 
+	private static final String NUMBER = "number";
+
+	private static final String SERVICENOW = "SERVICENOW";
+
 	private static final String REPOSITORY_NAME = "repositoryName";
 
 	private static final String BITBUCKET = "BITBUCKET";
@@ -255,7 +259,9 @@ public class ApprovalTriggerTask implements Task {
 			singlePayload(toolConnectorPayloads, connector, PRISMACLOUD, IMAGE_ID);
 		} else if (connectorType.equals(BITBUCKET)) {
 			bitBucket(toolConnectorPayloads, connector);
-		} 
+		} else if (connectorType.equals(SERVICENOW)) {
+			singlePayload(toolConnectorPayloads, connector, connectorType, NUMBER);
+		}
 	}
 	
 	private void bitBucket(ArrayNode toolConnectorPayloads, JsonNode connector) {

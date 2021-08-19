@@ -29,6 +29,8 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class ApprovalMonitorTask implements RetryableTask {
 
+	private static final String COMMENT2 = "comment";
+
 	private static final String REJECTED = "rejected";
 
 	private static final String APPROVED = "approved";
@@ -87,16 +89,21 @@ public class ApprovalMonitorTask implements RetryableTask {
 			HttpEntity entity = response.getEntity();
 			ObjectNode readValue = objectMapper.readValue(EntityUtils.toString(entity), ObjectNode.class);
 			String analysisStatus = readValue.get(STATUS).asText();
+			String comment = "";
+			if (readValue.get(COMMENT2) != null && !readValue.get(COMMENT2).asText().isEmpty()) {
+				comment = readValue.get(COMMENT2).asText();
+			}
 
 			logger.info("Approval status : {}", analysisStatus);
 			if (analysisStatus.equalsIgnoreCase(APPROVED)) {
 				outputs.put(STATUS, analysisStatus);
+				outputs.put("comments", comment);
 				return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 						.outputs(outputs)
 						.build();
 			} else if (analysisStatus.equalsIgnoreCase(REJECTED)) {
 				outputs.put(STATUS, analysisStatus);
-				outputs.put(EXCEPTION, "Rejected by approver");
+				outputs.put("comments", comment);
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.outputs(outputs)
 						.build();
