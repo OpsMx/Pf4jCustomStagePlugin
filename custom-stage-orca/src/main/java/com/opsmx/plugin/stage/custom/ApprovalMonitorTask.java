@@ -54,13 +54,15 @@ public class ApprovalMonitorTask implements RetryableTask {
 		String trigger = (String) outputs.getOrDefault(ApprovalTriggerTask.TRIGGER, "NOTYET");
 		
 		if (trigger.equals(ApprovalTriggerTask.FAILED)) {
-			logger.info("Approval Monitoring terminating because trigger task failed");
+			logger.info("Approval Monitoring terminating because trigger task failed, Application : {}, Pipeline : {}", 
+					stage.getExecution().getApplication(), stage.getExecution().getName());
 			return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
 					.build();
 		} else if (trigger.equals(ApprovalTriggerTask.SUCCESS)) {
-			logger.info("Approval Monitoring started");
+			logger.info("Approval Monitoring started, Application : {}, Pipeline : {}",
+					stage.getExecution().getApplication(), stage.getExecution().getName());
 			String approvalUrl = (String) outputs.get(LOCATION);
 			return getVerificationStatus(approvalUrl, stage.getExecution().getAuthentication().getUser(), outputs);
 		} else {
@@ -72,8 +74,8 @@ public class ApprovalMonitorTask implements RetryableTask {
 		}
 	}
 
-	private TaskResult getVerificationStatus(String canaryUrl, String user, Map<String, Object> outputs) {
-		HttpGet request = new HttpGet(canaryUrl);
+	private TaskResult getVerificationStatus(String approvalUrl, String user, Map<String, Object> outputs) {
+		HttpGet request = new HttpGet(approvalUrl);
 
 		CloseableHttpClient httpClient = null;
 		try {
@@ -86,7 +88,7 @@ public class ApprovalMonitorTask implements RetryableTask {
 			ObjectNode readValue = objectMapper.readValue(EntityUtils.toString(entity), ObjectNode.class);
 			String analysisStatus = readValue.get(STATUS).asText();
 
-			logger.info("Visibility approval status : {}", analysisStatus);
+			logger.info("Approval status : {}", analysisStatus);
 			if (analysisStatus.equalsIgnoreCase(APPROVED)) {
 				outputs.put(STATUS, analysisStatus);
 				return TaskResult.builder(ExecutionStatus.SUCCEEDED)
@@ -104,7 +106,7 @@ public class ApprovalMonitorTask implements RetryableTask {
 					.build();
 
 		} catch (Exception e) {
-			logger.error("Error occured while getting approval result ", e);
+			logger.error("Error occured while processing approval result ", e);
 			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
 			return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.outputs(outputs)

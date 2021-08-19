@@ -33,6 +33,14 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class ApprovalTriggerTask implements Task {
 
+	private static final String REPOSITORY_NAME = "repositoryName";
+
+	private static final String BITBUCKET = "BITBUCKET";
+
+	private static final String IMAGE_ID = "imageId";
+
+	private static final String PRISMACLOUD = "PRISMACLOUD";
+
 	public static final String FAILED = "FAILED";
 
 	public static final String SUCCESS = "SUCCESS";
@@ -70,8 +78,6 @@ public class ApprovalTriggerTask implements Task {
 	private static final String CANARY_ID = "canaryId";
 
 	private static final String AUTOPILOT = "AUTOPILOT";
-
-	private static final String IMAGE_ID = "imageId";
 
 	private static final String AQUAWAVE = "AQUAWAVE";
 
@@ -119,7 +125,7 @@ public class ApprovalTriggerTask implements Task {
 		Map<String, Object> contextMap = new HashMap<>();
 		Map<String, Object> outputs = new HashMap<>();
 
-		logger.info(" Visibility approval execution started");
+		logger.info("Approval execution started, Application name : {}, Pipeline name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
 		CloseableHttpClient httpClient = null;
 		try {
 
@@ -155,7 +161,7 @@ public class ApprovalTriggerTask implements Task {
 				registerResponse = EntityUtils.toString(entity);
 			}
 
-			logger.info("visibility approval trigger response : {}", registerResponse);
+			logger.info("Approval trigger response : {}", registerResponse);
 
 			if (response.getStatusLine().getStatusCode() != 202) {
 				logger.info("Failed to trigger approval request with Status code : {}, Response : {}", response.getStatusLine().getStatusCode(), registerResponse);
@@ -168,10 +174,7 @@ public class ApprovalTriggerTask implements Task {
 						.build();
 			}
 
-			String approvalUrl = response.getLastHeader(LOCATION).getValue();
-			logger.info("Application : {}, Pipeline : {}, Visibility Approval url : {}", stage.getExecution().getApplication(),
-					stage.getExecution().getName(), approvalUrl);
-			outputs.put(LOCATION, approvalUrl);
+			outputs.put(LOCATION, response.getLastHeader(LOCATION).getValue());
 			outputs.put(TRIGGER, SUCCESS);
 
 			return TaskResult.builder(ExecutionStatus.SUCCEEDED)
@@ -180,7 +183,7 @@ public class ApprovalTriggerTask implements Task {
 					.build();
 
 		} catch (Exception e) {
-			logger.error("Failed to execute verification gate", e);
+			logger.error("Error occured while processing approval", e);
 			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
 			outputs.put(TRIGGER, FAILED);
 			outputs.put(STATUS, REJECTED);
@@ -248,6 +251,29 @@ public class ApprovalTriggerTask implements Task {
 			jenkinsPayload(toolConnectorPayloads, connector);
 		} else if (connectorType.equals(BAMBOO)) {
 			bambooPayload(toolConnectorPayloads, connector);
+		}  else if (connectorType.equals(PRISMACLOUD)) {
+			singlePayload(toolConnectorPayloads, connector, PRISMACLOUD, IMAGE_ID);
+		} else if (connectorType.equals(BITBUCKET)) {
+			bitBucket(toolConnectorPayloads, connector);
+		} 
+	}
+	
+	private void bitBucket(ArrayNode toolConnectorPayloads, JsonNode connector) {
+		ObjectNode gitObjectNode = objectMapper.createObjectNode();
+		gitObjectNode.put(CONNECTOR_TYPE, BITBUCKET);
+		ArrayNode parameterArrayNode = objectMapper.createArrayNode();
+		ArrayNode valuesNode = (ArrayNode) connector.get(VALUES);
+		valuesNode.forEach(gitNode -> {
+			if (gitNode != null && gitNode.get(REPOSITORY_NAME) != null && ! gitNode.get(REPOSITORY_NAME).asText().isEmpty() 
+					&& gitNode.get(COMMIT_ID) != null && ! gitNode.get(COMMIT_ID).asText().isEmpty()) {				
+
+				parameterArrayNode.add(objectMapper.createObjectNode().put(REPOSITORY_NAME, gitNode.get(REPOSITORY_NAME).asText()).put(COMMIT_ID, gitNode.get(COMMIT_ID).asText()));
+			}
+		});
+
+		if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
+			gitObjectNode.set(PARAMETERS, parameterArrayNode);
+			toolConnectorPayloads.add(gitObjectNode);
 		}
 	}
 
