@@ -70,7 +70,10 @@ export function VisibilityApprovalConfig(props: IStageConfigProps) {
 
   const multiFieldComp = (props: any, fieldParams: any) => {
     return fieldParams.connectors.map((dynamicField: any, index: number) => {
-      if (dynamicField.supportedParams.length > 1) {
+      if (
+        (dynamicField.supportedParams.length > 0 && dynamicField.isMultiSupported) ||
+        dynamicField.supportedParams.length > 1
+      ) {
         HelpContentsRegistry.register('approval' + dynamicField.connectorType, dynamicField.helpText);
         return (
           <div className="grid-span-4 fullWidthContainer">
