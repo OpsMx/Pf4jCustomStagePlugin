@@ -3,6 +3,7 @@ package com.opsmx.plugin.stage.custom;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -32,6 +33,12 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @Extension
 @PluginComponent
 public class ApprovalTriggerTask implements Task {
+
+	private static final String REPOSITORY_PATH = "repositoryPath";
+
+	private static final String ARTIFACTORY = "ARTIFACTORY";
+
+	private static final String TYPE = "type";
 
 	private static final String NUMBER = "number";
 
@@ -236,6 +243,18 @@ public class ApprovalTriggerTask implements Task {
 	}
 
 	private void setParameters(ArrayNode toolConnectorPayloads, JsonNode connector) {
+
+		ArrayNode supporetedParams = (ArrayNode) connector.get("supportedParams");
+		boolean hasType =  supporetedParams.get(0).has(TYPE);
+
+		if(hasType) {
+			dynamicPayload(toolConnectorPayloads, connector, supporetedParams);
+		} else {
+			nonDynamic(toolConnectorPayloads, connector);
+		}
+	}
+
+	private void nonDynamic(ArrayNode toolConnectorPayloads, JsonNode connector) {
 		String connectorType = connector.get(CONNECTOR_TYPE).asText();
 		if (connectorType.equals(JIRA)) {
 			singlePayload(toolConnectorPayloads, connector, JIRA, JIRA_TICKET_NO);
@@ -260,7 +279,66 @@ public class ApprovalTriggerTask implements Task {
 		} else if (connectorType.equals(BITBUCKET)) {
 			bitBucket(toolConnectorPayloads, connector);
 		} else if (connectorType.equals(SERVICENOW)) {
-			singlePayload(toolConnectorPayloads, connector, connectorType, NUMBER);
+			singlePayload(toolConnectorPayloads, connector, SERVICENOW, NUMBER);
+		} else if (connectorType.equals(ARTIFACTORY)) {
+			artifactoryBucket(toolConnectorPayloads, connector);
+		}
+	}
+
+	private void dynamicPayload(ArrayNode toolConnectorPayloads, JsonNode connector, ArrayNode supporetedParams) {
+		ArrayNode valuesNode = (ArrayNode) connector.get(VALUES);
+		ArrayNode parameterArrayNode = objectMapper.createArrayNode();
+		valuesNode.forEach(a -> {
+			if (a != null) {
+				Iterator<String> fieldNames = a.fieldNames();
+				ObjectNode payloadObject = objectMapper.createObjectNode();
+				while (fieldNames.hasNext()) {
+					String key = fieldNames.next();
+					if (a.get(key) != null && ! a.get(key).asText().isEmpty()) {
+						supporetedParams.forEach(sp -> {
+							String name = sp.get("name").asText();
+							if (name.equals(key)) {
+								String type = sp.get(TYPE).asText();
+								if(type.equalsIgnoreCase("string")) {
+									payloadObject.put(key, a.get(key).asText().trim());
+								} else {
+									ArrayNode paramsNode = objectMapper.createArrayNode();
+									Arrays.asList(a.get(key).asText().split(",")).forEach(tic -> 
+									paramsNode.add(tic.trim())
+											);
+									payloadObject.set(key, paramsNode);
+								}
+							}
+						});
+					}
+				}
+
+				if(payloadObject.size() > 0) {
+					parameterArrayNode.add(payloadObject);
+				}
+			}
+		});
+
+		if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
+			toolConnectorPayloads.add(objectMapper.createObjectNode().put(CONNECTOR_TYPE, connector.get(CONNECTOR_TYPE).asText()).set(PARAMETERS, parameterArrayNode));
+		}
+	}
+
+	private void artifactoryBucket(ArrayNode toolConnectorPayloads, JsonNode connector) {
+		ObjectNode artifactoryNode = objectMapper.createObjectNode();
+		artifactoryNode.put(CONNECTOR_TYPE, ARTIFACTORY);
+		ArrayNode parameterArrayNode = objectMapper.createArrayNode();
+		ArrayNode valuesNode = (ArrayNode) connector.get(VALUES);
+		valuesNode.forEach(gitNode -> {
+			if (gitNode != null && gitNode.get(REPOSITORY_PATH) != null && ! gitNode.get(REPOSITORY_PATH).asText().isEmpty()) {				
+
+				parameterArrayNode.add(objectMapper.createObjectNode().put(REPOSITORY_PATH, gitNode.get(REPOSITORY_PATH).asText().trim()));
+			}
+		});
+
+		if (parameterArrayNode != null && parameterArrayNode.size() >= 1) {
+			artifactoryNode.set(PARAMETERS, parameterArrayNode);
+			toolConnectorPayloads.add(artifactoryNode);
 		}
 	}
 	
