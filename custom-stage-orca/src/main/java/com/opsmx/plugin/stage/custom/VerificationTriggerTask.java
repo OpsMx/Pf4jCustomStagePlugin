@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -44,6 +45,8 @@ public class VerificationTriggerTask implements Task {
 	private static final String CANARY_CONFIG = "canaryConfig";
 
 	private static final String CANARY_ID = "canaryId";
+	
+	private static final String PAYLOAD_CONSTRAINT = "payloadConstraint";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -72,12 +75,12 @@ public class VerificationTriggerTask implements Task {
 		}
 
 		logger.info("Application name : {}, Service name : {}", stage.getExecution().getApplication(), stage.getExecution().getName());
-
+		
 		try {
 
 			HttpPost request = new HttpPost(context.getGateurl());
 			String triggerPayload = getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(), context,
-					stage.getExecution().getAuthentication().getUser(), stage.getExecution().getId());
+					stage.getExecution().getAuthentication().getUser(), stage.getExecution().getId(), stage.getContext().get(PAYLOAD_CONSTRAINT));
 			outputs.put("trigger_json", String.format("Payload Json :: %s", triggerPayload));
 			request.setEntity(new StringEntity(triggerPayload));
 			request.setHeader("Content-type", "application/json");
@@ -144,7 +147,8 @@ public class VerificationTriggerTask implements Task {
 		}
 	}
 
-	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context,String user, String executionId) {
+	private String getPayloadString(String applicationName, String pipelineName, VerificationContext context,
+			String user, String executionId, Object gateSecurity) throws JsonProcessingException  {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("application", applicationName);
@@ -157,8 +161,12 @@ public class VerificationTriggerTask implements Task {
 				imageIdsNode.add(tic.trim());
 			});
 		}
-		
 		finalJson.set("imageIds", imageIdsNode);
+		if (gateSecurity != null) {
+			String gateSecurityPayload = objectMapper.writeValueAsString(gateSecurity);
+			finalJson.set(PAYLOAD_CONSTRAINT, objectMapper.readTree(gateSecurityPayload));
+		}
+		
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
 		canaryConfig.put("lifetimeHours", context.getLifetime());
 		canaryConfig.set("canaryHealthCheckHandler", objectMapper.createObjectNode().put(MINIMUM_CANARY_RESULT_SCORE, context.getMinicanaryresult()));
