@@ -34,6 +34,8 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class ApprovalTriggerTask implements Task {
 
+	private static final String PAYLOAD_CONSTRAINTS = "payloadConstraints";
+
 	private static final String REPOSITORY_PATH = "repositoryPath";
 
 	private static final String ARTIFACTORY = "ARTIFACTORY";
@@ -153,11 +155,13 @@ public class ApprovalTriggerTask implements Task {
 						.build();
 			}
 
+			Object gateSecurity = stage.getContext().get(PAYLOAD_CONSTRAINTS);
+
 			String gateUrl = (String) jsonContext.get(GATE_URL);
 			logger.info("Application name : {}, pipeline name : {}, GateUrl : {}", stage.getExecution().getApplication(), stage.getExecution().getName(), gateUrl);
 
 			HttpPost request = new HttpPost(gateUrl);
-			String triggerPayload = preparePayload(jsonContext, stage.getExecution().getId());
+			String triggerPayload = preparePayload(jsonContext, stage.getExecution().getId(), gateSecurity);
 			outputs.put(TRIGGER_JSON, String.format("Payload json :: %s", triggerPayload));
 			request.setEntity(new StringEntity(triggerPayload));
 			request.setHeader("Content-type", "application/json");
@@ -212,7 +216,7 @@ public class ApprovalTriggerTask implements Task {
 		}
 	}
 
-	private String preparePayload(Map<String, Object> parameterContext, String executionId) throws JsonProcessingException {
+	private String preparePayload(Map<String, Object> parameterContext, String executionId, Object gateSecurity) throws JsonProcessingException {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 
@@ -226,7 +230,12 @@ public class ApprovalTriggerTask implements Task {
 			imageIdsNode.add(tic.trim())
 					);
 		}
-
+		ArrayNode gateSecurityNode = objectMapper.createArrayNode();
+		if (gateSecurity != null) {
+			String gateSecurityPayload = objectMapper.writeValueAsString(gateSecurity);
+			gateSecurityNode = (ArrayNode) objectMapper.readTree(gateSecurityPayload);
+		}
+		finalJson.set(PAYLOAD_CONSTRAINTS, gateSecurityNode);
 		finalJson.set("imageIds", imageIdsNode);
 		String connectorJson = objectMapper.writeValueAsString(parameterContext.get(CONNECTORS));
 		ArrayNode connectorNode = (ArrayNode) objectMapper.readTree(connectorJson);
@@ -341,7 +350,7 @@ public class ApprovalTriggerTask implements Task {
 			toolConnectorPayloads.add(artifactoryNode);
 		}
 	}
-	
+
 	private void bitBucket(ArrayNode toolConnectorPayloads, JsonNode connector) {
 		ObjectNode gitObjectNode = objectMapper.createObjectNode();
 		gitObjectNode.put(CONNECTOR_TYPE, BITBUCKET);
