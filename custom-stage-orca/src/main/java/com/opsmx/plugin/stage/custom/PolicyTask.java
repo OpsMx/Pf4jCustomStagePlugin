@@ -35,6 +35,8 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @Extension
 @PluginComponent
 public class PolicyTask implements Task {
+	
+	private static final String PAYLOAD_CONSTRAINT = "payloadConstraint";
 
 	private static final String DENY = "Deny";
 
@@ -101,7 +103,7 @@ public class PolicyTask implements Task {
 
 			HttpPost request = new HttpPost(url);
 			String triggerPayload = getPayloadString(context, stage.getExecution().getApplication(), stage.getExecution().getName(),
-					stage.getExecution().getId(), stage.getExecution().getAuthentication().getUser(), context.getPayload());
+					stage.getExecution().getId(), stage.getExecution().getAuthentication().getUser(), context.getPayload(), stage.getContext().get(PAYLOAD_CONSTRAINT));
 			outputs.put(TRIGGER_JSON, String.format("Payload json :: %s", triggerPayload));
 			request.setEntity(new StringEntity(triggerPayload));
 			request.setHeader("Content-type", "application/json");
@@ -188,8 +190,12 @@ public class PolicyTask implements Task {
 	}
 
 
-	private String getPayloadString(PolicyContext context, String application, String name, String executionId, String user, String payload) throws JsonProcessingException {
+	private String getPayloadString(PolicyContext context, String application, String name, String executionId, String user, String payload, Object gateSecurity) throws JsonProcessingException {
 		ObjectNode finalJson = objectMapper.createObjectNode();
+		if (gateSecurity != null) {
+			String gateSecurityPayload = objectMapper.writeValueAsString(gateSecurity);
+			finalJson.set(PAYLOAD_CONSTRAINT, objectMapper.readTree(gateSecurityPayload));
+		}
 		if (payload != null && ! payload.trim().isEmpty()) {
 			finalJson = (ObjectNode) objectMapper.readTree(payload);
 			finalJson.put("executionId", executionId);
