@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -44,6 +45,8 @@ public class TestVerificationTriggerTask implements Task {
 	private static final String PIPELINE_NAME = "pipelineName";
 
 	private static final String CANARY_ID = "canaryId";
+	
+	private static final String PAYLOAD_CONSTRAINT = "payloadConstraint";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -76,7 +79,7 @@ public class TestVerificationTriggerTask implements Task {
 
 			HttpPost request = new HttpPost(context.getGateurl());
 			String triggerPayload = getPayloadString(stage.getExecution().getApplication(), stage.getExecution().getName(),
-					context, stage.getExecution().getAuthentication().getUser(), stage.getExecution().getId());
+					context, stage.getExecution().getAuthentication().getUser(), stage.getExecution().getId(), stage.getContext().get(PAYLOAD_CONSTRAINT));
 			outputs.put("trigger_json", String.format("Payload Json :: %s", triggerPayload));
 			request.setEntity(new StringEntity(triggerPayload));
 			request.setHeader("Content-type", "application/json");
@@ -146,7 +149,7 @@ public class TestVerificationTriggerTask implements Task {
 		}
 	}
 
-	private String getPayloadString(String applicationName, String pipelineName, TestVerificationContext context, String user, String executionId) {
+	private String getPayloadString(String applicationName, String pipelineName, TestVerificationContext context, String user, String executionId, Object gateSecurity) throws JsonProcessingException {
 
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		finalJson.put("application", applicationName);
@@ -159,8 +162,12 @@ public class TestVerificationTriggerTask implements Task {
 				imageIdsNode.add(tic.trim())
 			);
 		}
-
 		finalJson.set("imageIds", imageIdsNode);
+		
+		if (gateSecurity != null) {
+			String gateSecurityPayload = objectMapper.writeValueAsString(gateSecurity);
+			finalJson.set(PAYLOAD_CONSTRAINT, objectMapper.readTree(gateSecurityPayload));
+		}
 
 		ObjectNode canaryConfig = objectMapper.createObjectNode();
 		canaryConfig.put(LIFETIME_HOURS, context.getLifetime());
