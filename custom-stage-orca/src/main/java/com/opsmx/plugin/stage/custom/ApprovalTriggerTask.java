@@ -34,7 +34,7 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @PluginComponent
 public class ApprovalTriggerTask implements Task {
 
-	private static final String PAYLOAD_CONSTRAINTS = "payloadConstraints";
+	private static final String PAYLOAD_CONSTRAINT = "payloadConstraint";
 
 	private static final String REPOSITORY_PATH = "repositoryPath";
 
@@ -155,7 +155,7 @@ public class ApprovalTriggerTask implements Task {
 						.build();
 			}
 
-			Object gateSecurity = stage.getContext().get(PAYLOAD_CONSTRAINTS);
+			Object gateSecurity = stage.getContext().get(PAYLOAD_CONSTRAINT);
 
 			String gateUrl = (String) jsonContext.get(GATE_URL);
 			logger.info("Application name : {}, pipeline name : {}, GateUrl : {}", stage.getExecution().getApplication(), stage.getExecution().getName(), gateUrl);
@@ -234,8 +234,8 @@ public class ApprovalTriggerTask implements Task {
 		if (gateSecurity != null) {
 			String gateSecurityPayload = objectMapper.writeValueAsString(gateSecurity);
 			gateSecurityNode = (ArrayNode) objectMapper.readTree(gateSecurityPayload);
+			finalJson.set(PAYLOAD_CONSTRAINT, gateSecurityNode);
 		}
-		finalJson.set(PAYLOAD_CONSTRAINTS, gateSecurityNode);
 		finalJson.set("imageIds", imageIdsNode);
 		String connectorJson = objectMapper.writeValueAsString(parameterContext.get(CONNECTORS));
 		ArrayNode connectorNode = (ArrayNode) objectMapper.readTree(connectorJson);
