@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -34,6 +35,16 @@ import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 @Extension
 @PluginComponent
 public class PolicyTask implements Task {
+
+	private static final String DENY = "Deny";
+
+	private static final String ALLOW = "Allow";
+
+	private static final String EXECUTED_BY = "executedBy";
+
+	private static final String MESSAGE = "message";
+
+	private static final String STATUS = "status";
 
 	private static final String TRIGGER_JSON = "trigger_json";
 
@@ -108,46 +119,43 @@ public class PolicyTask implements Task {
 			logger.info("Policy trigger application : {}, pipeline : {},  response : {}", 
 					stage.getExecution().getApplication(), stage.getExecution().getName(), registerResponse);
 
-			if (response.getStatusLine().getStatusCode() != 200) {
-				outputs.put(EXCEPTION, String.format("Failed to trigger request with Status code : %s and Response : %s",
-						response.getStatusLine().getStatusCode(), registerResponse));
+			if (response.getStatusLine().getStatusCode() == 200 ) {
+				List<String> allow = getMessage(registerResponse, ALLOW);
+
+				outputs.put(STATUS, ALLOW);
+				outputs.put(MESSAGE, allow);
+				outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
+				return TaskResult.builder(ExecutionStatus.SUCCEEDED)
+						.context(contextMap)
+						.outputs(outputs)
+						.build();
+
+			} else  if (response.getStatusLine().getStatusCode() == 401 ) {
+				List<String> deny = getMessage(registerResponse, DENY);
+
+				outputs.put(STATUS, DENY);
+				outputs.put(MESSAGE, deny);
+				outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
 						.outputs(outputs)
 						.build();
-			}
 
-			List<String> deny = Arrays.asList();
-			JsonNode rootNode = objectMapper.readTree(registerResponse);  
-			Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
-		       while (fieldsIterator.hasNext()) {
-
-		           Map.Entry<String,JsonNode> field = fieldsIterator.next();
-		           if (field.getKey().equalsIgnoreCase("deny")) {
-		        	   ArrayNode denyJson = (ArrayNode) field.getValue();
-		        	   denyJson.forEach(a -> {
-		        		   deny.add(a.asText());
-		        	   });
-		           }
-		       }
-		       
-		     if (deny == null || deny.isEmpty()) {
-		    	return TaskResult.builder(ExecutionStatus.SUCCEEDED)
-					.context(contextMap)
-					.outputs(outputs)
-					.build();
-		     } else {
-		    	 outputs.put(EXCEPTION, String.format("Stage failed because of %s", deny));
-		    	 return TaskResult.builder(ExecutionStatus.TERMINAL)
-					.context(contextMap)
-					.outputs(outputs)
-					.build();
-		     }
-			
+			} else {
+				outputs.put(STATUS, DENY);
+				outputs.put(MESSAGE, String.format("Policy verification failed with statuscode :: %s", response.getStatusLine().getStatusCode()));
+				outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
+				return TaskResult.builder(ExecutionStatus.TERMINAL)
+						.context(contextMap)
+						.outputs(outputs)
+						.build();
+			}			
 
 		} catch (Exception e) {
-			logger.error("Error occured", e);
-			outputs.put(EXCEPTION, String.format("Error occured while processing, %s", e));
+			logger.error("Error occured while triggering policy ", e);
+			outputs.put(STATUS, DENY);
+			outputs.put(MESSAGE, String.format("Policy trigger failed with exception :: %s", e.getMessage()));
+			outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
 			return TaskResult.builder(ExecutionStatus.TERMINAL)
 					.context(contextMap)
 					.outputs(outputs)
@@ -162,6 +170,24 @@ public class PolicyTask implements Task {
 	}
 
 
+	private List<String> getMessage(String registerResponse, String key) throws JsonProcessingException, JsonMappingException {
+		List<String> deny = Arrays.asList();
+		JsonNode rootNode = objectMapper.readTree(registerResponse);  
+		Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
+		while (fieldsIterator.hasNext()) {
+
+			Map.Entry<String,JsonNode> field = fieldsIterator.next();
+			if (field.getKey().equalsIgnoreCase(key)) {
+				ArrayNode denyJson = (ArrayNode) field.getValue();
+				denyJson.forEach(a -> {
+					deny.add(a.asText());
+				});
+			}
+		}
+		return deny;
+	}
+
+
 	private String getPayloadString(PolicyContext context, String application, String name, String executionId, String user, String payload) throws JsonProcessingException {
 		ObjectNode finalJson = objectMapper.createObjectNode();
 		if (payload != null && ! payload.trim().isEmpty()) {
@@ -171,7 +197,7 @@ public class PolicyTask implements Task {
 			finalJson.put(APPLICATION2, application);
 			finalJson.put(NAME2, name);
 			finalJson.set(TRIGGER, objectMapper.createObjectNode().put(USER2, user));
-			
+
 		} else {
 			finalJson.put(START_TIME, System.currentTimeMillis());
 			finalJson.put(APPLICATION2, application);
@@ -187,7 +213,7 @@ public class PolicyTask implements Task {
 				finalJson.set("imageIds", images);
 			}
 		}
-		
+
 		logger.info("Payload string to policy : {}", finalJson);
 		return finalJson.toString();
 	}
