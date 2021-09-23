@@ -13,10 +13,20 @@ import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMes
 export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
-    if (props.stage.status == 'SUCCEEDED') {
+    if (props.stage.status == 'allow') {
       classes = 'policyStatusSuccess';
-    } else if (props.stage.status == 'TERMINAL') {
+    } else if (props.stage.status == 'deny') {
       classes = 'policyStatusDanger';
+    }
+    return classes;
+  };
+
+  const getStatus = () => {
+    let classes = '';
+    if (props.stage.outputs.status == 'allow') {
+      classes = 'Allow';
+    } else if (props.stage.outputs.status == 'deny') {
+      classes = 'Deny';
     }
     return classes;
   };
@@ -48,14 +58,18 @@ export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps)
             <thead>
               <tr>
                 <th>Status</th>
-                <th>Last Updated</th>
+                <th>Message</th>
+                <th>Executed By</th>
+                <th>Time</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>
-                  <span className={'PolicyStatusSmall ' + getClasses()}>{props.stage.status}</span>
+                  <span className={'PolicyStatusSmall ' + getClasses()}>{getStatus()}</span>
                 </td>
+                <td>{props.stage.outputs.message}</td>
+                <td>{props.stage.outputs.executedBy}</td>
                 <td>{new Date(props.stage.endTime).toLocaleString()}</td>
               </tr>
             </tbody>
