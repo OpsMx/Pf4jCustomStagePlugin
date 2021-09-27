@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -26,11 +27,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import com.netflix.spinnaker.kork.plugins.api.PluginComponent;
 import com.netflix.spinnaker.orca.api.pipeline.Task;
 import com.netflix.spinnaker.orca.api.pipeline.TaskResult;
 import com.netflix.spinnaker.orca.api.pipeline.models.ExecutionStatus;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
+
+import jline.internal.Log;
 
 @Extension
 @PluginComponent
@@ -38,9 +42,9 @@ public class PolicyTask implements Task {
 	
 	private static final String PAYLOAD_CONSTRAINT = "payloadConstraint";
 
-	private static final String DENY = "Deny";
+	private static final String DENY = "deny";
 
-	private static final String ALLOW = "Allow";
+	private static final String ALLOW = "allow";
 
 	private static final String EXECUTED_BY = "executedBy";
 
@@ -122,10 +126,16 @@ public class PolicyTask implements Task {
 					stage.getExecution().getApplication(), stage.getExecution().getName(), registerResponse);
 
 			if (response.getStatusLine().getStatusCode() == 200 ) {
-				List<String> allow = getMessage(registerResponse, ALLOW);
+				StringBuilder message = new StringBuilder();
+				getMessage(registerResponse, ALLOW).forEach(a -> {
+					if (StringUtils.isNotBlank(message)) {
+						message.append(",\n");
+					}
+					message.append(a);
+				});
 
 				outputs.put(STATUS, ALLOW);
-				outputs.put(MESSAGE, allow);
+				outputs.put(MESSAGE, message.toString());
 				outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
 				return TaskResult.builder(ExecutionStatus.SUCCEEDED)
 						.context(contextMap)
@@ -133,10 +143,16 @@ public class PolicyTask implements Task {
 						.build();
 
 			} else  if (response.getStatusLine().getStatusCode() == 401 ) {
-				List<String> deny = getMessage(registerResponse, DENY);
+				StringBuilder message = new StringBuilder();
+				getMessage(registerResponse, DENY).forEach(a -> {
+					if (StringUtils.isNotBlank(message)) {
+						message.append(",\n");
+					}
+					message.append(a);
+				});
 
 				outputs.put(STATUS, DENY);
-				outputs.put(MESSAGE, deny);
+				outputs.put(MESSAGE, message.toString());
 				outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
 						.context(contextMap)
@@ -173,21 +189,35 @@ public class PolicyTask implements Task {
 
 
 	private List<String> getMessage(String registerResponse, String key) throws JsonProcessingException, JsonMappingException {
-		List<String> deny = Arrays.asList();
+		List<String> deny = Lists.newArrayList();
 		JsonNode rootNode = objectMapper.readTree(registerResponse);  
-		Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
-		while (fieldsIterator.hasNext()) {
-
-			Map.Entry<String,JsonNode> field = fieldsIterator.next();
-			if (field.getKey().equalsIgnoreCase(key)) {
-				ArrayNode denyJson = (ArrayNode) field.getValue();
-				denyJson.forEach(a -> {
-					deny.add(a.asText());
-				});
-			}
-		}
+		iterateJsonObject(key, deny, rootNode);
 		return deny;
 	}
+
+
+	private void iterateJsonObject(String key, List<String> deny, JsonNode rootNode) {
+		Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
+		while (fieldsIterator.hasNext()) {
+			Map.Entry<String,JsonNode> field = fieldsIterator.next();
+			if (field.getKey().equalsIgnoreCase(key)) {
+				Iterator<JsonNode> iterator = field.getValue().iterator();
+				if (iterator.hasNext()) {
+					deny.add(iterator.next().asText());
+				}
+			} else {
+				if (field.getValue() instanceof ObjectNode ) {
+					iterateJsonObject(key, deny, field.getValue());
+				} else if (field.getValue() instanceof ArrayNode ) {
+					((ArrayNode) field.getValue()).forEach(obj -> {
+						iterateJsonObject(key, deny, obj);
+					});
+				}
+			}
+		}
+	}
+	
+	
 
 
 	private String getPayloadString(PolicyContext context, String application, String name, String executionId, String user, String payload, Object gateSecurity) throws JsonProcessingException {
