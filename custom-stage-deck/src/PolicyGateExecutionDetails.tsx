@@ -13,9 +13,9 @@ import { ExecutionDetailsSection, IExecutionDetailsSectionProps, StageFailureMes
 export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps) {
   const getClasses = () => {
     let classes = '';
-    if (props.stage.status == 'allow') {
+    if (props.stage.outputs.status == 'allow') {
       classes = 'policyStatusSuccess';
-    } else if (props.stage.status == 'deny') {
+    } else if (props.stage.outputs.status == 'deny') {
       classes = 'policyStatusDanger';
     }
     return classes;
@@ -54,12 +54,12 @@ export function PolicyGateExecutionDetails(props: IExecutionDetailsSectionProps)
               style={{ marginLeft: 'auto' }}
             ></img>
           </div>
-          <table className="table">
+          <table className="table" style={{ marginTop: '15px' }}>
             <thead>
               <tr>
                 <th>Status</th>
                 <th>Message</th>
-                <th>Executed By</th>
+                <th style={{ width: '90px' }}>Executed By</th>
                 <th>Time</th>
               </tr>
             </thead>
