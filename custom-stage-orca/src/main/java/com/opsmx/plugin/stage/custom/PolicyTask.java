@@ -161,6 +161,7 @@ public class PolicyTask implements Task {
 
 			} else {
 				outputs.put(STATUS, DENY);
+				outputs.put("REASON", String.format("Policy verification statuscode :: %s, %s", response.getStatusLine().getStatusCode(), registerResponse));
 				outputs.put(MESSAGE, String.format("Policy verification failed with statuscode :: %s", response.getStatusLine().getStatusCode()));
 				outputs.put(EXECUTED_BY, stage.getExecution().getAuthentication().getUser());
 				return TaskResult.builder(ExecutionStatus.TERMINAL)
