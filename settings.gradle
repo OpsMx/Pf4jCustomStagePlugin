@@ -8,7 +8,7 @@ pluginManagement {
 
 rootProject.name = "pf4jCustomStagePlugin"
 
-include "custom-stage-orca", "custom-event-echo", "custom-stage-deck"
+include "custom-stage-orca"
 
 def setBuildFile(project) {
   project.buildFileName = "${project.name}.gradle"
