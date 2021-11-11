@@ -80,10 +80,8 @@ public class OpenPolicyAgentValidator implements PipelineValidator, SpinnakerExt
 			logger.info("OPA not enabled, returning");
 			return;
 		}
-		logger.info("OPA is enabled, #######");
 		String finalInput = null;
 		Response httpResponse;
-		logger.info("OPA Server: {}", opaUrl);
 		try {
 
 			// Form input to opa
@@ -93,7 +91,9 @@ public class OpenPolicyAgentValidator implements PipelineValidator, SpinnakerExt
 
 			/* build our request to OPA */
 			RequestBody requestBody = RequestBody.create(JSON, finalInput);
-			String opaFinalUrl = String.format("%s/%s", this.opaUrl, this.opaPolicyLocation);
+			String opaFinalUrl = String.format("%s/%s", opaUrl.endsWith("/") ? opaUrl.substring(0, opaUrl.length() - 1) : opaUrl, opaPolicyLocation.startsWith("/") ? opaPolicyLocation.substring(1) : opaPolicyLocation);
+			
+			logger.info("OPA endpoint : {}", opaFinalUrl);
 			String opaStringResponse;
 
 			/* fetch the response from the spawned call execution */
