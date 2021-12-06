@@ -22,6 +22,7 @@ import com.netflix.spinnaker.front50.model.application.Application;
 import com.netflix.spinnaker.front50.validator.ApplicationValidationErrors;
 import com.netflix.spinnaker.front50.validator.ApplicationValidator;
 import com.netflix.spinnaker.kork.plugins.api.internal.SpinnakerExtensionPoint;
+import com.netflix.spinnaker.kork.web.exceptions.ValidationException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -33,10 +34,6 @@ import okhttp3.ResponseBody;
 @Extension
 @Component
 public class ApplicationNameValidation implements ApplicationValidator, SpinnakerExtensionPoint {
-
-	public ApplicationNameValidation(ApplicationPermissionsService applicationPermissionsService) {
-		this.applicationPermissionsService = applicationPermissionsService;
-	}
 
 	private final Logger logger = LoggerFactory.getLogger(ApplicationNameValidation.class);
 
@@ -64,10 +61,6 @@ public class ApplicationNameValidation implements ApplicationValidator, Spinnake
 	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final OkHttpClient opaClient = new OkHttpClient();
 
-	private final ApplicationPermissionsService applicationPermissionsService;  
-
-
-
 	@Override
 	public void validate(Application application, ApplicationValidationErrors validationErrors) {
 		if (!isOpaEnabled) {
@@ -77,9 +70,7 @@ public class ApplicationNameValidation implements ApplicationValidator, Spinnake
 		String finalInput = null;
 		Response httpResponse;
 		try {
-			logger.info("Application : **************###############************");
 			finalInput = getOpaInput(application);
-			
 			logger.info("Verifying {} with OPA", finalInput);
 
 			RequestBody requestBody = RequestBody.create(JSON, finalInput);
@@ -98,32 +89,31 @@ public class ApplicationNameValidation implements ApplicationValidator, Spinnake
 					JsonObject opaResponse = gson.fromJson(opaStringResponse, JsonObject.class);
 					StringBuilder denyMessage = new StringBuilder();
 					extractDenyMessage(opaResponse, denyMessage);
-					if (StringUtils.isNotBlank(denyMessage)) {
+					String opaMessage = denyMessage.toString();
+					logger.info("###########################----############# : {}", opaMessage);
+					if (StringUtils.isNotBlank(opaMessage)) {
 						validationErrors.rejectValue(
 								"name",
 								"application.name.invalid with opa deny",
-								Optional.ofNullable("Application name doesn't satisfy the validation regex")
-								.orElse(
-										"Application name doesn't satisfy the validation regex"));
+								Optional.ofNullable(opaMessage)
+								.orElse("Application doesn't satisfy the policy specified"));
 					} else {
 						validationErrors.rejectValue(
 								"name",
-								"application.name.invalid",
-								Optional.ofNullable("There is no OPA RESULT KEY")
-								.orElse("There is no OPA RESULT KEY"));
+								"application.name.invalid","Application doesn't satisfy the policy specified");
 					}
 				} else if (httpResponse.code() != 200 ) {
 					validationErrors.rejectValue(
 							"name",
-							"application.name.invalid",
-							Optional.ofNullable("NOT 200")
-							.orElse(
-									"NOT 200"));;
+							"application.name.invalid",  httpResponse.message());;
 				}
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("Communication exception for OPA at {}: {}", this.opaUrl, e.toString());
+			validationErrors.rejectValue(
+					"name",
+					"application.name.invalid", e.toString());
 		}
 	}
 
