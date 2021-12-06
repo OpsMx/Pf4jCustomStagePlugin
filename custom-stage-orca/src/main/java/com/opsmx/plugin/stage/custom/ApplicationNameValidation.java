@@ -90,7 +90,6 @@ public class ApplicationNameValidation implements ApplicationValidator, Spinnake
 					StringBuilder denyMessage = new StringBuilder();
 					extractDenyMessage(opaResponse, denyMessage);
 					String opaMessage = denyMessage.toString();
-					logger.info("###########################----############# : {}", opaMessage);
 					if (StringUtils.isNotBlank(opaMessage)) {
 						validationErrors.rejectValue(
 								"name",
