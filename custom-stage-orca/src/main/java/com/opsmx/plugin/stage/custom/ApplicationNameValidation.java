@@ -71,19 +71,18 @@ public class ApplicationNameValidation implements ApplicationValidator, Spinnake
 		Response httpResponse;
 		try {
 			finalInput = getOpaInput(application);
-			logger.info("Verifying {} with OPA", finalInput);
+			logger.debug("Verifying {} with OPA", finalInput);
 
 			RequestBody requestBody = RequestBody.create(JSON, finalInput);
 			String opaFinalUrl = String.format("%s/%s", opaUrl.endsWith("/") ? opaUrl.substring(0, opaUrl.length() - 1) : opaUrl, opaPolicyLocation.startsWith("/") ? opaPolicyLocation.substring(1) : opaPolicyLocation);
 
-			logger.info("OPA endpoint : {}", opaFinalUrl);
+			logger.debug("OPA endpoint : {}", opaFinalUrl);
 			String opaStringResponse;
 
 			/* fetch the response from the spawned call execution */
 			httpResponse = doPost(opaFinalUrl, requestBody);
 			opaStringResponse = httpResponse.body().string();
 			logger.info("OPA response: {}", opaStringResponse);
-			logger.info("proxy enabled : {}, statuscode : {}, opaResultKey : {}", isOpaProxy, httpResponse.code(), opaResultKey);
 			if (isOpaProxy) {
 				if (httpResponse.code() == 401 ) {
 					JsonObject opaResponse = gson.fromJson(opaStringResponse, JsonObject.class);
