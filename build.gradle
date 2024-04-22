@@ -32,9 +32,9 @@ subprojects {
     spotless {
       kotlin {
         ktlint().userData([
-          disabled_rules          : "no-wildcard-imports",
-          indent_size             : "2",
-          continuation_indent_size: "2",
+                disabled_rules          : "no-wildcard-imports",
+                indent_size             : "2",
+                continuation_indent_size: "2",
         ])
       }
     }
@@ -50,4 +50,3 @@ String normalizedVersion() {
     return normalized
   }
 }
-

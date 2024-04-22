@@ -19,7 +19,7 @@ apply plugin: "kotlin-spring"
 repositories {
     mavenCentral()
     jcenter()
-    maven { url "https://spinnaker-releases.bintray.com/jars" }
+    maven { url "https://dl.bintray.com/spinnaker/gradle/" }
 }
 
 sourceSets {
@@ -37,11 +37,11 @@ spinnakerPlugin {
 dependencies {
     compileOnly "org.pf4j:pf4j:${pf4jVersion}"
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    compileOnly "com.netflix.spinnaker.kork:kork-plugins-api:${korkVersion}"
-    compileOnly "com.netflix.spinnaker.echo:echo-api:${echoVersion}"
+    compileOnly "io.spinnaker.kork:kork-plugins-api:${korkVersion}"
+    compileOnly "io.spinnaker.echo:echo-api:${echoVersion}"
     kapt "org.pf4j:pf4j:${pf4jVersion}"
 
-    testImplementation "com.netflix.spinnaker.kork:kork-plugins-tck"
+    testImplementation "io.spinnaker.kork:kork-plugins-tck"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
     testImplementation "io.strikt:strikt-core:0.22.1"
     testImplementation "dev.minutest:minutest:1.10.0"

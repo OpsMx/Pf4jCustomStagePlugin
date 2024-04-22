@@ -3,6 +3,7 @@ package com.opsmx.plugin.stage.custom;
 import com.netflix.spinnaker.orca.api.pipeline.graph.StageDefinitionBuilder;
 import com.netflix.spinnaker.orca.api.pipeline.graph.TaskNode;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
+import com.opsmx.plugin.stage.custom.tasks.CustomStageTask;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
